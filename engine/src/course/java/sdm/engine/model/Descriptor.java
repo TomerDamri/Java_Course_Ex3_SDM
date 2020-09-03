@@ -12,6 +12,7 @@ public class Descriptor implements Serializable {
     private static Integer numOfDynamicOrders = 1;
     private Map<Integer, SystemStore> systemStores;
     private Map<Integer, SystemItem> systemItems;
+    Map<Integer, SystemCustomer> systemCustomers;
     private Map<UUID, List<SystemOrder>> systemOrders;
     private Map<UUID, DynamicOrder> dynamicOrders;
 
@@ -27,11 +28,18 @@ public class Descriptor implements Serializable {
         return num;
     }
 
-    public Descriptor (Map<Integer, SystemStore> systemStores, Map<Integer, SystemItem> systemItems) {
+    public Descriptor (Map<Integer, SystemStore> systemStores,
+                       Map<Integer, SystemItem> systemItems,
+                       Map<Integer, SystemCustomer> systemCustomers) {
         this.systemStores = systemStores;
         this.systemItems = systemItems;
+        this.systemCustomers = systemCustomers;
         this.systemOrders = new TreeMap<>();
         this.dynamicOrders = new TreeMap<>();
+    }
+
+    public Map<Integer, SystemCustomer> getSystemCustomers () {
+        return systemCustomers;
     }
 
     public Map<Integer, SystemStore> getSystemStores () {

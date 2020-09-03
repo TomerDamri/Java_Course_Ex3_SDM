@@ -2,14 +2,16 @@ package course.java.sdm.engine.utils.fileManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
+import course.java.sdm.engine.exceptions.DuplicateEntityException;
 import course.java.sdm.engine.exceptions.IllegalFileExtensionException;
 import course.java.sdm.engine.exceptions.ItemNotExistInStores;
 import course.java.sdm.engine.exceptions.ItemNotFoundException;
+import course.java.sdm.engine.model.Customer;
 import course.java.sdm.engine.model.Item;
+import course.java.sdm.engine.model.Location;
 import course.java.sdm.engine.model.Store;
 
 public class FileManagerValidator {
@@ -20,7 +22,7 @@ public class FileManagerValidator {
         validateFileExists(filePath);
     }
 
-    public void validateItemsAndStores (Map<Integer, Item> items, Map<Integer, Store> stores) {
+    public void validateItemsAndStores (Map<Integer, Item> items, Map<Integer, Store> stores, List<Customer> customers) {
         Set<Integer> itemsIds = items.keySet();
         Set<Integer> suppliedItemsIds = new HashSet<>();
 
@@ -32,6 +34,32 @@ public class FileManagerValidator {
 
         // validate that all items are supplied in at least 1 store
         validateAllItemsSupplied(itemsIds, suppliedItemsIds);
+
+        // validate all customers and stores location are unique
+        validateAllLocations(stores, customers);
+    }
+
+    private Set<Location> validateAllLocations (Map<Integer, Store> stores, List<Customer> customers) {
+        Set<Location> allSystemLocations = new HashSet<>();
+
+        validateLocations(stores.values(), Store::getLocation, allSystemLocations);
+        validateLocations(customers, Customer::getLocation, allSystemLocations);
+
+        return allSystemLocations;
+    }
+
+    private <T> void validateLocations (Collection<T> entityCollection,
+                                        Function<T, Location> getLocationFunction,
+                                        Set<Location> allLocations) {
+        entityCollection.stream().map(getLocationFunction).forEach(location -> addLocationToLocationSet(allLocations, location));
+    }
+
+    private void addLocationToLocationSet (Set<Location> allSystemLocations, Location location) {
+        if (allSystemLocations.contains(location)) {
+            throw new DuplicateEntityException(location);
+        }
+
+        allSystemLocations.add(location);
     }
 
     private void validateFileExists (String filePath) throws FileNotFoundException {

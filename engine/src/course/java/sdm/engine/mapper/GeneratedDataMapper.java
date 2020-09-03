@@ -4,12 +4,20 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import course.java.sdm.engine.exceptions.DuplicateIdsException;
+import course.java.sdm.engine.exceptions.DuplicateEntityException;
 import course.java.sdm.engine.model.*;
 import course.java.sdm.engine.model.Location;
 import examples.jaxb.schema.generated.*;
 
 public class GeneratedDataMapper {
+
+    public List<Customer> generatedCustomersToCustomers (SDMCustomers sdmCustomers) {
+        if (sdmCustomers == null) {
+            return null;
+        }
+
+        return sdmCustomers.getSDMCustomer().stream().map(this::toCustomer).collect(Collectors.toList());
+    }
 
     public Map<Integer, Item> generatedItemsToItems (SDMItems generatedItems) {
         if (generatedItems == null) {
@@ -26,15 +34,16 @@ public class GeneratedDataMapper {
         return toStores(generatedStores, items);
     }
 
-    public Descriptor toDescriptor (Map<Integer, Item> items, Map<Integer, Store> stores) {
+    public Descriptor toDescriptor (Map<Integer, Item> items, Map<Integer, Store> stores, List<Customer> customers) {
         ArrayList<Store> storesList = new ArrayList<>(stores.values());
         Map<Integer, SystemStore> systemStores = generatedListToMap(storesList,
                                                                     Store::getId,
                                                                     SystemStore::new,
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
+        Map<Integer, SystemCustomer> systemCustomers = toSystemCustomers(customers);
 
-        return new Descriptor(systemStores, systemItems);
+        return new Descriptor(systemStores, systemItems, systemCustomers);
     }
 
     private Map<Integer, SystemItem> toSystemItems (Map<Integer, Item> items, Collection<SystemStore> stores) {
@@ -63,6 +72,18 @@ public class GeneratedDataMapper {
         }
 
         return systemItems;
+    }
+
+    private Map<Integer, SystemCustomer> toSystemCustomers (List<Customer> customers) {
+        return generatedListToMap(customers, Customer::getId, this::toSystemCustomer, Customer.class.getSimpleName());
+    }
+
+    private SystemCustomer toSystemCustomer (Customer customer) {
+        return new SystemCustomer(customer);
+    }
+
+    private Customer toCustomer (SDMCustomer sdmCustomer) {
+        return new Customer(sdmCustomer.getId(), sdmCustomer.getName(), toLocation(sdmCustomer.getLocation()));
     }
 
     private double calculateAvgPrice (int storesCount, double avgPrice, double sumPrices) {
@@ -161,7 +182,7 @@ public class GeneratedDataMapper {
             return map;
         }
         catch (IllegalStateException ex) {
-            throw new DuplicateIdsException(valuesClassName, ex);
+            throw new DuplicateEntityException(valuesClassName, ex);
         }
     }
 

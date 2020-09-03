@@ -1,6 +1,7 @@
 package course.java.sdm.engine.utils.fileManager;
 
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -10,10 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.exceptions.FileNotSaveException;
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
-import course.java.sdm.engine.model.Descriptor;
-import course.java.sdm.engine.model.Item;
-import course.java.sdm.engine.model.Store;
-import course.java.sdm.engine.model.SystemOrdersHistory;
+import course.java.sdm.engine.model.*;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
 
 public class FileManager {
@@ -50,10 +48,12 @@ public class FileManager {
 
     public Descriptor loadDataFromGeneratedData (SuperDuperMarketDescriptor superDuperMarketDescriptor) {
         Map<Integer, Item> items = GENERATED_DATA_MAPPER.generatedItemsToItems(superDuperMarketDescriptor.getSDMItems());
+        // TODO: 02/09/2020 - add discounts to stores
         Map<Integer, Store> stores = GENERATED_DATA_MAPPER.generatedStoresToStores(superDuperMarketDescriptor.getSDMStores(), items);
-        FILE_MANAGER_VALIDATOR.validateItemsAndStores(items, stores);
+        List<Customer> customers = GENERATED_DATA_MAPPER.generatedCustomersToCustomers(superDuperMarketDescriptor.getSDMCustomers());
+        FILE_MANAGER_VALIDATOR.validateItemsAndStores(items, stores, customers);
 
-        return GENERATED_DATA_MAPPER.toDescriptor(items, stores);
+        return GENERATED_DATA_MAPPER.toDescriptor(items, stores, customers);
     }
 
     public void saveOrdersHistoryToFile (Descriptor descriptor, String path) {
