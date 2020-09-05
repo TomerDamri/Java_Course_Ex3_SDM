@@ -3,13 +3,17 @@ package course.java.sdm.engine.utils.ordersCreator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
+import model.request.PlaceDynamicOrderRequest;
 
 public class OrdersCreator {
+
+    private Map<UUID, TempOrder> tempStaticOrders = new TreeMap<>();
 
     private static OrdersCreator singletonOrderExecutor = null;
     private final static OrdersCreatorValidator ORDERS_CREATOR_VALIDATOR = new OrdersCreatorValidator();
@@ -25,6 +29,31 @@ public class OrdersCreator {
         return singletonOrderExecutor;
     }
 
+    public Order createOrderV2 (SystemStore systemStore,
+                                LocalDateTime orderDate,
+                                Location orderLocation,
+                                Map<PricedItem, Double> pricedItemToAmountMap,
+                                UUID parentId,
+                                Integer customerId) {
+        ORDERS_CREATOR_VALIDATOR.validateLocation(orderLocation, systemStore);
+        Order newOrder = new Order(orderDate, orderLocation, parentId);
+        addItemsToOrder(systemStore, newOrder, pricedItemToAmountMap);
+        completeTheOrder(systemStore, newOrder);
+
+        TempOrder tempOrder = new TempOrder(newOrder.getId(),
+                                            Collections.singletonMap(systemStore.getStore().getStoreDetails(), newOrder),
+                                            customerId);
+        tempStaticOrders.put(tempOrder.getOrderId(), tempOrder);
+
+        return newOrder;
+    }
+
+    public TempOrder getTempOrder (UUID orderId) {
+        ORDERS_CREATOR_VALIDATOR.validateTempStaticOrderExist(orderId, tempStaticOrders);
+        return tempStaticOrders.get(orderId);
+        // ORDERS_CREATOR_VALIDATOR.validateTempOrderNotConfirmedYet(orderId, tempOrder);
+    }
+
     public Order createOrder (SystemStore systemStore,
                               LocalDateTime orderDate,
                               Location orderLocation,
@@ -36,6 +65,55 @@ public class OrdersCreator {
         completeTheOrder(systemStore, newOrder);
 
         return newOrder;
+    }
+
+    public DynamicOrder createDynamicOrder (PlaceDynamicOrderRequest request,
+                                            Location orderLocation,
+                                            List<SystemItem> systemItemsIncludedInOrder,
+                                            Set<SystemStore> storesIncludedInOrder) {
+        UUID dynamicOrderId = UUID.randomUUID();
+        Map<StoreDetails, Order> staticOrders = storesIncludedInOrder.stream()
+                                                                     .collect(Collectors.toMap(systemStore -> systemStore.getStore()
+                                                                                                                         .getStoreDetails(),
+                                                                                               createSubOrder(request.getOrderItemToAmount(),
+                                                                                                              request.getOrderDate(),
+                                                                                                              orderLocation,
+                                                                                                              systemItemsIncludedInOrder,
+                                                                                                              dynamicOrderId)));
+
+        DynamicOrder dynamicOrder = new DynamicOrder(dynamicOrderId, staticOrders);
+        return dynamicOrder;
+    }
+
+    private Function<SystemStore, Order> createSubOrder (Map<Integer, Double> orderItemToAmount,
+                                                         LocalDateTime orderDate,
+                                                         Location orderLocation,
+                                                         List<SystemItem> systemItemsIncludedInOrder,
+                                                         UUID parentId) {
+        return systemStore -> {
+            Map<PricedItem, Double> pricedItems = getPricedItemFromDynamicOrderRequest(orderItemToAmount,
+                                                                                       systemItemsIncludedInOrder,
+                                                                                       systemStore);
+
+            return createOrder(systemStore, orderDate, orderLocation, pricedItems, parentId);
+        };
+    }
+
+    private Map<PricedItem, Double> getPricedItemFromDynamicOrderRequest (final Map<Integer, Double> orderItemToAmount,
+                                                                          List<SystemItem> systemItemsIncludedInOrder,
+                                                                          SystemStore systemStore) {
+        return systemItemsIncludedInOrder.stream()
+                                         .filter(systemItem -> systemItem.getStoreSellsInCheapestPrice().equals(systemStore.getId()))
+                                         .map(createPricedItem(systemStore))
+                                         .collect(Collectors.toMap(pricedItem -> pricedItem,
+                                                                   pricedItem -> orderItemToAmount.get(pricedItem.getId())));
+    }
+
+    private Function<SystemItem, PricedItem> createPricedItem (SystemStore systemStore) {
+        return systemItem -> {
+            int itemPriceInStore = systemStore.getItemIdToStoreItem().get(systemItem.getId()).getPrice();
+            return new PricedItem(systemItem.getItem(), itemPriceInStore);
+        };
     }
 
     private void addItemsToOrder (SystemStore systemStore, Order newOrder, Map<PricedItem, Double> pricedItemToAmountMap) {

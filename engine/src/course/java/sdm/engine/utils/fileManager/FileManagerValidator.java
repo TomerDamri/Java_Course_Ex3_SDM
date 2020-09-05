@@ -8,7 +8,7 @@ import java.util.function.Function;
 import course.java.sdm.engine.exceptions.DuplicateEntityException;
 import course.java.sdm.engine.exceptions.IllegalFileExtensionException;
 import course.java.sdm.engine.exceptions.ItemNotExistInStores;
-import course.java.sdm.engine.exceptions.ItemNotFoundException;
+import course.java.sdm.engine.exceptions.NotFoundException;
 import course.java.sdm.engine.model.Customer;
 import course.java.sdm.engine.model.Item;
 import course.java.sdm.engine.model.Location;
@@ -73,7 +73,7 @@ public class FileManagerValidator {
         Set<Integer> itemsInStoreIds = store.getItemIdToStoreItem().keySet();
         if (!itemsIds.containsAll(itemsInStoreIds)) {
             itemsInStoreIds.removeAll(itemsIds);
-            throw new ItemNotFoundException(store.getName(), itemsInStoreIds);
+            throw new NotFoundException(store.getName(), itemsInStoreIds);
         }
 
         return itemsInStoreIds;

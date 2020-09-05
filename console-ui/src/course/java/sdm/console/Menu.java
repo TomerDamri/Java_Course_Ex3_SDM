@@ -363,6 +363,7 @@ public class Menu {
             System.out.println("No items were selected, the order is canceled");
         }
         else {
+            // TODO: 05/09/2020 - add customer ID to request
             PlaceOrderRequest request = new PlaceOrderRequest(orderStoreId, date, location.x, location.y, orderItemToAmount);
             printOrderSummary(request);
             System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));

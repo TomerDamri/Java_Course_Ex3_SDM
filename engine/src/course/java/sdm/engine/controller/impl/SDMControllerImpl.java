@@ -1,9 +1,12 @@
 package course.java.sdm.engine.controller.impl;
 
 import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import course.java.sdm.engine.controller.ISDMController;
+import course.java.sdm.engine.model.Discount;
 import course.java.sdm.engine.service.SDMService;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
@@ -70,5 +73,9 @@ public class SDMControllerImpl implements ISDMController {
     @Override
     public void loadOrdersHistoryFromFile (String path) {
         service.loadDataFromFile(path);
+    }
+
+    public Map<Integer, Map<Integer, List<Discount>>> getDiscounts(UUID orderId){
+        return service.getDiscounts(orderId);
     }
 }
