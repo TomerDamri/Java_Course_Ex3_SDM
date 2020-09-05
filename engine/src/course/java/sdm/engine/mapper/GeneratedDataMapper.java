@@ -5,8 +5,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import course.java.sdm.engine.exceptions.DuplicateEntityException;
+import course.java.sdm.engine.exceptions.ItemNotExistInStores;
 import course.java.sdm.engine.model.*;
 import course.java.sdm.engine.model.Location;
+import course.java.sdm.engine.model.ThenYouGet;
 import examples.jaxb.schema.generated.*;
 
 public class GeneratedDataMapper {
@@ -142,11 +144,99 @@ public class GeneratedDataMapper {
             return null;
         }
 
+        Map<Integer, StoreItem> itemIdToStoreItem = toStoreItems(generatedStore.getSDMPrices(), items);
+        Map<Integer, List<Discount>> storeDiscountsMap = getStoreDiscountsMap(generatedStore, itemIdToStoreItem);
+
         return new Store(generatedStore.getName(),
                          generatedStore.getDeliveryPpk(),
                          toLocation(generatedStore.getLocation()),
-                         toStoreItems(generatedStore.getSDMPrices(), items),
-                         generatedStore.getId());
+                         itemIdToStoreItem,
+                         generatedStore.getId(),
+                         storeDiscountsMap);
+
+    }
+
+    private Map<Integer, List<Discount>> getStoreDiscountsMap (SDMStore generatedStore, Map<Integer, StoreItem> itemIdToStoreItem) {
+        Map<Integer, List<Discount>> storeDiscountsMap = new TreeMap<>();
+
+        if (generatedStore.getSDMDiscounts() != null) {
+            List<Discount> storeDiscountsList = toDiscounts(generatedStore.getSDMDiscounts(), itemIdToStoreItem);
+
+            for (Discount discount : storeDiscountsList) {
+                addDiscountToMap(storeDiscountsMap, discount);
+            }
+        }
+
+        return storeDiscountsMap;
+    }
+
+    private void addDiscountToMap (Map<Integer, List<Discount>> storeDiscountsMap, Discount discount) {
+        List<Discount> discountList;
+        int discountItemId = discount.getDiscountItemId();
+        if (storeDiscountsMap.containsKey(discountItemId)) {
+            discountList = storeDiscountsMap.get(discountItemId);
+        }
+        else {
+            discountList = new LinkedList<>();
+        }
+        if (!discountList.contains(discount)) {
+            discountList.add(discount);
+            storeDiscountsMap.put(discountItemId, discountList);
+        }
+        else {
+            throw new DuplicateEntityException(Discount.class.getSimpleName());
+        }
+    }
+
+    private List<Discount> toDiscounts (SDMDiscounts sdmDiscounts, Map<Integer, StoreItem> itemIdToStoreItem) {
+        return sdmDiscounts.getSDMDiscount()
+                           .stream()
+                           .map(sdmDiscount -> toDiscount(sdmDiscount, itemIdToStoreItem))
+                           .collect(Collectors.toList());
+    }
+
+    private Discount toDiscount (SDMDiscount sdmDiscount, Map<Integer, StoreItem> itemIdToStoreItem) {
+        if (sdmDiscount == null) {
+            return null;
+        }
+
+        IfYouBuy ifYouBuy = sdmDiscount.getIfYouBuy();
+        validateDiscount(sdmDiscount, itemIdToStoreItem);
+
+        return new Discount(sdmDiscount.getName(),
+                            new IfYouBy(ifYouBuy.getItemId(), ifYouBuy.getQuantity()),
+                            toThenYouGet(sdmDiscount.getThenYouGet()));
+    }
+
+    private void validateDiscount (SDMDiscount sdmDiscount, Map<Integer, StoreItem> itemIdToStoreItem) {
+        // Get ids of discount items
+        List<Integer> discountItemIds = new LinkedList<>();
+        discountItemIds.add(sdmDiscount.getIfYouBuy().getItemId());
+        sdmDiscount.getThenYouGet().getSDMOffer().forEach(sdmOffer -> discountItemIds.add(sdmOffer.getItemId()));
+
+        discountItemIds.forEach(itemId -> {
+            if (!itemIdToStoreItem.containsKey(itemId)) {
+                throw new ItemNotExistInStores(sdmDiscount.getName(), itemId);
+            }
+        });
+    }
+
+    private ThenYouGet toThenYouGet (examples.jaxb.schema.generated.ThenYouGet thenYouGet) {
+        if (thenYouGet == null) {
+            return null;
+        }
+
+        List<Offer> offers = thenYouGet.getSDMOffer().stream().map(this::toOffer).collect(Collectors.toList());
+
+        return new ThenYouGet(offers, thenYouGet.getOperator());
+    }
+
+    public Offer toOffer (SDMOffer sdmOffer) {
+        if (sdmOffer == null) {
+            return null;
+        }
+
+        return new Offer(sdmOffer.getQuantity(), sdmOffer.getItemId(), sdmOffer.getForAdditional());
     }
 
     private Map<Integer, StoreItem> toStoreItems (SDMPrices sdmPrices, Map<Integer, Item> items) {

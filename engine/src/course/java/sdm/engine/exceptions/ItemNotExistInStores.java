@@ -6,4 +6,8 @@ public class ItemNotExistInStores extends RuntimeException {
     public ItemNotExistInStores (Set<Integer> notSuppliedItems) {
         super(String.format("There are items that aren't supplied in any store: %s", notSuppliedItems));
     }
+
+    public ItemNotExistInStores (String discountName, int itemId) {
+        super(String.format("In discount: %s the item with id: %s aren't supplied in his store", discountName, itemId));
+    }
 }
