@@ -8,6 +8,6 @@ public class ItemNotExistInStores extends RuntimeException {
     }
 
     public ItemNotExistInStores (String discountName, int itemId) {
-        super(String.format("In discount: %s the item with id: %s aren't supplied in his store", discountName, itemId));
+        super(String.format("In discount: %s the item with id: %s isn't supplied in his store", discountName, itemId));
     }
 }

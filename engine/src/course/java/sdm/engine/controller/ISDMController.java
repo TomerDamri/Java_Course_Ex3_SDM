@@ -10,6 +10,8 @@ import model.response.*;
 public interface ISDMController {
     void loadFile (String filePath) throws FileNotFoundException;
 
+    GetCustomersResponse getCustomers ();
+
     GetStoresResponse getStores ();
 
     GetItemsResponse getItems ();

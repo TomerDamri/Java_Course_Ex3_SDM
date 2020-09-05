@@ -23,6 +23,11 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
+    public GetCustomersResponse getCustomers () {
+        return service.getCustomers();
+    }
+
+    @Override
     public GetStoresResponse getStores () {
         return service.getStores();
     }

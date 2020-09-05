@@ -45,6 +45,13 @@ public class SDMService {
         return mapper.toGetStoresResponse(descriptor.getSystemStores());
     }
 
+    public GetCustomersResponse getCustomers () {
+        if (descriptor == null) {
+            throw new FileNotLoadedException();
+        }
+        return mapper.toGetCustomersResponse(descriptor.getSystemCustomers());
+    }
+
     public GetItemsResponse getItems () {
         if (descriptor == null) {
             throw new FileNotLoadedException();

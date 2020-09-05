@@ -3,29 +3,36 @@ package course.java.sdm.engine.mapper;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import course.java.sdm.engine.model.*;
 import model.*;
+import model.response.GetCustomersResponse;
 import model.response.GetItemsResponse;
 import model.response.GetOrdersResponse;
 import model.response.GetStoresResponse;
 
 public class DTOMapper {
+    public GetCustomersResponse toGetCustomersResponse (Map<Integer, SystemCustomer> systemCustomer) {
+        Map<Integer, CustomerDTO> systemCustomersDTO = toDTO(systemCustomer,
+                                                             this::toCustomerDTO,
+                                                             CustomerDTO::getId,
+                                                             customerDTO -> customerDTO);
+
+        return new GetCustomersResponse(systemCustomersDTO);
+    }
+
     public GetStoresResponse toGetStoresResponse (Map<Integer, SystemStore> systemStores) {
-        Map<Integer, StoreDTO> stores = systemStores.values()
-                                                    .stream()
-                                                    .map(this::toStoreDTO)
-                                                    .collect(Collectors.toMap(StoreDTO::getId, storeDTO -> storeDTO));
+        Map<Integer, StoreDTO> stores = toDTO(systemStores, this::toStoreDTO, StoreDTO::getId, storeDTO -> storeDTO);
+
         return new GetStoresResponse(stores);
 
     }
 
     public GetItemsResponse toGetItemsResponse (Map<Integer, SystemItem> systemItems) {
-        Map<Integer, SystemItemDTO> items = systemItems.values()
-                                                       .stream()
-                                                       .map(this::toSystemItemDTO)
-                                                       .collect(Collectors.toMap(SystemItemDTO::getId, systemItemDTO -> systemItemDTO));
+        Map<Integer, SystemItemDTO> items = toDTO(systemItems, this::toSystemItemDTO, SystemItemDTO::getId, systemItemDTO -> systemItemDTO);
+
         return new GetItemsResponse(items);
     }
 
@@ -39,6 +46,16 @@ public class DTOMapper {
                                                                                                .collect(Collectors.toList())));
 
         return new GetOrdersResponse(orders);
+    }
+
+    private CustomerDTO toCustomerDTO (SystemCustomer systemCustomer) {
+        return new CustomerDTO(systemCustomer.getId(),
+                               systemCustomer.getName(),
+                               systemCustomer.getLocation().getX(),
+                               systemCustomer.getLocation().getY(),
+                               systemCustomer.getNumOfOrders(),
+                               systemCustomer.getAvgItemsPrice(),
+                               systemCustomer.getAvgDeliveryPrice());
     }
 
     private StoreDTO toStoreDTO (SystemStore systemStore) {
@@ -115,5 +132,14 @@ public class DTOMapper {
                                  order.getItemsPrice(),
                                  order.getDeliveryPrice(),
                                  order.getTotalPrice());
+    }
+
+    private <K, PV, NV> Map<K, NV> toDTO (Map<K, PV> prevMap,
+                                          Function<PV, NV> toDTOFunction,
+                                          Function<NV, K> getKeyFunction,
+                                          Function<NV, NV> hetValueFunction) {
+        Map<K, NV> newMap = prevMap.values().stream().map(toDTOFunction).collect(Collectors.toMap(getKeyFunction, hetValueFunction));
+
+        return newMap;
     }
 }
