@@ -19,6 +19,7 @@ public class Order implements Serializable {
     private Double deliveryPrice;
     private Double distanceFromCustomerLocation;
     private Double totalPrice;
+    private Map<Offer, Integer> discountsPricedItems;
 
     public Order (LocalDateTime orderDate, Location orderLocation, UUID parentId) {
         this.id = UUID.randomUUID();
@@ -26,6 +27,7 @@ public class Order implements Serializable {
         this.orderLocation = orderLocation;
         this.parentId = parentId;
         this.pricedItems = new HashMap<>();
+        this.discountsPricedItems = new HashMap<>();
     }
 
     public UUID getParentId () {
@@ -94,6 +96,10 @@ public class Order implements Serializable {
 
     public void setAmountOfItems (Integer amountOfItems) {
         this.amountOfItems = amountOfItems;
+    }
+
+    public Map<Offer, Integer> getOrderOffers() {
+        return discountsPricedItems;
     }
 
     @Override

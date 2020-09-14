@@ -62,7 +62,7 @@ public class FileManager {
         }
 
         try {
-            SystemOrdersHistory systemOrdersHistory = new SystemOrdersHistory(descriptor.getSystemOrders(), descriptor.getDynamicOrders());
+            SystemOrdersHistory systemOrdersHistory = new SystemOrdersHistory(descriptor.getSystemOrders());
             FileOutputStream fileOutputStream = new FileOutputStream(path);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(systemOrdersHistory);

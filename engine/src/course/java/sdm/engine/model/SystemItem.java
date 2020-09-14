@@ -7,7 +7,7 @@ public class SystemItem implements Serializable {
     private Item item;
     private int storesCount;
     private double avgPrice;
-    private int ordersCount;
+    private double ordersCount;
     private int storeSellsInCheapestPrice;
 
     public SystemItem (Item item) {
@@ -49,11 +49,11 @@ public class SystemItem implements Serializable {
         this.avgPrice = avgPrice;
     }
 
-    public int getOrdersCount () {
+    public Double getOrdersCount () {
         return ordersCount;
     }
 
-    public void setOrdersCount (int ordersCount) {
+    public void setOrdersCount (double ordersCount) {
         this.ordersCount = ordersCount;
     }
 

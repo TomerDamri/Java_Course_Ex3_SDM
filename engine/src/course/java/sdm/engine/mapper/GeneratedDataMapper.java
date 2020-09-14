@@ -226,17 +226,25 @@ public class GeneratedDataMapper {
             return null;
         }
 
-        List<Offer> offers = thenYouGet.getSDMOffer().stream().map(this::toOffer).collect(Collectors.toList());
+        int offersIdCounter = 1;
+        Map<Integer, Offer> offers = new HashMap<>();
+        List<SDMOffer> sdmOffers = thenYouGet.getSDMOffer();
+
+        for (SDMOffer sdmOffer : sdmOffers) {
+            Offer offer = toOffer(sdmOffer, offersIdCounter);
+            offers.put(offer.getId(), offer);
+            offersIdCounter++;
+        }
 
         return new ThenYouGet(offers, thenYouGet.getOperator());
     }
 
-    public Offer toOffer (SDMOffer sdmOffer) {
+    public Offer toOffer (SDMOffer sdmOffer, int id) {
         if (sdmOffer == null) {
             return null;
         }
 
-        return new Offer(sdmOffer.getQuantity(), sdmOffer.getItemId(), sdmOffer.getForAdditional());
+        return new Offer(sdmOffer.getQuantity(), sdmOffer.getItemId(), sdmOffer.getForAdditional(), id);
     }
 
     private Map<Integer, StoreItem> toStoreItems (SDMPrices sdmPrices, Map<Integer, Item> items) {

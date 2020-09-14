@@ -13,8 +13,7 @@ import course.java.sdm.engine.utils.ordersCreator.OrdersCreator;
 import course.java.sdm.engine.utils.systemUpdater.SystemUpdater;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
 import model.DynamicOrderEntityDTO;
-import model.request.PlaceDynamicOrderRequest;
-import model.request.PlaceOrderRequest;
+import model.request.*;
 import model.response.*;
 
 public class SDMService {
@@ -22,6 +21,7 @@ public class SDMService {
     private final FileManager fileManager = FileManager.getFileManager();
     private final OrdersCreator ordersCreator = OrdersCreator.getOrdersExecutor();
     private final SystemUpdater systemUpdater = SystemUpdater.getSystemUpdater();
+    private Map<UUID, Map<Integer, StoreValidDiscounts>> orderIdToValidDiscounts = new HashMap<>();
     private final static DTOMapper mapper = new DTOMapper();
     private Descriptor descriptor;
 
@@ -62,67 +62,126 @@ public class SDMService {
         return mapper.toGetOrdersResponse(descriptor.getSystemOrders());
     }
 
-    public Map<Integer, Map<Integer, List<Discount>>> getDiscounts (UUID orderId) {
+    public Map<Integer, StoreValidDiscounts> getOrderDiscounts (UUID orderId) {
+
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
-        Map<Integer, Map<Integer, List<Discount>>> returnDiscounts = new TreeMap<>();
+        Map<Integer, StoreValidDiscounts> returnDiscounts = new TreeMap<>();
 
         for (Map.Entry<StoreDetails, Order> SO_Entry : staticOrders.entrySet()) {
-            Map<PricedItem, Double> pricedItems = SO_Entry.getValue().getPricedItems();
-            int storeId = SO_Entry.getKey().getId();
-            Map<Integer, List<Discount>> storeValidDiscounts = createStoreValidDiscounts(pricedItems, storeId);
+            Order currOrder = SO_Entry.getValue();
+            StoreDetails currStoreDetails = SO_Entry.getKey();
+
+            Map<PricedItem, Double> pricedItems = currOrder.getPricedItems();
+            int storeId = currStoreDetails.getId();
+            StoreValidDiscounts storeValidDiscounts = getStoreDiscounts(pricedItems, storeId);
 
             if (storeValidDiscounts != null) {
                 returnDiscounts.put(storeId, storeValidDiscounts);
             }
         }
 
+        orderIdToValidDiscounts.put(orderId, returnDiscounts);
         return returnDiscounts;
     }
 
-    private Map<Integer, List<Discount>> createStoreValidDiscounts (Map<PricedItem, Double> pricedItems, int storeId) {
-        Map<Integer, List<Discount>> storeValidDiscounts = null;
+    private StoreValidDiscounts getStoreDiscounts (Map<PricedItem, Double> pricedItems, int storeId) {
+        Map<Integer, List<Discount>> storeValidDiscounts = new TreeMap<>();
+        SystemStore systemStore = descriptor.getSystemStores().get(storeId);
+        Map<Integer, List<Discount>> storeDiscounts = systemStore.getStore().getStoreDiscounts();
 
         for (Map.Entry<PricedItem, Double> PI_Entry : pricedItems.entrySet()) {
-            Map<Integer, List<Discount>> storeDiscounts = descriptor.getSystemStores().get(storeId).getStore().getStoreDiscounts();
             int itemId = PI_Entry.getKey().getId();
 
             if (storeDiscounts.containsKey(itemId)) {
-                storeValidDiscounts = putItemDiscountsInStoreValidDiscounts(storeValidDiscounts, PI_Entry, storeDiscounts, itemId);
+                addItemDiscounts(storeValidDiscounts, PI_Entry.getValue(), storeDiscounts, itemId);
             }
         }
-        return storeValidDiscounts;
+
+        return !storeValidDiscounts.isEmpty() ? new StoreValidDiscounts(storeValidDiscounts) : null;
     }
 
-    private Map<Integer, List<Discount>> putItemDiscountsInStoreValidDiscounts (Map<Integer, List<Discount>> storeValidDiscounts,
-                                                                                Map.Entry<PricedItem, Double> PI_Entry,
-                                                                                Map<Integer, List<Discount>> storeDiscounts,
-                                                                                int itemId) {
-        Double itemQuantity = PI_Entry.getValue();
+    private void addItemDiscounts (Map<Integer, List<Discount>> storeValidDiscounts,
+                                   Double itemQuantity,
+                                   Map<Integer, List<Discount>> storeDiscounts,
+                                   int itemId) {
         List<Discount> itemDiscounts = storeDiscounts.get(itemId);
         List<Discount> validDiscounts = itemDiscounts.stream()
                                                      .filter(discount -> discount.getIfYouBuy().getQuantity() <= itemQuantity)
                                                      .collect(Collectors.toList());
 
         if (!validDiscounts.isEmpty()) {
-            if (storeValidDiscounts == null) {
-                storeValidDiscounts = new TreeMap<>();
-            }
-
             storeValidDiscounts.put(itemId, validDiscounts);
         }
-        return storeValidDiscounts;
     }
 
-    public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
+    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+        UUID orderId = request.getOrderID();
+        TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
+        Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
+
+        staticOrders.forEach(( (storeDetails, order) -> {
+            int storeId = storeDetails.getId();
+            UUID currStaticOrderId = order.getId();
+
+            SystemStore systemStore = descriptor.getSystemStores().get(storeId);
+            StoreChosenDiscounts storeChosenDiscounts = request.getStoreIdToChosenDiscounts().get(storeId);
+            StoreValidDiscounts validDiscounts = orderIdToValidDiscounts.get(currStaticOrderId).get(storeId);
+
+            ordersCreator.addDiscountsPerStoreToStaticOrder(systemStore, order, storeChosenDiscounts, validDiscounts);
+
+            ordersCreator.completeTheOrderV2(systemStore, order);
+        }));
+
+    }
+
+    // public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
+    // if (descriptor == null) {
+    // throw new FileNotLoadedException();
+    // }
+    //
+    // Map<PricedItem, Double> pricedItems = getPricedItemFromStaticRequest(request);
+    // Order newOrder = addNewStaticOrder(request, pricedItems);
+    //
+    // return new PlaceOrderResponse(newOrder.getId());
+    // }
+
+    public PlaceOrderResponse placeStaticOrderV2 (PlaceOrderRequest request) {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
 
+        int customerId = request.getCustomerId();
+        if (!descriptor.getSystemCustomers().containsKey(customerId)) {
+            throw new RuntimeException(String.format("There is no customer with id: %s in the system", customerId));
+        }
+
+        SystemCustomer customer = descriptor.getSystemCustomers().get(customerId);
+
         Map<PricedItem, Double> pricedItems = getPricedItemFromStaticRequest(request);
-        Order newOrder = addNewStaticOrder(request, pricedItems);
+        SystemStore systemStore = descriptor.getSystemStores().get(request.getStoreId());
+        LocalDateTime orderDate = request.getOrderDate();
+        Location orderLocation = customer.getLocation();
+
+        Order newOrder = ordersCreator.createOrderV2(systemStore, orderDate, orderLocation, pricedItems, null, customerId);
 
         return new PlaceOrderResponse(newOrder.getId());
+    }
+
+    public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {
+        TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
+
+        if (toConfirmNewDynamicOrder) {
+            Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
+
+            staticOrders.forEach( (storeDetails, order) -> {
+                SystemStore systemStore = descriptor.getSystemStores().get(storeDetails.getId());
+
+                systemUpdater.updateSystemAfterStaticOrderV2(systemStore, order, descriptor);
+            });
+        }
+
+        ordersCreator.deleteTempOrder(orderId);
     }
 
     public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {
@@ -136,7 +195,25 @@ public class SDMService {
         return !allStoresLocations.contains(userLocation);
     }
 
-    public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {
+    // public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {
+    // if (descriptor == null) {
+    // throw new FileNotLoadedException();
+    // }
+    //
+    // Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
+    // List<SystemItem> systemItemsIncludedInOrder =
+    // getItemsFromDynamicOrderRequest(request.getOrderItemToAmount());
+    // Set<SystemStore> storesIncludedInOrder = getIncludedStoresInOrder(systemItemsIncludedInOrder);
+    // DynamicOrder dynamicOrder = ordersCreator.createDynamicOrder(request,
+    // orderLocation,
+    // systemItemsIncludedInOrder,
+    // storesIncludedInOrder);
+    // descriptor.getDynamicOrders().put(dynamicOrder.getOrderId(), dynamicOrder);
+    //
+    // return createPlaceDynamicOrderResponse(dynamicOrder);
+    // }
+
+    public PlaceDynamicOrderResponse placeDynamicOrderV2 (PlaceDynamicOrderRequest request) {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
@@ -144,66 +221,62 @@ public class SDMService {
         Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
         List<SystemItem> systemItemsIncludedInOrder = getItemsFromDynamicOrderRequest(request.getOrderItemToAmount());
         Set<SystemStore> storesIncludedInOrder = getIncludedStoresInOrder(systemItemsIncludedInOrder);
-        DynamicOrder dynamicOrder = ordersCreator.createDynamicOrder(request,
-                                                                     orderLocation,
-                                                                     systemItemsIncludedInOrder,
-                                                                     storesIncludedInOrder);
-        descriptor.getDynamicOrders().put(dynamicOrder.getOrderId(), dynamicOrder);
+        TempOrder tempDynamicOrder = ordersCreator.createDynamicOrderV2(request,
+                                                                        orderLocation,
+                                                                        systemItemsIncludedInOrder,
+                                                                        storesIncludedInOrder,
+                                                                        request.getCustomerId());
 
-        return createPlaceDynamicOrderResponse(dynamicOrder);
+        return createPlaceDynamicOrderResponseV2(tempDynamicOrder);
     }
 
-    public PlaceOrderResponse placeStaticOrderV2 (PlaceOrderRequest request) {
-        if (descriptor == null) {
-            throw new FileNotLoadedException();
-        }
-
-        SystemStore systemStore = descriptor.getSystemStores().get(request.getStoreId());
-        LocalDateTime orderDate = request.getOrderDate();
-        Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
-        Map<PricedItem, Double> pricedItems = getPricedItemFromStaticRequest(request);
-        int customerId = request.getCustomerId();
-
-        Order newOrder = ordersCreator.createOrderV2(systemStore, orderDate, orderLocation, pricedItems, null, customerId);
-
-        return new PlaceOrderResponse(newOrder.getId());
-    }
-
-    public void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder) {
-        systemUpdater.updateSystemAfterDynamicOrder(dynamicOrderId, toConfirmNewDynamicOrder, descriptor);
-    }
+    // public void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder) {
+    // systemUpdater.updateSystemAfterDynamicOrder(dynamicOrderId, toConfirmNewDynamicOrder,
+    // descriptor);
+    // }
 
     public void saveOrdersHistoryToFile (String path) {
         fileManager.saveOrdersHistoryToFile(descriptor, path);
     }
 
-    public void loadDataFromFile (String path) {
+    public void loadOrdersHistoryFromFile (String path) {
         SystemOrdersHistory systemOrdersHistory = fileManager.loadDataFromFile(path);
         Map<UUID, List<SystemOrder>> historySystemOrders = systemOrdersHistory.getSystemOrders();
-        Map<UUID, DynamicOrder> historyDynamicOrders = systemOrdersHistory.getDynamicOrders();
 
-        systemUpdater.updateSystemAfterLoadingOrdersHistoryFromFile(historySystemOrders, historyDynamicOrders, descriptor);
+        systemUpdater.updateSystemAfterLoadingOrdersHistoryFromFile(historySystemOrders, descriptor);
     }
 
-    private Order addNewStaticOrder (PlaceOrderRequest request, Map<PricedItem, Double> pricedItems) {
-        SystemStore systemStore = descriptor.getSystemStores().get(request.getStoreId());
-        LocalDateTime orderDate = request.getOrderDate();
-        Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
+    // private Order addNewStaticOrder (PlaceOrderRequest request, Map<PricedItem, Double> pricedItems)
+    // {
+    // SystemStore systemStore = descriptor.getSystemStores().get(request.getStoreId());
+    // LocalDateTime orderDate = request.getOrderDate();
+    // Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
+    //
+    // Order newOrder = ordersCreator.createOrder(systemStore, orderDate, orderLocation, pricedItems,
+    // null);
+    // systemUpdater.updateSystemAfterStaticOrder(systemStore, newOrder, descriptor);
+    //
+    // return newOrder;
+    // }
 
-        Order newOrder = ordersCreator.createOrder(systemStore, orderDate, orderLocation, pricedItems, null);
-        systemUpdater.updateSystemAfterStaticOrder(systemStore, newOrder, descriptor);
+    // private PlaceDynamicOrderResponse createPlaceDynamicOrderResponse (DynamicOrder dynamicOrder) {
+    // List<DynamicOrderEntityDTO> dynamicOrderEntityDTOS = dynamicOrder.getStaticOrders()
+    // .entrySet()
+    // .stream()
+    // .map(entry -> createDynamicOrderEntity(entry))
+    // .collect(Collectors.toList());
+    //
+    // return new PlaceDynamicOrderResponse(dynamicOrder.getOrderId(), dynamicOrderEntityDTOS);
+    // }
 
-        return newOrder;
-    }
+    private PlaceDynamicOrderResponse createPlaceDynamicOrderResponseV2 (TempOrder tempDynamicOrder) {
+        List<DynamicOrderEntityDTO> dynamicOrderEntityDTOS = tempDynamicOrder.getStaticOrders()
+                                                                             .entrySet()
+                                                                             .stream()
+                                                                             .map(this::createDynamicOrderEntity)
+                                                                             .collect(Collectors.toList());
 
-    private PlaceDynamicOrderResponse createPlaceDynamicOrderResponse (DynamicOrder dynamicOrder) {
-        List<DynamicOrderEntityDTO> dynamicOrderEntityDTOS = dynamicOrder.getStaticOrders()
-                                                                         .entrySet()
-                                                                         .stream()
-                                                                         .map(entry -> createDynamicOrderEntity(entry))
-                                                                         .collect(Collectors.toList());
-
-        return new PlaceDynamicOrderResponse(dynamicOrder.getOrderId(), dynamicOrderEntityDTOS);
+        return new PlaceDynamicOrderResponse(tempDynamicOrder.getOrderId(), dynamicOrderEntityDTOS);
     }
 
     private DynamicOrderEntityDTO createDynamicOrderEntity (Map.Entry<StoreDetails, Order> entry) {

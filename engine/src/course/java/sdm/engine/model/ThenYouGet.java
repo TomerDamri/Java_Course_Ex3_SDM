@@ -1,20 +1,20 @@
 package course.java.sdm.engine.model;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ThenYouGet {
 
-    protected List<Offer> Offers;
+    protected Map<Integer, Offer> offers;
     protected DiscountType operator;
 
-    public ThenYouGet (List<Offer> offers, String operator) {
-        Offers = offers;
+    public ThenYouGet (Map<Integer, Offer> offers, String operator) {
+        this.offers = offers;
         this.operator = DiscountType.createDiscountType(operator);
     }
 
-    public List<Offer> getOffers () {
-        return Offers;
+    public Map<Integer, Offer> getOffers () {
+        return offers;
     }
 
     public DiscountType getOperator () {
@@ -22,7 +22,7 @@ public class ThenYouGet {
     }
 
     public enum DiscountType {
-        IRRELEVENT, OR, AND;
+        IRRELEVANT, OR, AND;
 
         private static final String ONE_OF = "ONE-OF";
         public static final String ALL_OR_NOTHING = "ALL-OR-NOTHING";
@@ -34,7 +34,7 @@ public class ThenYouGet {
             case ALL_OR_NOTHING:
                 return AND;
             default:
-                return IRRELEVENT;
+                return IRRELEVANT;
             }
         }
     }

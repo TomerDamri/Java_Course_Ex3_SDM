@@ -4,9 +4,9 @@ public class SystemItemDTO {
     private final ItemDTO item;
     private final int storesCount;
     private final double avgPrice;
-    private final int ordersCount;
+    private final double ordersCount;
 
-    public SystemItemDTO (ItemDTO item, int storesCount, double avgPrice, int ordersCount) {
+    public SystemItemDTO (ItemDTO item, int storesCount, double avgPrice, double ordersCount) {
         this.item = item;
         this.storesCount = storesCount;
         this.avgPrice = avgPrice;
@@ -37,7 +37,7 @@ public class SystemItemDTO {
         return avgPrice;
     }
 
-    public int getOrdersCount () {
+    public double getOrdersCount () {
         return ordersCount;
     }
 

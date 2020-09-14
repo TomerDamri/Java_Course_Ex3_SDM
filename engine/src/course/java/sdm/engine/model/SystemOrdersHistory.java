@@ -8,18 +8,12 @@ import java.util.UUID;
 public class SystemOrdersHistory implements Serializable {
 
     private Map<UUID, List<SystemOrder>> systemOrders;
-    private Map<UUID, DynamicOrder> dynamicOrders;
 
     public SystemOrdersHistory () {
     }
 
-    public SystemOrdersHistory (Map<UUID, List<SystemOrder>> systemOrders, Map<UUID, DynamicOrder> dynamicOrders) {
+    public SystemOrdersHistory (Map<UUID, List<SystemOrder>> systemOrders) {
         this.systemOrders = systemOrders;
-        this.dynamicOrders = dynamicOrders;
-    }
-
-    public Map<UUID, DynamicOrder> getDynamicOrders () {
-        return dynamicOrders;
     }
 
     public Map<UUID, List<SystemOrder>> getSystemOrders () {

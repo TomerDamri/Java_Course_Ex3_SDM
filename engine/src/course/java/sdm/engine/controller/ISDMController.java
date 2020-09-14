@@ -1,13 +1,13 @@
 package course.java.sdm.engine.controller;
 
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import course.java.sdm.engine.model.Discount;
+import model.request.AddDiscountsToOrderRequest;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
+import model.request.StoreValidDiscounts;
 import model.response.*;
 
 public interface ISDMController {
@@ -23,7 +23,11 @@ public interface ISDMController {
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
 
-    Map<Integer, Map<Integer, List<Discount>>> getDiscounts(UUID orderId);
+    Map<Integer, StoreValidDiscounts> getDiscounts (UUID orderId);
+
+    void addDiscountsToOrder (AddDiscountsToOrderRequest request);
+
+    void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder);
 
     boolean isFileLoaded ();
 

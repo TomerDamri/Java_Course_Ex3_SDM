@@ -2,9 +2,9 @@ package model;
 
 public class StoreItemDTO {
     private final PricedItemDTO pricedItem;
-    private final int purchasesCount;
+    private final Double purchasesCount;
 
-    public StoreItemDTO (PricedItemDTO pricedItem, int purchasesCount) {
+    public StoreItemDTO (PricedItemDTO pricedItem, Double purchasesCount) {
         this.pricedItem = pricedItem;
         this.purchasesCount = purchasesCount;
     }
@@ -29,7 +29,7 @@ public class StoreItemDTO {
         return pricedItem.getPrice();
     }
 
-    public int getPurchasesCount () {
+    public Double getPurchasesCount () {
         return purchasesCount;
     }
 

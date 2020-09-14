@@ -1,15 +1,15 @@
 package course.java.sdm.engine.controller.impl;
 
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import course.java.sdm.engine.controller.ISDMController;
-import course.java.sdm.engine.model.Discount;
 import course.java.sdm.engine.service.SDMService;
+import model.request.AddDiscountsToOrderRequest;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
+import model.request.StoreValidDiscounts;
 import model.response.*;
 
 public class SDMControllerImpl implements ISDMController {
@@ -47,7 +47,11 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
-        return service.placeStaticOrder(request);
+        // return service.placeStaticOrder(request);
+        PlaceOrderResponse placeOrderResponse = service.placeStaticOrderV2(request);
+        // Map<Integer, StoreValidDiscounts> orderDiscounts =
+        // service.getOrderDiscounts(placeOrderResponse.getOrderId());
+        return placeOrderResponse;
     }
 
     @Override
@@ -57,12 +61,13 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {
-        return service.placeDynamicOrder(request);
+        // return service.placeDynamicOrder(request);
+        return service.placeDynamicOrderV2(request);
     }
 
     @Override
     public void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder) {
-        service.completeDynamicOrder(dynamicOrderId, toConfirmNewDynamicOrder);
+//        service.completeDynamicOrder(dynamicOrderId, toConfirmNewDynamicOrder);
     }
 
     @Override
@@ -72,10 +77,20 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public void loadOrdersHistoryFromFile (String path) {
-        service.loadDataFromFile(path);
+        service.loadOrdersHistoryFromFile(path);
     }
 
-    public Map<Integer, Map<Integer, List<Discount>>> getDiscounts(UUID orderId){
-        return service.getDiscounts(orderId);
+    public Map<Integer, StoreValidDiscounts> getDiscounts (UUID orderId) {
+        return service.getOrderDiscounts(orderId);
+    }
+
+    @Override
+    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+        service.addDiscountsToOrder(request);
+    }
+
+    @Override
+    public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {
+        service.completeTheOrder(orderId, toConfirmNewDynamicOrder);
     }
 }

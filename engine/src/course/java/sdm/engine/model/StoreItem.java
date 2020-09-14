@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class StoreItem implements Serializable {
     private PricedItem pricedItem;
-    private int purchasesCount;
+    private double purchasesCount;
 
     public StoreItem (Item item, Integer price) {
         this.pricedItem = new PricedItem(item, price);
@@ -31,11 +31,11 @@ public class StoreItem implements Serializable {
         pricedItem.setPrice(price);
     }
 
-    public int getPurchasesCount () {
+    public Double getPurchasesCount () {
         return purchasesCount;
     }
 
-    public void setPurchasesCount (int purchasesCount) {
+    public void setPurchasesCount (Double purchasesCount) {
         this.purchasesCount = purchasesCount;
     }
 

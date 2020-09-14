@@ -8,25 +8,10 @@ import java.util.UUID;
 
 public class Descriptor implements Serializable {
 
-    private static Integer numOfOrders = 1;
-    private static Integer numOfDynamicOrders = 1;
     private Map<Integer, SystemStore> systemStores;
     private Map<Integer, SystemItem> systemItems;
     Map<Integer, SystemCustomer> systemCustomers;
     private Map<UUID, List<SystemOrder>> systemOrders;
-    private Map<UUID, DynamicOrder> dynamicOrders;
-
-    public static Integer generateStaticOrderId () {
-        Integer num = numOfOrders;
-        numOfOrders++;
-        return num;
-    }
-
-    public static Integer generateDynamicOrderId () {
-        Integer num = numOfDynamicOrders;
-        numOfDynamicOrders++;
-        return num;
-    }
 
     public Descriptor (Map<Integer, SystemStore> systemStores,
                        Map<Integer, SystemItem> systemItems,
@@ -35,7 +20,6 @@ public class Descriptor implements Serializable {
         this.systemItems = systemItems;
         this.systemCustomers = systemCustomers;
         this.systemOrders = new TreeMap<>();
-        this.dynamicOrders = new TreeMap<>();
     }
 
     public Map<Integer, SystemCustomer> getSystemCustomers () {
@@ -52,9 +36,5 @@ public class Descriptor implements Serializable {
 
     public Map<UUID, List<SystemOrder>> getSystemOrders () {
         return systemOrders;
-    }
-
-    public Map<UUID, DynamicOrder> getDynamicOrders () {
-        return dynamicOrders;
     }
 }
