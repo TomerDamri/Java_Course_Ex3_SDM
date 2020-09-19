@@ -60,6 +60,11 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
+    public GetSystemMappableEntitiesResponse getSystemMappableEntities () {
+        return service.getSystemMappableEntities();
+    }
+
+    @Override
     public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {
         // return service.placeDynamicOrder(request);
         return service.placeDynamicOrderV2(request);
@@ -67,7 +72,7 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder) {
-//        service.completeDynamicOrder(dynamicOrderId, toConfirmNewDynamicOrder);
+        // service.completeDynamicOrder(dynamicOrderId, toConfirmNewDynamicOrder);
     }
 
     @Override

@@ -12,13 +12,16 @@ public class Descriptor implements Serializable {
     private Map<Integer, SystemItem> systemItems;
     Map<Integer, SystemCustomer> systemCustomers;
     private Map<UUID, List<SystemOrder>> systemOrders;
+    private Map<Location, Mappable> mappableEntities;
 
     public Descriptor (Map<Integer, SystemStore> systemStores,
                        Map<Integer, SystemItem> systemItems,
-                       Map<Integer, SystemCustomer> systemCustomers) {
+                       Map<Integer, SystemCustomer> systemCustomers,
+                       Map<Location, Mappable> mappableEntities) {
         this.systemStores = systemStores;
         this.systemItems = systemItems;
         this.systemCustomers = systemCustomers;
+        this.mappableEntities = mappableEntities;
         this.systemOrders = new TreeMap<>();
     }
 
@@ -36,5 +39,9 @@ public class Descriptor implements Serializable {
 
     public Map<UUID, List<SystemOrder>> getSystemOrders () {
         return systemOrders;
+    }
+
+    public Map<Location, Mappable> getMappableEntities () {
+        return mappableEntities;
     }
 }

@@ -2,31 +2,23 @@ package model;
 
 public class CustomerDTO {
 
-    private int id;
+    private Integer id;
     private String name;
-    private final int xCoordinate;
-    private final int yCoordinate;
-    private int numOfOrders;
-    private double avgItemsPrice;
-    private double avgDeliveryPrice;
+    private final LocationDTO location;
+    private Integer numOfOrders;
+    private Double avgItemsPrice;
+    private Double avgDeliveryPrice;
 
-    public CustomerDTO (int id,
-                        String name,
-                        int xCoordinate,
-                        int yCoordinate,
-                        int numOfOrders,
-                        double avgItemsPrice,
-                        double avgDeliveryPrice) {
+    public CustomerDTO (int id, String name, LocationDTO location, int numOfOrders, double avgItemsPrice, double avgDeliveryPrice) {
         this.id = id;
         this.name = name;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+        this.location = location;
         this.numOfOrders = numOfOrders;
         this.avgItemsPrice = avgItemsPrice;
         this.avgDeliveryPrice = avgDeliveryPrice;
     }
 
-    public int getId () {
+    public Integer getId () {
         return id;
     }
 
@@ -34,23 +26,19 @@ public class CustomerDTO {
         return name;
     }
 
-    public int getxCoordinate () {
-        return xCoordinate;
-    }
-
-    public int getyCoordinate () {
-        return yCoordinate;
-    }
-
-    public int getNumOfOrders () {
+    public Integer getNumOfOrders () {
         return numOfOrders;
     }
 
-    public double getAvgItemsPrice () {
+    public Double getAvgItemsPrice () {
         return avgItemsPrice;
     }
 
-    public double getAvgDeliveryPrice () {
+    public Double getAvgDeliveryPrice () {
         return avgDeliveryPrice;
+    }
+
+    public LocationDTO getLocation () {
+        return location;
     }
 }

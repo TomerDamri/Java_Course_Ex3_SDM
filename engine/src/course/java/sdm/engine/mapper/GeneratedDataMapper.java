@@ -44,8 +44,34 @@ public class GeneratedDataMapper {
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
         Map<Integer, SystemCustomer> systemCustomers = toSystemCustomers(customers);
+        Map<Location, Mappable> mappableEntities = toMappableEntities(new ArrayList<>(systemStores.values()), systemCustomers.values());
 
-        return new Descriptor(systemStores, systemItems, systemCustomers);
+        return new Descriptor(systemStores, systemItems, systemCustomers, mappableEntities);
+    }
+
+    private Map<Location, Mappable> toMappableEntities (Collection<SystemStore> systemStores, Collection<SystemCustomer> systemCustomers) {
+        Map<Location, Mappable> storeEntities = generatedListToMap(new ArrayList<>(systemStores),
+                                                                   SystemStore::getLocation,
+                                                                   systemStore -> systemStore,
+                                                                   SystemStore.class.getSimpleName());
+
+        Map<Location, Mappable> customerEntities = generatedListToMap(new ArrayList<>(systemCustomers),
+                                                                      SystemCustomer::getLocation,
+                                                                      systemCustomer -> systemCustomer,
+                                                                      SystemCustomer.class.getSimpleName());
+
+        validateNoCommonLocations(storeEntities.keySet(), customerEntities.keySet());
+        Map<Location, Mappable> allSystemEntities = new HashMap<>(storeEntities);
+        allSystemEntities.putAll(customerEntities);
+
+        return allSystemEntities;
+    }
+
+    private void validateNoCommonLocations(Collection<Location> storeLocations, Collection<Location> customerLocations) {
+        Set<Location> commonLocations = storeLocations.stream().distinct().filter(customerLocations::contains).collect(Collectors.toSet());
+        if (commonLocations.size() > 0) {
+            throw new RuntimeException(String.format("The locations: %s used for system store and for system customer", commonLocations));
+        }
     }
 
     private Map<Integer, SystemItem> toSystemItems (Map<Integer, Item> items, Collection<SystemStore> stores) {

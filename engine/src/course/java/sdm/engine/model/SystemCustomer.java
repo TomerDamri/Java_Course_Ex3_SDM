@@ -1,6 +1,6 @@
 package course.java.sdm.engine.model;
 
-public class SystemCustomer {
+public class SystemCustomer implements Mappable {
 
     private final Customer customer;
     private int numOfOrders = 0;

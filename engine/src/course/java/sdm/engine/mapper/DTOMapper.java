@@ -1,5 +1,6 @@
 package course.java.sdm.engine.mapper;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -8,12 +9,35 @@ import java.util.stream.Collectors;
 
 import course.java.sdm.engine.model.*;
 import model.*;
-import model.response.GetCustomersResponse;
-import model.response.GetItemsResponse;
-import model.response.GetOrdersResponse;
-import model.response.GetStoresResponse;
+import model.response.*;
 
 public class DTOMapper {
+    public GetSystemMappableEntitiesResponse toGetSystemMappableEntitiesResponse (Collection<Mappable> systemMappabels) {
+        List<MappableEntity> mappableEntities = systemMappabels.stream().map(this::toMappableEntity).collect(Collectors.toList());
+
+        return new GetSystemMappableEntitiesResponse(mappableEntities);
+    }
+
+    private MappableEntity toMappableEntity (Mappable entity) {
+        if (entity instanceof SystemStore) {
+            SystemStore systemStore = (SystemStore) entity;
+            return new StoreMappableEntity(systemStore.getId(),
+                                           toLocationDTO(systemStore.getLocation()),
+                                           systemStore.getName(),
+                                           systemStore.getOrders().size(),
+                                           systemStore.getDeliveryPpk());
+        }
+        else if (entity instanceof SystemCustomer) {
+            SystemCustomer systemCustomer = (SystemCustomer) entity;
+            return new CustomerMappableEntity(systemCustomer.getId(),
+                                              toLocationDTO(systemCustomer.getLocation()),
+                                              systemCustomer.getName(),
+                                              systemCustomer.getNumOfOrders());
+        }
+
+        throw new RuntimeException("The type of the mappable entity must be SystemCustomer or SystemStore");
+    }
+
     public GetCustomersResponse toGetCustomersResponse (Map<Integer, SystemCustomer> systemCustomer) {
         Map<Integer, CustomerDTO> systemCustomersDTO = toDTO(systemCustomer,
                                                              this::toCustomerDTO,
@@ -51,11 +75,14 @@ public class DTOMapper {
     private CustomerDTO toCustomerDTO (SystemCustomer systemCustomer) {
         return new CustomerDTO(systemCustomer.getId(),
                                systemCustomer.getName(),
-                               systemCustomer.getLocation().getX(),
-                               systemCustomer.getLocation().getY(),
+                               toLocationDTO(systemCustomer.getLocation()),
                                systemCustomer.getNumOfOrders(),
                                systemCustomer.getAvgItemsPrice(),
                                systemCustomer.getAvgDeliveryPrice());
+    }
+
+    private LocationDTO toLocationDTO (Location location) {
+        return new LocationDTO(location.getX(), location.getY());
     }
 
     private StoreDTO toStoreDTO (SystemStore systemStore) {

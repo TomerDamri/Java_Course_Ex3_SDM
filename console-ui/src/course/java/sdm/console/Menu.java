@@ -38,7 +38,8 @@ public class Menu {
     public void displayMenu () {
         do {
             printMenuOptions();
-            int userChoice = getUserChoice();
+            // int userChoice = getUserChoice();
+            int userChoice = Integer.parseInt(scanner.nextLine());
             if (!quit) {
                 handleUserChoice(userChoice);
             }
@@ -107,6 +108,14 @@ public class Menu {
                     break;
                 case 7:
                     handleLoadOrdersHistory();
+                    break;
+                case 8:
+                    GetCustomersResponse customers = controller.getCustomers();
+                    System.out.println(9);
+                    break;
+                case 9:
+                    GetSystemMappableEntitiesResponse systemMappableEntities = controller.getSystemMappableEntities();
+                    System.out.println(systemMappableEntities.getAllSystemMappableEntities());
                     break;
                 default:
                     break;

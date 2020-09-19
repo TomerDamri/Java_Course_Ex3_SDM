@@ -22,7 +22,7 @@ public class SDMService {
     private final OrdersCreator ordersCreator = OrdersCreator.getOrdersExecutor();
     private final SystemUpdater systemUpdater = SystemUpdater.getSystemUpdater();
     private Map<UUID, Map<Integer, StoreValidDiscounts>> orderIdToValidDiscounts = new HashMap<>();
-    private final static DTOMapper mapper = new DTOMapper();
+    private final static DTOMapper dtoMapper = new DTOMapper();
     private Descriptor descriptor;
 
     public void loadData (String xmlDataFileStr) throws FileNotFoundException {
@@ -38,28 +38,39 @@ public class SDMService {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
-        return mapper.toGetStoresResponse(descriptor.getSystemStores());
+        return dtoMapper.toGetStoresResponse(descriptor.getSystemStores());
     }
 
     public GetCustomersResponse getCustomers () {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
-        return mapper.toGetCustomersResponse(descriptor.getSystemCustomers());
+
+        Map<Integer, SystemCustomer> systemCustomers = descriptor.getSystemCustomers();
+
+        return dtoMapper.toGetCustomersResponse(systemCustomers);
+    }
+
+    public GetSystemMappableEntitiesResponse getSystemMappableEntities () {
+        if (descriptor == null) {
+            throw new FileNotLoadedException();
+        }
+
+        return dtoMapper.toGetSystemMappableEntitiesResponse(descriptor.getMappableEntities().values());
     }
 
     public GetItemsResponse getItems () {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
-        return mapper.toGetItemsResponse(descriptor.getSystemItems());
+        return dtoMapper.toGetItemsResponse(descriptor.getSystemItems());
     }
 
     public GetOrdersResponse getOrders () {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
-        return mapper.toGetOrdersResponse(descriptor.getSystemOrders());
+        return dtoMapper.toGetOrdersResponse(descriptor.getSystemOrders());
     }
 
     public Map<Integer, StoreValidDiscounts> getOrderDiscounts (UUID orderId) {
@@ -186,13 +197,9 @@ public class SDMService {
 
     public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {
         Location userLocation = new Location(xCoordinate, yCoordinate);
-        List<Location> allStoresLocations = descriptor.getSystemStores()
-                                                      .values()
-                                                      .stream()
-                                                      .map(SystemStore::getLocation)
-                                                      .collect(Collectors.toList());
+        Set<Location> allSystemLocations = descriptor.getMappableEntities().keySet();
 
-        return !allStoresLocations.contains(userLocation);
+        return !allSystemLocations.contains(userLocation);
     }
 
     // public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {

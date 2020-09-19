@@ -33,6 +33,8 @@ public interface ISDMController {
 
     boolean isValidLocation (final int xCoordinate, final int yCoordinate);
 
+    GetSystemMappableEntitiesResponse getSystemMappableEntities();
+
     PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request);
 
     void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder);

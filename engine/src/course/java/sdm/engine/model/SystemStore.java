@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class SystemStore implements Serializable {
+public class SystemStore implements Serializable, Mappable {
 
     private Store store;
     private List<Order> orders;
