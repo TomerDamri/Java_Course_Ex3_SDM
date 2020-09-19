@@ -147,7 +147,10 @@ public class SystemUpdater {
         }
     }
 
-    public void updateSystemAfterStaticOrderV2 (SystemStore systemStore, Order newOrder, Descriptor descriptor) {
+    public void updateSystemAfterStaticOrderV2 (SystemStore systemStore,
+                                                Order newOrder,
+                                                Descriptor descriptor,
+                                                SystemCustomer systemCustomer) {
         updateSystemStore(systemStore, newOrder);
         // add order to store
         systemStore.getOrders().add(newOrder);
@@ -157,6 +160,22 @@ public class SystemUpdater {
         updateStoreAfterOrderCompletionV2(systemStore, newOrder);
         // update counter of all system items that was included in order
         updateSystemItemsAfterOrderCompletionV2(descriptor.getSystemItems(), newOrder);
+        // update total delivery price and total items price for system customer (update numOfOrder in case
+        // the order is not part of dynamic order)
+        updateSystemCustomerAfterOrderCompletion(newOrder, systemCustomer);
+    }
+
+    private void updateSystemCustomerAfterOrderCompletion (Order newOrder, SystemCustomer systemCustomer) {
+        double prevTotalDeliveryPrice = systemCustomer.getTotalDeliveryPrice();
+        double prevTotalItemsPrice = systemCustomer.getTotalItemsPrice();
+
+        systemCustomer.setTotalItemsPrice(prevTotalDeliveryPrice + newOrder.getDeliveryPrice());
+        systemCustomer.setTotalDeliveryPrice(prevTotalItemsPrice + newOrder.getItemsPrice());
+
+        if (newOrder.getParentId() == null) {
+            int prevNumOfOrders = systemCustomer.getNumOfOrders();
+            systemCustomer.setNumOfOrders(prevNumOfOrders + 1);
+        }
     }
 
     private void updateStoreAfterOrderCompletionV2 (SystemStore systemStore, Order newOrder) {

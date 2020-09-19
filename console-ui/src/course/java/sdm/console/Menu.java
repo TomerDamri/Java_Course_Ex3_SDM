@@ -3,10 +3,7 @@ package course.java.sdm.console;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
@@ -14,8 +11,7 @@ import model.DynamicOrderEntityDTO;
 import model.OrderDTO;
 import model.StoreDTO;
 import model.SystemItemDTO;
-import model.request.PlaceDynamicOrderRequest;
-import model.request.PlaceOrderRequest;
+import model.request.*;
 import model.response.*;
 
 public class Menu {
@@ -373,14 +369,19 @@ public class Menu {
         }
         else {
             // TODO: 05/09/2020 - add customer ID to request
-            PlaceOrderRequest request = new PlaceOrderRequest(orderStoreId, date, location.x, location.y, orderItemToAmount);
+            PlaceOrderRequest request = new PlaceOrderRequest(1, orderStoreId, date, location.x, location.y, orderItemToAmount);
             printOrderSummary(request);
             System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
             String userInput = scanner.nextLine();
             if (userInput.equals("Y") || userInput.equals("y")) {
                 try {
                     PlaceOrderResponse response = controller.placeStaticOrder(request);
-                    System.out.println("Order created successfully\nOrder id:" + response.getOrderId());
+                    UUID orderId = response.getOrderId();
+                    Map<Integer, ValidStoreDiscounts> discounts = controller.getDiscounts(orderId);
+                    controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForTest(orderId));
+                    controller.completeTheOrder(orderId, true);
+
+                    System.out.println("Order created successfully\nOrder id:" + orderId);
                 }
                 catch (Exception exception) {
                     System.out.println(exception.getMessage());
@@ -391,6 +392,24 @@ public class Menu {
             }
         }
 
+    }
+
+    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForTest (UUID orderId) {
+        Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts = new HashMap<>();
+
+        ChosenItemDiscount chosenItemDiscount1 = new ChosenItemDiscount("YallA BaLaGaN", 2, Optional.of(1));
+        ChosenItemDiscount chosenItemDiscount2 = new ChosenItemDiscount("YallA BaLaGaN", 3, Optional.of(2));
+        List<ChosenItemDiscount> chosenItemDiscountList = new LinkedList<>();
+        chosenItemDiscountList.add(chosenItemDiscount1);
+        chosenItemDiscountList.add(chosenItemDiscount2);
+        itemIdToChosenDiscounts.put(1, chosenItemDiscountList);
+
+        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = new HashMap<>();
+        ChosenStoreDiscounts chosenStoreDiscounts = new ChosenStoreDiscounts(itemIdToChosenDiscounts);
+        storeIdToChosenDiscounts.put(1, chosenStoreDiscounts);
+
+        AddDiscountsToOrderRequest addDiscountsToOrderRequest = new AddDiscountsToOrderRequest(orderId, storeIdToChosenDiscounts);
+        return addDiscountsToOrderRequest;
     }
 
     private int getOrderStore () {

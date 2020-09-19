@@ -40,16 +40,17 @@ public class OrdersCreatorValidator {
         }
     }
 
-    public void validateNumOfRealizationForChosenDiscount (double itemAmountInOrder,
-                                                           double itemQuantityInChosenDiscount,
+    public void validateNumOfRealizationForChosenDiscount (Double itemQuantityInOrder,
+                                                           Double itemQuantityInDiscount,
                                                            String discountName,
-                                                           int counter,
-                                                           int chosenDiscountRealizationCount) {
-        if (itemQuantityInChosenDiscount > itemAmountInOrder) {
+                                                           int numOfRealization) {
+        double totalNumOfChosenItemToAdd = itemQuantityInDiscount * numOfRealization;
+        if (totalNumOfChosenItemToAdd > itemQuantityInOrder) {
+            Double validNumOfRealization = (itemQuantityInOrder / itemQuantityInDiscount);
             throw new RuntimeException(String.format("You can implements the discount '%s' only %s times (and not %s times as you asked).",
                                                      discountName,
-                                                     counter,
-                                                     chosenDiscountRealizationCount));
+                                                     validNumOfRealization.intValue(),
+                                                     numOfRealization));
         }
     }
 

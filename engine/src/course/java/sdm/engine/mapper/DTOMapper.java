@@ -73,12 +73,16 @@ public class DTOMapper {
     }
 
     private CustomerDTO toCustomerDTO (SystemCustomer systemCustomer) {
+        int numOfOrders = systemCustomer.getNumOfOrders();
+        double avgItemsPrice = systemCustomer.getTotalItemsPrice() / numOfOrders;
+        double avgDeliveryPrice = systemCustomer.getTotalDeliveryPrice() / numOfOrders;
+
         return new CustomerDTO(systemCustomer.getId(),
                                systemCustomer.getName(),
                                toLocationDTO(systemCustomer.getLocation()),
-                               systemCustomer.getNumOfOrders(),
-                               systemCustomer.getAvgItemsPrice(),
-                               systemCustomer.getAvgDeliveryPrice());
+                               numOfOrders,
+                               GeneratedDataMapper.round(avgItemsPrice, 2),
+                               GeneratedDataMapper.round(avgDeliveryPrice, 2));
     }
 
     private LocationDTO toLocationDTO (Location location) {

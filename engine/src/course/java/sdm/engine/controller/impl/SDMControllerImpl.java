@@ -9,7 +9,7 @@ import course.java.sdm.engine.service.SDMService;
 import model.request.AddDiscountsToOrderRequest;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
-import model.request.StoreValidDiscounts;
+import model.request.ValidStoreDiscounts;
 import model.response.*;
 
 public class SDMControllerImpl implements ISDMController {
@@ -85,7 +85,7 @@ public class SDMControllerImpl implements ISDMController {
         service.loadOrdersHistoryFromFile(path);
     }
 
-    public Map<Integer, StoreValidDiscounts> getDiscounts (UUID orderId) {
+    public Map<Integer, ValidStoreDiscounts> getDiscounts (UUID orderId) {
         return service.getOrderDiscounts(orderId);
     }
 

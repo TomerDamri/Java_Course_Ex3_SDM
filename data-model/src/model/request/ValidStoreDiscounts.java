@@ -5,10 +5,10 @@ import java.util.Map;
 
 import course.java.sdm.engine.model.Discount;
 
-public class StoreValidDiscounts {
+public class ValidStoreDiscounts {
     private Map<Integer, List<Discount>> itemIdToValidStoreDiscounts;
 
-    public StoreValidDiscounts (Map<Integer, List<Discount>> itemIdToValidStoreDiscounts) {
+    public ValidStoreDiscounts (Map<Integer, List<Discount>> itemIdToValidStoreDiscounts) {
         this.itemIdToValidStoreDiscounts = itemIdToValidStoreDiscounts;
     }
 

@@ -21,7 +21,7 @@ public class SDMService {
     private final FileManager fileManager = FileManager.getFileManager();
     private final OrdersCreator ordersCreator = OrdersCreator.getOrdersExecutor();
     private final SystemUpdater systemUpdater = SystemUpdater.getSystemUpdater();
-    private Map<UUID, Map<Integer, StoreValidDiscounts>> orderIdToValidDiscounts = new HashMap<>();
+    private Map<UUID, Map<Integer, ValidStoreDiscounts>> orderIdToValidDiscounts = new HashMap<>();
     private final static DTOMapper dtoMapper = new DTOMapper();
     private Descriptor descriptor;
 
@@ -73,11 +73,11 @@ public class SDMService {
         return dtoMapper.toGetOrdersResponse(descriptor.getSystemOrders());
     }
 
-    public Map<Integer, StoreValidDiscounts> getOrderDiscounts (UUID orderId) {
+    public Map<Integer, ValidStoreDiscounts> getOrderDiscounts (UUID orderId) {
 
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
-        Map<Integer, StoreValidDiscounts> returnDiscounts = new TreeMap<>();
+        Map<Integer, ValidStoreDiscounts> returnDiscounts = new TreeMap<>();
 
         for (Map.Entry<StoreDetails, Order> SO_Entry : staticOrders.entrySet()) {
             Order currOrder = SO_Entry.getValue();
@@ -85,10 +85,10 @@ public class SDMService {
 
             Map<PricedItem, Double> pricedItems = currOrder.getPricedItems();
             int storeId = currStoreDetails.getId();
-            StoreValidDiscounts storeValidDiscounts = getStoreDiscounts(pricedItems, storeId);
+            ValidStoreDiscounts validStoreDiscounts = getStoreDiscounts(pricedItems, storeId);
 
-            if (storeValidDiscounts != null) {
-                returnDiscounts.put(storeId, storeValidDiscounts);
+            if (validStoreDiscounts != null) {
+                returnDiscounts.put(storeId, validStoreDiscounts);
             }
         }
 
@@ -96,7 +96,7 @@ public class SDMService {
         return returnDiscounts;
     }
 
-    private StoreValidDiscounts getStoreDiscounts (Map<PricedItem, Double> pricedItems, int storeId) {
+    private ValidStoreDiscounts getStoreDiscounts (Map<PricedItem, Double> pricedItems, int storeId) {
         Map<Integer, List<Discount>> storeValidDiscounts = new TreeMap<>();
         SystemStore systemStore = descriptor.getSystemStores().get(storeId);
         Map<Integer, List<Discount>> storeDiscounts = systemStore.getStore().getStoreDiscounts();
@@ -109,7 +109,7 @@ public class SDMService {
             }
         }
 
-        return !storeValidDiscounts.isEmpty() ? new StoreValidDiscounts(storeValidDiscounts) : null;
+        return !storeValidDiscounts.isEmpty() ? new ValidStoreDiscounts(storeValidDiscounts) : null;
     }
 
     private void addItemDiscounts (Map<Integer, List<Discount>> storeValidDiscounts,
@@ -130,20 +130,32 @@ public class SDMService {
         UUID orderId = request.getOrderID();
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
+        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = request.getStoreIdToChosenDiscounts();
 
         staticOrders.forEach(( (storeDetails, order) -> {
             int storeId = storeDetails.getId();
             UUID currStaticOrderId = order.getId();
 
-            SystemStore systemStore = descriptor.getSystemStores().get(storeId);
-            StoreChosenDiscounts storeChosenDiscounts = request.getStoreIdToChosenDiscounts().get(storeId);
-            StoreValidDiscounts validDiscounts = orderIdToValidDiscounts.get(currStaticOrderId).get(storeId);
+            if (storeIdToChosenDiscounts.containsKey(storeId)) {
+                ChosenStoreDiscounts chosenStoreDiscounts = storeIdToChosenDiscounts.get(storeId);
+                SystemStore systemStore = descriptor.getSystemStores().get(storeId);
+                ValidStoreDiscounts validDiscounts = getValidStoreDiscounts(orderId, storeId, currStaticOrderId, systemStore);
 
-            ordersCreator.addDiscountsPerStoreToStaticOrder(systemStore, order, storeChosenDiscounts, validDiscounts);
-
-            ordersCreator.completeTheOrderV2(systemStore, order);
+                ordersCreator.addDiscountsPerStore(systemStore, order, chosenStoreDiscounts, validDiscounts);
+                ordersCreator.completeTheOrderV2(systemStore, order);
+            }
         }));
 
+    }
+
+    private ValidStoreDiscounts getValidStoreDiscounts (UUID orderId, int storeId, UUID currStaticOrderId, SystemStore systemStore) {
+        ValidStoreDiscounts validDiscounts = orderIdToValidDiscounts.get(currStaticOrderId).get(storeId);
+        if (validDiscounts.getItemIdToValidStoreDiscounts().size() <= 0) {
+            throw new RuntimeException(String.format("There is no valid discount from store %s for order with id: %",
+                                                     systemStore.getName(),
+                                                     orderId));
+        }
+        return validDiscounts;
     }
 
     // public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
@@ -161,38 +173,54 @@ public class SDMService {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
-
-        int customerId = request.getCustomerId();
-        if (!descriptor.getSystemCustomers().containsKey(customerId)) {
-            throw new RuntimeException(String.format("There is no customer with id: %s in the system", customerId));
-        }
-
-        SystemCustomer customer = descriptor.getSystemCustomers().get(customerId);
+        SystemCustomer customer = getSystemCustomer(request.getCustomerId());
 
         Map<PricedItem, Double> pricedItems = getPricedItemFromStaticRequest(request);
         SystemStore systemStore = descriptor.getSystemStores().get(request.getStoreId());
         LocalDateTime orderDate = request.getOrderDate();
         Location orderLocation = customer.getLocation();
 
-        Order newOrder = ordersCreator.createOrderV2(systemStore, orderDate, orderLocation, pricedItems, null, customerId);
+        Order newOrder = ordersCreator.createOrderV2(systemStore, orderDate, orderLocation, pricedItems, null, customer.getId());
 
         return new PlaceOrderResponse(newOrder.getId());
+    }
+
+    private SystemCustomer getSystemCustomer (Integer customerId) {
+        Map<Integer, SystemCustomer> systemCustomers = descriptor.getSystemCustomers();
+        if (!systemCustomers.containsKey(customerId)) {
+            throw new RuntimeException(String.format("There is no customer with id: %s in the system", customerId));
+        }
+
+        return systemCustomers.get(customerId);
     }
 
     public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
 
         if (toConfirmNewDynamicOrder) {
+            SystemCustomer systemCustomer = descriptor.getSystemCustomers().get(tempOrder.getCustomerId());
             Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
 
             staticOrders.forEach( (storeDetails, order) -> {
                 SystemStore systemStore = descriptor.getSystemStores().get(storeDetails.getId());
 
-                systemUpdater.updateSystemAfterStaticOrderV2(systemStore, order, descriptor);
+                systemUpdater.updateSystemAfterStaticOrderV2(systemStore, order, descriptor, systemCustomer);
             });
+
+            updateSystemCustomer(orderId, systemCustomer, staticOrders);
         }
 
         ordersCreator.deleteTempOrder(orderId);
+    }
+
+    // will update numOfOrders property for chosen system customer in case the temp order is dynamic
+    // order
+    private void updateSystemCustomer (UUID orderId, SystemCustomer systemCustomer, Map<StoreDetails, Order> staticOrders) {
+        Order firstSubOrder = staticOrders.values().iterator().next();
+        if (staticOrders.size() > 1 || !firstSubOrder.getId().equals(orderId)) {
+            int prevNumOfOrders = systemCustomer.getNumOfOrders();
+            systemCustomer.setNumOfOrders(prevNumOfOrders + 1);
+        }
     }
 
     public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {

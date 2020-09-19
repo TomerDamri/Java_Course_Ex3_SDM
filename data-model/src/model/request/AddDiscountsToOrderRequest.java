@@ -5,19 +5,19 @@ import java.util.UUID;
 
 public class AddDiscountsToOrderRequest {
     private UUID orderID;
-    //<storeId,
-    private Map<Integer, StoreChosenDiscounts> storeIdToChosenDiscounts;
+    // <storeId,
+    private Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts;
 
-    public AddDiscountsToOrderRequest(UUID orderID, Map<Integer, StoreChosenDiscounts> storeIdToChosenDiscounts) {
+    public AddDiscountsToOrderRequest (UUID orderID, Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts) {
         this.orderID = orderID;
         this.storeIdToChosenDiscounts = storeIdToChosenDiscounts;
     }
 
-    public UUID getOrderID() {
+    public UUID getOrderID () {
         return orderID;
     }
 
-    public Map<Integer, StoreChosenDiscounts> getStoreIdToChosenDiscounts() {
+    public Map<Integer, ChosenStoreDiscounts> getStoreIdToChosenDiscounts () {
         return storeIdToChosenDiscounts;
     }
 }

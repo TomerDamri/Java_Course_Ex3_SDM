@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 import course.java.sdm.engine.exceptions.ItemNotExistInStores;
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
-import model.request.ItemChosenDiscount;
+import model.request.ChosenItemDiscount;
+import model.request.ChosenStoreDiscounts;
 import model.request.PlaceDynamicOrderRequest;
-import model.request.StoreChosenDiscounts;
-import model.request.StoreValidDiscounts;
+import model.request.ValidStoreDiscounts;
 
 public class OrdersCreator {
 
@@ -67,67 +67,58 @@ public class OrdersCreator {
      * 1) chosenDiscountsForChosenStore = user chosen discounts (== Map<itemId, Map<Discount's name,
      * amount>>) 2) storeValidDiscounts = store discounts that valid for current order (
      */
-    public void addDiscountsPerStoreToStaticOrder (SystemStore systemStore,
-                                                   Order order,
-                                                   StoreChosenDiscounts storeChosenDiscounts,
-                                                   StoreValidDiscounts storeValidDiscounts) {
+    public void addDiscountsPerStore (SystemStore systemStore,
+                                      Order order,
+                                      ChosenStoreDiscounts chosenStoreDiscounts,
+                                      ValidStoreDiscounts validStoreDiscounts) {
         Map<Integer, Double> itemIdToAmount = order.getPricedItems()
                                                    .entrySet()
                                                    .stream()
                                                    .collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue));
-        Map<Integer, List<ItemChosenDiscount>> itemIdToChosenDiscountsDetails = storeChosenDiscounts.getItemIdToChosenDiscounts();
+        Map<Integer, List<ChosenItemDiscount>> itemIdToChosenItemDiscounts = chosenStoreDiscounts.getItemIdToChosenDiscounts();
 
-        for (Map.Entry<Integer, List<ItemChosenDiscount>> entry : itemIdToChosenDiscountsDetails.entrySet()) {
+        for (Map.Entry<Integer, List<ChosenItemDiscount>> entry : itemIdToChosenItemDiscounts.entrySet()) {
             Integer currItemId = entry.getKey();
-            List<ItemChosenDiscount> chosenDiscountNameToAmount = entry.getValue();
-            Map<String, Discount> discountsNameToValidDiscount = storeValidDiscounts.getItemIdToValidStoreDiscounts()
+            List<ChosenItemDiscount> chosenItemDiscounts = entry.getValue();
+            Map<String, Discount> discountsNameToValidDiscount = validStoreDiscounts.getItemIdToValidStoreDiscounts()
                                                                                     .get(currItemId)
                                                                                     .stream()
                                                                                     .collect(Collectors.toMap(Discount::getName,
                                                                                                               discount -> discount));
             Double itemAmountInOrder = itemIdToAmount.get(currItemId);
 
-            addDiscountsPerItemToStaticOrder(systemStore,
-                                             order,
-                                             chosenDiscountNameToAmount,
-                                             discountsNameToValidDiscount,
-                                             itemAmountInOrder);
+            addDiscountsPerItem(systemStore, order, chosenItemDiscounts, discountsNameToValidDiscount, itemAmountInOrder);
         }
     }
 
-    private void addDiscountsPerItemToStaticOrder (SystemStore systemStore,
-                                                   Order order,
-                                                   List<ItemChosenDiscount> chosenDiscountNameToAmount,
-                                                   Map<String, Discount> discountsNameToValidDiscount,
-                                                   Double itemAmountInOrder) {
-        for (ItemChosenDiscount itemChosenDiscount : chosenDiscountNameToAmount) {
-            String discountName = itemChosenDiscount.getDiscountId();
-            Integer chosenDiscountRealizationCount = itemChosenDiscount.getNumOfRealizations();
-            Optional<Integer> chosenOfferId = itemChosenDiscount.getOrOfferId();
-
-            ORDERS_CREATOR_VALIDATOR.validateExistenceOfChosenDiscount(discountsNameToValidDiscount, order.getId(), discountName);
-
-            Discount chosenDiscount = discountsNameToValidDiscount.get(discountName);
+    private void addDiscountsPerItem (SystemStore systemStore,
+                                      Order order,
+                                      List<ChosenItemDiscount> chosenDiscountNameToAmount,
+                                      Map<String, Discount> discountsNameToValidDiscount,
+                                      Double itemAmountInOrder) {
+        for (ChosenItemDiscount chosenItemDiscount : chosenDiscountNameToAmount) {
+            String discountName = chosenItemDiscount.getDiscountId();
+            Integer numOfRealizations = chosenItemDiscount.getNumOfRealizations();
+            Optional<Integer> chosenOfferId = chosenItemDiscount.getOrOfferId();
+            Discount chosenDiscount = getChosenDiscount(order, discountsNameToValidDiscount, discountName);
             double itemQuantityInChosenDiscount = chosenDiscount.getIfYouBuy().getQuantity();
 
-            for (int i = 0; chosenDiscountRealizationCount > i; i++) {
-                ORDERS_CREATOR_VALIDATOR.validateNumOfRealizationForChosenDiscount(itemAmountInOrder,
-                                                                                   itemQuantityInChosenDiscount,
-                                                                                   discountName,
-                                                                                   i,
-                                                                                   chosenDiscountRealizationCount);
+            ORDERS_CREATOR_VALIDATOR.validateNumOfRealizationForChosenDiscount(itemAmountInOrder,
+                                                                               itemQuantityInChosenDiscount,
+                                                                               discountName,
+                                                                               numOfRealizations);
 
-                // add to order
-                handleDiscountOperator(chosenDiscount, systemStore, order, chosenOfferId);
-                itemAmountInOrder = itemAmountInOrder - itemQuantityInChosenDiscount;
-            }
+            List<Offer> offersToAdd = getOffersToAdd(chosenDiscount, chosenOfferId);
+            offersToAdd.forEach(offer -> addOffersToOrder(offer, systemStore, order, discountName, numOfRealizations));
         }
     }
 
-    private void handleDiscountOperator (Discount chosenDiscount,
-                                         SystemStore systemStore,
-                                         Order order,
-                                         Optional<Integer> chosenOfferIdOptional) {
+    private Discount getChosenDiscount (Order order, Map<String, Discount> discountsNameToValidDiscount, String discountName) {
+        ORDERS_CREATOR_VALIDATOR.validateExistenceOfChosenDiscount(discountsNameToValidDiscount, order.getId(), discountName);
+        return discountsNameToValidDiscount.get(discountName);
+    }
+
+    private List<Offer> getOffersToAdd (Discount chosenDiscount, Optional<Integer> chosenOfferIdOptional) {
         ThenYouGet.DiscountType operator = chosenDiscount.getThenYouGet().getOperator();
         Map<Integer, Offer> discountOffers = chosenDiscount.getThenYouGet().getOffers();
         String discountName = chosenDiscount.getName();
@@ -136,7 +127,7 @@ public class OrdersCreator {
         switch (operator) {
         case OR:
             ORDERS_CREATOR_VALIDATOR.validateOffersForOneOfOperator(discountOffers, chosenOfferIdOptional, discountName);
-            Offer chosenOffer = discountOffers.get(chosenOfferIdOptional.get());
+            Offer chosenOffer = getChosenOffer(chosenOfferIdOptional, discountOffers, discountName);
             offersToAdd.add(chosenOffer);
             break;
         case AND:
@@ -151,10 +142,18 @@ public class OrdersCreator {
             break;
         }
 
-        offersToAdd.forEach(offer -> addOffersToStaticOrder(offer, systemStore, order, discountName));
+        return offersToAdd;
     }
 
-    private void addOffersToStaticOrder (Offer offer, SystemStore systemStore, Order order, String discountName) {
+    private Offer getChosenOffer (Optional<Integer> chosenOfferIdOptional, Map<Integer, Offer> discountOffers, String discountName) {
+        if (!chosenOfferIdOptional.isPresent()) {
+            throw new RuntimeException(String.format("You need to send chosen offer id for discount '%s'", discountName));
+        }
+
+        return discountOffers.get(chosenOfferIdOptional.get());
+    }
+
+    private void addOffersToOrder (Offer offer, SystemStore systemStore, Order order, String discountName, Integer numOfRealizations) {
         int discountItemId = offer.getItemId();
         Map<Integer, StoreItem> itemIdToStoreItem = systemStore.getItemIdToStoreItem();
 
@@ -164,52 +163,53 @@ public class OrdersCreator {
         }
 
         Item item = itemIdToStoreItem.get(discountItemId).getPricedItem().getItem();
-        addOfferItemToOrder(systemStore, order, item, offer);
+        addOfferItemToOrder(systemStore, order, item, offer, numOfRealizations);
     }
 
-    private void addOfferItemToOrder (SystemStore systemStore, Order newOrder, Item item, Offer offer) {
+    private void addOfferItemToOrder (SystemStore systemStore, Order newOrder, Item item, Offer offer, int numOfOfferRealizations) {
         ORDERS_CREATOR_VALIDATOR.validateAmount(item, offer.getQuantity());
         ORDERS_CREATOR_VALIDATOR.validateItemExistsInStore(item, systemStore);
 
         Map<Offer, Integer> orderOffers = newOrder.getOrderOffers();
-        Integer numOfOfferRealizations = 1;
+
         if (orderOffers.containsKey(offer)) {
-            numOfOfferRealizations += orderOffers.get(offer);
+            Integer prevNumOfRealization = orderOffers.get(offer);
+            numOfOfferRealizations += prevNumOfRealization;
         }
 
         orderOffers.put(offer, numOfOfferRealizations);
     }
 
-//    public Order createOrder (SystemStore systemStore,
-//                              LocalDateTime orderDate,
-//                              Location orderLocation,
-//                              Map<PricedItem, Double> pricedItemToAmountMap,
-//                              UUID parentId) {
-//        ORDERS_CREATOR_VALIDATOR.validateLocation(orderLocation, systemStore);
-//        Order newOrder = new Order(orderDate, orderLocation, parentId);
-//        addItemsToOrder(systemStore, newOrder, pricedItemToAmountMap);
-//        completeTheOrder(systemStore, newOrder);
-//
-//        return newOrder;
-//    }
+    // public Order createOrder (SystemStore systemStore,
+    // LocalDateTime orderDate,
+    // Location orderLocation,
+    // Map<PricedItem, Double> pricedItemToAmountMap,
+    // UUID parentId) {
+    // ORDERS_CREATOR_VALIDATOR.validateLocation(orderLocation, systemStore);
+    // Order newOrder = new Order(orderDate, orderLocation, parentId);
+    // addItemsToOrder(systemStore, newOrder, pricedItemToAmountMap);
+    // completeTheOrder(systemStore, newOrder);
+    //
+    // return newOrder;
+    // }
 
-//    public DynamicOrder createDynamicOrder (PlaceDynamicOrderRequest request,
-//                                            Location orderLocation,
-//                                            List<SystemItem> systemItemsIncludedInOrder,
-//                                            Set<SystemStore> storesIncludedInOrder) {
-//        UUID dynamicOrderId = UUID.randomUUID();
-//        Map<StoreDetails, Order> staticOrders = storesIncludedInOrder.stream()
-//                                                                     .collect(Collectors.toMap(systemStore -> systemStore.getStore()
-//                                                                                                                         .getStoreDetails(),
-//                                                                                               createSubOrder(request.getOrderItemToAmount(),
-//                                                                                                              request.getOrderDate(),
-//                                                                                                              orderLocation,
-//                                                                                                              systemItemsIncludedInOrder,
-//                                                                                                              dynamicOrderId)));
-//
-//        DynamicOrder dynamicOrder = new DynamicOrder(dynamicOrderId, staticOrders);
-//        return dynamicOrder;
-//    }
+    // public DynamicOrder createDynamicOrder (PlaceDynamicOrderRequest request,
+    // Location orderLocation,
+    // List<SystemItem> systemItemsIncludedInOrder,
+    // Set<SystemStore> storesIncludedInOrder) {
+    // UUID dynamicOrderId = UUID.randomUUID();
+    // Map<StoreDetails, Order> staticOrders = storesIncludedInOrder.stream()
+    // .collect(Collectors.toMap(systemStore -> systemStore.getStore()
+    // .getStoreDetails(),
+    // createSubOrder(request.getOrderItemToAmount(),
+    // request.getOrderDate(),
+    // orderLocation,
+    // systemItemsIncludedInOrder,
+    // dynamicOrderId)));
+    //
+    // DynamicOrder dynamicOrder = new DynamicOrder(dynamicOrderId, staticOrders);
+    // return dynamicOrder;
+    // }
 
     public TempOrder createDynamicOrderV2 (PlaceDynamicOrderRequest request,
                                            Location orderLocation,
@@ -233,19 +233,19 @@ public class OrdersCreator {
         return tempOrder;
     }
 
-//    private Function<SystemStore, Order> createSubOrder (Map<Integer, Double> orderItemToAmount,
-//                                                         LocalDateTime orderDate,
-//                                                         Location orderLocation,
-//                                                         List<SystemItem> systemItemsIncludedInOrder,
-//                                                         UUID parentId) {
-//        return systemStore -> {
-//            Map<PricedItem, Double> pricedItems = getPricedItemFromDynamicOrderRequest(orderItemToAmount,
-//                                                                                       systemItemsIncludedInOrder,
-//                                                                                       systemStore);
-//
-//            return createOrder(systemStore, orderDate, orderLocation, pricedItems, parentId);
-//        };
-//    }
+    // private Function<SystemStore, Order> createSubOrder (Map<Integer, Double> orderItemToAmount,
+    // LocalDateTime orderDate,
+    // Location orderLocation,
+    // List<SystemItem> systemItemsIncludedInOrder,
+    // UUID parentId) {
+    // return systemStore -> {
+    // Map<PricedItem, Double> pricedItems = getPricedItemFromDynamicOrderRequest(orderItemToAmount,
+    // systemItemsIncludedInOrder,
+    // systemStore);
+    //
+    // return createOrder(systemStore, orderDate, orderLocation, pricedItems, parentId);
+    // };
+    // }
 
     private Function<SystemStore, Order> createSubOrderV2 (Map<Integer, Double> orderItemToAmount,
                                                            LocalDateTime orderDate,
@@ -430,6 +430,6 @@ public class OrdersCreator {
     }
 
     private double calculateTotalPriceForDiscountItem (Offer offer, Integer numOfRealizations) {
-        return offer.getForAdditional() * numOfRealizations;
+        return offer.getForAdditional() * offer.getQuantity() * numOfRealizations;
     }
 }

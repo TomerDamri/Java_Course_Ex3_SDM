@@ -7,7 +7,7 @@ import java.util.UUID;
 import model.request.AddDiscountsToOrderRequest;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
-import model.request.StoreValidDiscounts;
+import model.request.ValidStoreDiscounts;
 import model.response.*;
 
 public interface ISDMController {
@@ -23,7 +23,7 @@ public interface ISDMController {
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
 
-    Map<Integer, StoreValidDiscounts> getDiscounts (UUID orderId);
+    Map<Integer, ValidStoreDiscounts> getDiscounts (UUID orderId);
 
     void addDiscountsToOrder (AddDiscountsToOrderRequest request);
 

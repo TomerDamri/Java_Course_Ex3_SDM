@@ -4,8 +4,8 @@ public class SystemCustomer implements Mappable {
 
     private final Customer customer;
     private int numOfOrders = 0;
-    private double avgItemsPrice = 0;
-    private double avgDeliveryPrice = 0;
+    private double totalItemsPrice = 0;
+    private double totalDeliveryPrice = 0;
 
     public SystemCustomer (Customer customer) {
         this.customer = customer;
@@ -31,23 +31,23 @@ public class SystemCustomer implements Mappable {
         return numOfOrders;
     }
 
-    public double getAvgItemsPrice () {
-        return avgItemsPrice;
+    public double getTotalItemsPrice() {
+        return totalItemsPrice;
     }
 
-    public double getAvgDeliveryPrice () {
-        return avgDeliveryPrice;
+    public double getTotalDeliveryPrice() {
+        return totalDeliveryPrice;
     }
 
     public void setNumOfOrders (int numOfOrders) {
         this.numOfOrders = numOfOrders;
     }
 
-    public void setAvgItemsPrice (double avgItemsPrice) {
-        this.avgItemsPrice = avgItemsPrice;
+    public void setTotalItemsPrice(double totalItemsPrice) {
+        this.totalItemsPrice = totalItemsPrice;
     }
 
-    public void setAvgDeliveryPrice (double avgDeliveryPrice) {
-        this.avgDeliveryPrice = avgDeliveryPrice;
+    public void setTotalDeliveryPrice(double totalDeliveryPrice) {
+        this.totalDeliveryPrice = totalDeliveryPrice;
     }
 }
