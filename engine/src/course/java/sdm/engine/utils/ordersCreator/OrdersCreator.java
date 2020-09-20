@@ -13,7 +13,6 @@ import course.java.sdm.engine.model.*;
 import model.request.ChosenItemDiscount;
 import model.request.ChosenStoreDiscounts;
 import model.request.PlaceDynamicOrderRequest;
-import model.request.ValidStoreDiscounts;
 
 public class OrdersCreator {
 
@@ -180,37 +179,6 @@ public class OrdersCreator {
         orderOffers.put(offer, numOfOfferRealizations);
     }
 
-    // public Order createOrder (SystemStore systemStore,
-    // LocalDateTime orderDate,
-    // Location orderLocation,
-    // Map<PricedItem, Double> pricedItemToAmountMap,
-    // UUID parentId) {
-    // ORDERS_CREATOR_VALIDATOR.validateLocation(orderLocation, systemStore);
-    // Order newOrder = new Order(orderDate, orderLocation, parentId);
-    // addItemsToOrder(systemStore, newOrder, pricedItemToAmountMap);
-    // completeTheOrder(systemStore, newOrder);
-    //
-    // return newOrder;
-    // }
-
-    // public DynamicOrder createDynamicOrder (PlaceDynamicOrderRequest request,
-    // Location orderLocation,
-    // List<SystemItem> systemItemsIncludedInOrder,
-    // Set<SystemStore> storesIncludedInOrder) {
-    // UUID dynamicOrderId = UUID.randomUUID();
-    // Map<StoreDetails, Order> staticOrders = storesIncludedInOrder.stream()
-    // .collect(Collectors.toMap(systemStore -> systemStore.getStore()
-    // .getStoreDetails(),
-    // createSubOrder(request.getOrderItemToAmount(),
-    // request.getOrderDate(),
-    // orderLocation,
-    // systemItemsIncludedInOrder,
-    // dynamicOrderId)));
-    //
-    // DynamicOrder dynamicOrder = new DynamicOrder(dynamicOrderId, staticOrders);
-    // return dynamicOrder;
-    // }
-
     public TempOrder createDynamicOrderV2 (PlaceDynamicOrderRequest request,
                                            Location orderLocation,
                                            List<SystemItem> systemItemsIncludedInOrder,
@@ -232,20 +200,6 @@ public class OrdersCreator {
 
         return tempOrder;
     }
-
-    // private Function<SystemStore, Order> createSubOrder (Map<Integer, Double> orderItemToAmount,
-    // LocalDateTime orderDate,
-    // Location orderLocation,
-    // List<SystemItem> systemItemsIncludedInOrder,
-    // UUID parentId) {
-    // return systemStore -> {
-    // Map<PricedItem, Double> pricedItems = getPricedItemFromDynamicOrderRequest(orderItemToAmount,
-    // systemItemsIncludedInOrder,
-    // systemStore);
-    //
-    // return createOrder(systemStore, orderDate, orderLocation, pricedItems, parentId);
-    // };
-    // }
 
     private Function<SystemStore, Order> createSubOrderV2 (Map<Integer, Double> orderItemToAmount,
                                                            LocalDateTime orderDate,
@@ -300,14 +254,6 @@ public class OrdersCreator {
         pricedItems.put(pricedItem, value);
     }
 
-    private void completeTheOrder (SystemStore systemStore, Order newOrder) {
-        setItemTypes(newOrder);
-        setItemsAmount(newOrder);
-        setItemsPrice(newOrder);
-        setDeliveryPrice(systemStore, newOrder);
-        setTotalPrice(newOrder);
-    }
-
     private void setItemTypes (Order newOrder) {
         newOrder.setNumOfItemTypes(newOrder.getPricedItems().size());
     }
@@ -330,16 +276,6 @@ public class OrdersCreator {
             numOfItemsToAdd = newOrder.getPricedItems().get(pricedItem).intValue();
         }
         return numOfItemsToAdd;
-    }
-
-    private void setItemsPrice (Order newOrder) {
-        double allItemPrices = 0;
-        for (PricedItem pricedItem : newOrder.getPricedItems().keySet()) {
-            allItemPrices += calculateTotalPriceForOrderItem(newOrder, pricedItem);
-        }
-
-        BigDecimal bd = new BigDecimal(allItemPrices).setScale(2, RoundingMode.HALF_UP);
-        newOrder.setItemsPrice(bd.doubleValue());
     }
 
     private double calculateTotalPriceForOrderItem (Order newOrder, PricedItem pricedItem) {
