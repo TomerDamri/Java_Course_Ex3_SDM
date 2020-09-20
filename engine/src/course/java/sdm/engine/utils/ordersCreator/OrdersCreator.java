@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import course.java.sdm.engine.exceptions.ItemNotExistInStores;
+import course.java.sdm.engine.exceptions.ItemNotExist;
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
 import model.request.ChosenItemDiscount;
@@ -158,7 +158,7 @@ public class OrdersCreator {
 
         // validate discount item is supplied in chosen store
         if (!itemIdToStoreItem.containsKey(discountItemId)) {
-            throw new ItemNotExistInStores(discountName, discountItemId);
+            throw new ItemNotExist(discountName, discountItemId);
         }
 
         Item item = itemIdToStoreItem.get(discountItemId).getPricedItem().getItem();
@@ -169,7 +169,7 @@ public class OrdersCreator {
         ORDERS_CREATOR_VALIDATOR.validateAmount(item, offer.getQuantity());
         ORDERS_CREATOR_VALIDATOR.validateItemExistsInStore(item, systemStore);
 
-        Map<Offer, Integer> orderOffers = newOrder.getOrderOffers();
+        Map<Offer, Integer> orderOffers = newOrder.getSelectedOfferToNumOfRealization();
 
         if (orderOffers.containsKey(offer)) {
             Integer prevNumOfRealization = orderOffers.get(offer);
@@ -310,7 +310,11 @@ public class OrdersCreator {
 
     private void setItemTypesV2 (Order newOrder) {
         List<Integer> orderItemIds = newOrder.getPricedItems().keySet().stream().map(PricedItem::getId).collect(Collectors.toList());
-        List<Integer> discountItemIds = newOrder.getOrderOffers().keySet().stream().map(Offer::getItemId).collect(Collectors.toList());
+        List<Integer> discountItemIds = newOrder.getSelectedOfferToNumOfRealization()
+                                                .keySet()
+                                                .stream()
+                                                .map(Offer::getItemId)
+                                                .collect(Collectors.toList());
 
         Set<Integer> orderItemTypes = new HashSet<>(orderItemIds);
         orderItemTypes.addAll(discountItemIds);
@@ -324,7 +328,7 @@ public class OrdersCreator {
             amountOfItems += calculateNumOfOrderItemsToAdd(newOrder, pricedItem);
         }
 
-        for (Map.Entry<Offer, Integer> entry : newOrder.getOrderOffers().entrySet()) {
+        for (Map.Entry<Offer, Integer> entry : newOrder.getSelectedOfferToNumOfRealization().entrySet()) {
             Offer currOffer = entry.getKey();
             Integer numOfRealizations = entry.getValue();
             StoreItem storeItem = systemStore.getItemIdToStoreItem().get(currOffer.getItemId());
@@ -354,7 +358,7 @@ public class OrdersCreator {
             allItemPrices += calculateTotalPriceForOrderItem(newOrder, pricedItem);
         }
 
-        for (Map.Entry<Offer, Integer> entry : newOrder.getOrderOffers().entrySet()) {
+        for (Map.Entry<Offer, Integer> entry : newOrder.getSelectedOfferToNumOfRealization().entrySet()) {
             Offer currOffer = entry.getKey();
             Integer numOfRealizations = entry.getValue();
 

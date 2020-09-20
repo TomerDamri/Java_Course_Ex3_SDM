@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import course.java.sdm.engine.exceptions.DuplicateEntityException;
 import course.java.sdm.engine.exceptions.IllegalFileExtensionException;
-import course.java.sdm.engine.exceptions.ItemNotExistInStores;
+import course.java.sdm.engine.exceptions.ItemNotExist;
 import course.java.sdm.engine.exceptions.NotFoundException;
 import course.java.sdm.engine.model.Customer;
 import course.java.sdm.engine.model.Item;
@@ -82,7 +82,7 @@ public class FileManagerValidator {
     private void validateAllItemsSupplied (Set<Integer> items, Set<Integer> suppliedItems) {
         if (!items.equals(suppliedItems)) {
             items.removeAll(suppliedItems);
-            throw new ItemNotExistInStores(items);
+            throw new ItemNotExist(items);
         }
     }
 

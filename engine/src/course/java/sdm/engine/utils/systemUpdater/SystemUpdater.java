@@ -21,6 +21,186 @@ public class SystemUpdater {
         return singletonSystemUpdater;
     }
 
+    public void addItemToStore (Integer itemId,
+                                Integer storeId,
+                                Integer itemPrice,
+                                Map<Integer, SystemStore> systemStores,
+                                Map<Integer, SystemItem> systemItems) {
+
+        validateExistenceInSystem(itemId, storeId, systemStores, systemItems);
+
+        SystemStore systemStore = systemStores.get(storeId);
+        SystemItem systemItem = systemItems.get(itemId);
+
+        SYSTEM_UPDATER_VALIDATOR.validateItemNotExistInStore(itemId, systemStore, systemItem);
+
+        addNewItemToStore(itemId, itemPrice, systemStore, systemItem);
+        updateSystemItemAfterAddingToStore(itemId, storeId, itemPrice, systemStores, systemItem);
+    }
+
+    public void updateItemPrice (Integer itemId,
+                                 Integer storeId,
+                                 Integer newItemPrice,
+                                 Map<Integer, SystemStore> systemStores,
+                                 Map<Integer, SystemItem> systemItems) {
+        validateExistenceInSystem(itemId, storeId, systemStores, systemItems);
+
+        SystemStore systemStore = systemStores.get(storeId);
+        SystemItem systemItem = systemItems.get(itemId);
+
+        SYSTEM_UPDATER_VALIDATOR.validateItemExistInStore(itemId, systemStore, systemItem);
+        // update store item price
+        StoreItem storeItem = systemStore.getItemIdToStoreItem().get(itemId);
+        int prevPrice = storeItem.getPrice();
+        storeItem.setPrice(newItemPrice);
+        // update systemItem avg price
+        updateSystemItemAfterUpdatingStoreItemPrice(newItemPrice, systemStores, systemItem, prevPrice);
+    }
+
+    public List<Discount> deleteItemFromStore (Integer itemId,
+                                               Integer storeId,
+                                               Map<Integer, SystemStore> systemStores,
+                                               Map<Integer, SystemItem> systemItems) {
+        validateExistenceInSystem(itemId, storeId, systemStores, systemItems);
+
+        SystemStore systemStore = systemStores.get(storeId);
+        SystemItem systemItem = systemItems.get(itemId);
+
+        SYSTEM_UPDATER_VALIDATOR.validateItemExistInStore(itemId, systemStore, systemItem);
+        SYSTEM_UPDATER_VALIDATOR.validateItemSellsInOtherStores(systemStore, systemItem);
+        SYSTEM_UPDATER_VALIDATOR.validateStoreSellsOtherItems(systemStore, systemItem);
+
+        // remove item from store
+        StoreItem removedStoreItem = systemStore.getItemIdToStoreItem().remove(itemId);
+        // remove related discounts
+        List<Discount> removedDiscounts = deleteRelatedDiscounts(itemId, systemStore);
+        // update system item
+        updateSystemItemAfterDeletingItemFromStore(systemStores, systemItem, removedStoreItem);
+
+        return removedDiscounts;
+    }
+
+    private void validateExistenceInSystem (Integer itemId,
+                                            Integer storeId,
+                                            Map<Integer, SystemStore> systemStores,
+                                            Map<Integer, SystemItem> systemItems) {
+        SYSTEM_UPDATER_VALIDATOR.validateItemExistInSystem(itemId, systemItems);
+        SYSTEM_UPDATER_VALIDATOR.validateStoreExistInSystem(storeId, systemStores);
+    }
+
+    private void updateSystemItemAfterAddingToStore (Integer itemId,
+                                                     Integer storeId,
+                                                     Integer itemPrice,
+                                                     Map<Integer, SystemStore> systemStores,
+                                                     SystemItem systemItem) {
+        updateStoreCountAfterAddingItemToStore(systemItem);
+        updateAvgPriceAfterAddingItemToStore(itemPrice, systemItem);
+        updateStoreSellsInCheapestPriceAfterAddingItemToStore(itemId, storeId, itemPrice, systemStores, systemItem);
+    }
+
+    private void updateStoreSellsInCheapestPriceAfterAddingItemToStore (Integer itemId,
+                                                                        Integer storeId,
+                                                                        Integer itemPrice,
+                                                                        Map<Integer, SystemStore> systemStores,
+                                                                        SystemItem systemItem) {
+        SystemStore storeSellsInCheapestPrice = systemStores.get(systemItem.getStoreSellsInCheapestPrice());
+        int cheapestPrice = storeSellsInCheapestPrice.getItemIdToStoreItem().get(itemId).getPrice();
+
+        if (cheapestPrice > itemPrice) {
+            systemItem.setStoreSellsInCheapestPrice(storeId);
+        }
+    }
+
+    private void updateAvgPriceAfterAddingItemToStore (Integer itemPrice, SystemItem systemItem) {
+        int storesCount = systemItem.getStoresCount();
+        int prevStoreCount = storesCount - 1;
+        double prevAvg = systemItem.getAvgPrice();
+        double newAvgPrice = (prevAvg * prevStoreCount + itemPrice) / storesCount;
+
+        systemItem.setAvgPrice(newAvgPrice);
+    }
+
+    private void updateStoreCountAfterAddingItemToStore (SystemItem systemItem) {
+        int prevStoreCount = systemItem.getStoresCount();
+        systemItem.setStoresCount(prevStoreCount + 1);
+    }
+
+    private void addNewItemToStore (Integer itemId, Integer itemPrice, SystemStore systemStore, SystemItem systemItem) {
+        StoreItem newStoreItem = new StoreItem(systemItem.getItem(), itemPrice);
+        systemStore.getItemIdToStoreItem().put(itemId, newStoreItem);
+    }
+
+    private void updateSystemItemAfterUpdatingStoreItemPrice (Integer newItemPrice,
+                                                              Map<Integer, SystemStore> systemStores,
+                                                              SystemItem systemItem,
+                                                              int prevPrice) {
+        updateAvgPriceAfterUpdatingStoreItemPrice(newItemPrice, systemItem, prevPrice);
+        updateStoreSellsInCheapestPriceAfterUpdatingStoreItemPrice(systemStores, systemItem);
+    }
+
+    private void updateStoreSellsInCheapestPriceAfterUpdatingStoreItemPrice (Map<Integer, SystemStore> systemStores,
+                                                                             SystemItem systemItem) {
+        Integer itemId = systemItem.getId();
+        Comparator<SystemStore> storeSellsInCheapestPriceComparator = (store1,
+                                                                       store2) -> Integer.compare(store1.getItemIdToStoreItem()
+                                                                                                        .get(itemId)
+                                                                                                        .getPrice(),
+                                                                                                  store2.getItemIdToStoreItem()
+                                                                                                        .get(itemId)
+                                                                                                        .getPrice());
+
+        int newStoreSellsInCheapestPriceId = systemStores.values()
+                                                         .stream()
+                                                         .filter(store -> store.getItemIdToStoreItem().containsKey(itemId))
+                                                         .min(storeSellsInCheapestPriceComparator)
+                                                         .get()
+                                                         .getId();
+
+        systemItem.setStoreSellsInCheapestPrice(newStoreSellsInCheapestPriceId);
+    }
+
+    private void updateAvgPriceAfterUpdatingStoreItemPrice (Integer newItemPrice, SystemItem systemItem, int prevPrice) {
+        int storesCount = systemItem.getStoresCount();
+        double prevAvg = systemItem.getAvgPrice();
+        double newAvgPrice = (prevAvg * storesCount - prevPrice + newItemPrice) / storesCount;
+
+        systemItem.setAvgPrice(newAvgPrice);
+    }
+
+    private void updateSystemItemAfterDeletingItemFromStore (Map<Integer, SystemStore> systemStores,
+                                                             SystemItem systemItem,
+                                                             StoreItem removedStoreItem) {
+        updateStoreCountAfterDeletion(systemItem);
+        // update avg price
+        updateAvgPriceAfterDeletion(systemItem, removedStoreItem);
+        // update store sells in cheapest price
+        updateStoreSellsInCheapestPriceAfterUpdatingStoreItemPrice(systemStores, systemItem);
+    }
+
+    private int updateStoreCountAfterDeletion (SystemItem systemItem) {
+        int prevStoresCount = systemItem.getStoresCount();
+        systemItem.setStoresCount(prevStoresCount - 1);
+        return prevStoresCount;
+    }
+
+    private void updateAvgPriceAfterDeletion (SystemItem systemItem, StoreItem removedStoreItem) {
+        double prevAvgPrice = systemItem.getAvgPrice();
+        int storesCount = systemItem.getStoresCount();
+        int prevStoresCount = storesCount - 1;
+        double newAvgPrice = (prevAvgPrice * prevStoresCount - removedStoreItem.getPrice()) / storesCount;
+
+        systemItem.setAvgPrice(newAvgPrice);
+    }
+
+    private List<Discount> deleteRelatedDiscounts (Integer itemId, SystemStore systemStore) {
+        List<Discount> removedDiscounts = null;
+        Map<Integer, List<Discount>> storeDiscounts = systemStore.getStore().getStoreDiscounts();
+        if (storeDiscounts.containsKey(itemId)) {
+            removedDiscounts = storeDiscounts.remove(itemId);
+        }
+        return removedDiscounts;
+    }
+
     public void updateSystemAfterLoadingOrdersHistoryFromFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile, Descriptor descriptor) {
         Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate = descriptor.getSystemOrders();
         Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
@@ -50,36 +230,6 @@ public class SystemUpdater {
 
         updateSystemAfterStaticOrder(systemStore, order, descriptor);
     }
-
-    // private void updateDynamicOrdersAccordingToHistoryFile (Map<UUID, DynamicOrder>
-    // historyDynamicOrders,
-    // Map<UUID, DynamicOrder> dynamicOrdersBeforeUpdate) {
-    // historyDynamicOrders.entrySet()
-    // .stream()
-    // .filter(entry -> !dynamicOrdersBeforeUpdate.containsKey(entry.getKey()))
-    // .forEach(entry -> dynamicOrdersBeforeUpdate.put(entry.getKey(), entry.getValue()));
-    // }
-
-    // public void updateSystemAfterDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder,
-    // Descriptor descriptor) {
-    // Map<UUID, DynamicOrder> dynamicOrders = descriptor.getDynamicOrders();
-    // SYSTEM_UPDATER_VALIDATOR.validateDynamicOrderExist(dynamicOrderId, dynamicOrders);
-    //
-    // DynamicOrder dynamicOrder = dynamicOrders.get(dynamicOrderId);
-    // SYSTEM_UPDATER_VALIDATOR.validateDynamicOrderNotConfirmedYet(dynamicOrderId, dynamicOrder);
-    //
-    // if (toConfirmNewDynamicOrder) {
-    // dynamicOrder.setConfirmed(toConfirmNewDynamicOrder);
-    // dynamicOrder.getStaticOrders().forEach( (storeDetails, order) -> {
-    // int storeId = storeDetails.getId();
-    // SystemStore systemStore = descriptor.getSystemStores().get(storeId);
-    // updateSystemAfterStaticOrder(systemStore, order, descriptor);
-    // });
-    // }
-    // else {
-    // dynamicOrders.remove(dynamicOrderId);
-    // }
-    // }
 
     public void updateSystemAfterStaticOrder (SystemStore systemStore, Order newOrder, Descriptor descriptor) {
         updateSystemStore(systemStore, newOrder);
@@ -181,7 +331,7 @@ public class SystemUpdater {
     private void updateStoreAfterOrderCompletionV2 (SystemStore systemStore, Order newOrder) {
         Map<Integer, StoreItem> storeItems = systemStore.getItemIdToStoreItem();
         Map<PricedItem, Double> orderItems = newOrder.getPricedItems();
-        Map<Offer, Integer> orderOffers = newOrder.getOrderOffers();
+        Map<Offer, Integer> orderOffers = newOrder.getSelectedOfferToNumOfRealization();
 
         // for order items
         for (PricedItem pricedItem : orderItems.keySet()) {
@@ -223,7 +373,7 @@ public class SystemUpdater {
         }
 
         // for discount items
-        Map<Offer, Integer> orderOffersToNumOfRealizations = newOrder.getOrderOffers();
+        Map<Offer, Integer> orderOffersToNumOfRealizations = newOrder.getSelectedOfferToNumOfRealization();
         for (Map.Entry<Offer, Integer> entry : orderOffersToNumOfRealizations.entrySet()) {
             Offer currOffer = entry.getKey();
             Integer numOfRealizations = entry.getValue();

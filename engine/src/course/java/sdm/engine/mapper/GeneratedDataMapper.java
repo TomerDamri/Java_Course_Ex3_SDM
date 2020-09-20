@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import course.java.sdm.engine.exceptions.DuplicateEntityException;
-import course.java.sdm.engine.exceptions.ItemNotExistInStores;
+import course.java.sdm.engine.exceptions.ItemNotExist;
 import course.java.sdm.engine.model.*;
 import course.java.sdm.engine.model.Location;
 import course.java.sdm.engine.model.ThenYouGet;
@@ -67,7 +67,7 @@ public class GeneratedDataMapper {
         return allSystemEntities;
     }
 
-    private void validateNoCommonLocations(Collection<Location> storeLocations, Collection<Location> customerLocations) {
+    private void validateNoCommonLocations (Collection<Location> storeLocations, Collection<Location> customerLocations) {
         Set<Location> commonLocations = storeLocations.stream().distinct().filter(customerLocations::contains).collect(Collectors.toSet());
         if (commonLocations.size() > 0) {
             throw new RuntimeException(String.format("The locations: %s used for system store and for system customer", commonLocations));
@@ -242,7 +242,7 @@ public class GeneratedDataMapper {
 
         discountItemIds.forEach(itemId -> {
             if (!itemIdToStoreItem.containsKey(itemId)) {
-                throw new ItemNotExistInStores(sdmDiscount.getName(), itemId);
+                throw new ItemNotExist(sdmDiscount.getName(), itemId);
             }
         });
     }

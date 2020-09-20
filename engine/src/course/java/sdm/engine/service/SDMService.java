@@ -12,11 +12,9 @@ import course.java.sdm.engine.utils.fileManager.FileManager;
 import course.java.sdm.engine.utils.ordersCreator.OrdersCreator;
 import course.java.sdm.engine.utils.systemUpdater.SystemUpdater;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
+import model.DiscountDTO;
 import model.DynamicOrderEntityDTO;
-import model.request.AddDiscountsToOrderRequest;
-import model.request.ChosenStoreDiscounts;
-import model.request.PlaceDynamicOrderRequest;
-import model.request.PlaceOrderRequest;
+import model.request.*;
 import model.response.*;
 
 public class SDMService {
@@ -285,5 +283,45 @@ public class SDMService {
         return itemsToAmount.stream()
                             .map(systemItem -> descriptor.getSystemStores().get(systemItem.getStoreSellsInCheapestPrice()))
                             .collect(Collectors.toSet());
+    }
+
+    public void addItemToStore (UpdateStoreRequest request) {
+        Integer itemId = request.getItemId();
+        Integer storeId = request.getStoreId();
+        Integer itemPrice = request.getItemPrice();
+        Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
+        Map<Integer, SystemItem> systemItems = descriptor.getSystemItems();
+
+        systemUpdater.addItemToStore(itemId, storeId, itemPrice, systemStores, systemItems);
+    }
+
+    public DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request) {
+        Integer itemId = request.getItemId();
+        Integer storeId = request.getStoreId();
+        Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
+        Map<Integer, SystemItem> systemItems = descriptor.getSystemItems();
+
+        List<Discount> removedDiscounts = systemUpdater.deleteItemFromStore(itemId, storeId, systemStores, systemItems);
+
+        return createDeleteItemFromStoreResponse(removedDiscounts);
+    }
+
+    public void updateItemPrice (UpdateStoreRequest request) {
+        Integer itemId = request.getItemId();
+        Integer storeId = request.getStoreId();
+        Integer itemPrice = request.getItemPrice();
+        Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
+        Map<Integer, SystemItem> systemItems = descriptor.getSystemItems();
+
+        systemUpdater.updateItemPrice(itemId, storeId, itemPrice, systemStores, systemItems);
+    }
+
+    private DeleteItemFromStoreResponse createDeleteItemFromStoreResponse (List<Discount> removedDiscounts) {
+        List<DiscountDTO> removedDiscountsDTO = null;
+        if (removedDiscounts != null) {
+            removedDiscountsDTO = removedDiscounts.stream().map(dtoMapper::toDiscountDTO).collect(Collectors.toList());
+        }
+
+        return new DeleteItemFromStoreResponse(removedDiscountsDTO);
     }
 }
