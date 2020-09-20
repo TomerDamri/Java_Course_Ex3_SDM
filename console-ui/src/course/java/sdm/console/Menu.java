@@ -275,7 +275,7 @@ public class Menu {
             controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceDynamicOrderTest(orderId));
             controller.completeTheOrder(orderId, true);
 
-//            displayDynamicOrderOffer(response);
+            // displayDynamicOrderOffer(response);
             System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
             String userInput = scanner.nextLine();
             if (userInput.equals("Y") || userInput.equals("y")) {
@@ -361,7 +361,7 @@ public class Menu {
     private void displayDynamicItems () {
         items = controller.getItems().getItems();
         items.values().forEach(item -> {
-            System.out.println("{" + item.getItem() + "}");
+            // System.out.println("{" + item.getItem() + "}");
         });
     }
 
@@ -612,10 +612,10 @@ public class Menu {
         StoreDTO store = this.stores.get(storeId);
         items.keySet().forEach(itemId -> {
             if (store.getItems().containsKey(itemId)) {
-                System.out.println("{" + store.getItems().get(itemId).getPricedItem().toString() + "}");
+//                System.out.println("{" + store.getItems().get(itemId).getPricedItem().toString() + "}");
             }
             else {
-                System.out.print("{" + items.get(itemId).getItem().toString() + ",\nThis item is not supplied in the store}\n");
+//                System.out.print("{" + items.get(itemId).getItem().toString() + ",\nThis item is not supplied in the store}\n");
             }
         });
     }
@@ -681,9 +681,9 @@ public class Menu {
             totalItemsPrice += totalItemPrice;
         }
         System.out.println();
-        double distance = calculateDistance((this.stores.get(request.getStoreId()).get_X_Coordinate()),
+        double distance = calculateDistance((this.stores.get(request.getStoreId()).getLocation().getxCoordinate()),
                                             request.getxCoordinate(),
-                                            this.stores.get(request.getStoreId()).get_Y_Coordinate(),
+                                            this.stores.get(request.getStoreId()).getLocation().getyCoordinate(),
                                             request.getyCoordinate());
 
         int ppk = this.stores.get(request.getStoreId()).getDeliveryPpk();
