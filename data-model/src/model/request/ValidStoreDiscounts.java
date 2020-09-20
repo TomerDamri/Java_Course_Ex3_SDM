@@ -1,18 +1,18 @@
 package model.request;
 
+import model.DiscountDTO;
+
 import java.util.List;
 import java.util.Map;
 
-import course.java.sdm.engine.model.Discount;
-
 public class ValidStoreDiscounts {
-    private Map<Integer, List<Discount>> itemIdToValidStoreDiscounts;
+    private Map<Integer, List<DiscountDTO>> itemIdToValidStoreDiscounts;
 
-    public ValidStoreDiscounts (Map<Integer, List<Discount>> itemIdToValidStoreDiscounts) {
+    public ValidStoreDiscounts(Map<Integer, List<DiscountDTO>> itemIdToValidStoreDiscounts) {
         this.itemIdToValidStoreDiscounts = itemIdToValidStoreDiscounts;
     }
 
-    public Map<Integer, List<Discount>> getItemIdToValidStoreDiscounts () {
+    public Map<Integer, List<DiscountDTO>> getItemIdToValidStoreDiscounts() {
         return itemIdToValidStoreDiscounts;
     }
 }

@@ -8,70 +8,63 @@ public class StoreDTO {
     private final int id;
     private final String name;
     private final int deliveryPpk;
-    private final int xCoordinate;
-    private final int yCoordinate;
+    private final LocationDTO location;
     private final Map<Integer, StoreItemDTO> items;
     private final List<StoreOrderDTO> orders;
     private final double totalDeliveriesPayment;
 
-    public StoreDTO (int id,
-                     String name,
-                     int deliveryPpk,
-                     int xCoordinate,
-                     int yCoordinate,
-                     Map<Integer, StoreItemDTO> items,
-                     List<StoreOrderDTO> orders,
-                     double totalDeliveriesPayment) {
+    public StoreDTO(int id,
+                    String name,
+                    int deliveryPpk,
+                    LocationDTO locationDTO,
+                    Map<Integer, StoreItemDTO> items,
+                    List<StoreOrderDTO> orders,
+                    double totalDeliveriesPayment) {
         this.id = id;
         this.name = name;
         this.deliveryPpk = deliveryPpk;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+        this.location = locationDTO;
         this.items = items;
         this.orders = orders;
         this.totalDeliveriesPayment = totalDeliveriesPayment;
     }
 
-    public int getId () {
+    public int getId() {
         return id;
     }
 
-    public String getName () {
+    public String getName() {
         return name;
     }
 
-    public int getDeliveryPpk () {
+    public int getDeliveryPpk() {
         return deliveryPpk;
     }
 
-    public int get_X_Coordinate () {
-        return xCoordinate;
+    public LocationDTO getLocation() {
+        return location;
     }
 
-    public int get_Y_Coordinate () {
-        return yCoordinate;
-    }
-
-    public Map<Integer, StoreItemDTO> getItems () {
+    public Map<Integer, StoreItemDTO> getItems() {
         return items;
     }
 
-    public List<StoreOrderDTO> getOrders () {
+    public List<StoreOrderDTO> getOrders() {
         return orders;
     }
 
-    public double getTotalDeliveriesPayment () {
+    public double getTotalDeliveriesPayment() {
         return totalDeliveriesPayment;
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         StringBuilder builder = new StringBuilder("Store id: ").append(id)
-                                                               .append(",\nName: ")
-                                                               .append(name)
-                                                               .append(",\nPPK: ")
-                                                               .append(deliveryPpk)
-                                                               .append(",\nStore Items:\n");
+                .append(",\nName: ")
+                .append(name)
+                .append(",\nPPK: ")
+                .append(deliveryPpk)
+                .append(",\nStore Items:\n");
         if (!items.isEmpty()) {
             builder.append("[");
             Iterator<StoreItemDTO> iterator = items.values().iterator();
@@ -94,8 +87,7 @@ public class StoreDTO {
                 }
             }
             builder.append("]");
-        }
-        else {
+        } else {
             builder.append("There are no items");
         }
         builder.append("\nTotal deliveries payment: ").append(totalDeliveriesPayment);
