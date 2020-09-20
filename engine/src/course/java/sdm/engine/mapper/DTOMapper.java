@@ -47,6 +47,17 @@ public class DTOMapper {
         return new GetCustomersResponse(systemCustomersDTO);
     }
 
+    public DynamicOrderEntityDTO toDynamicOrderEntityDTO (StoreDetails storeDetails, Order order) {
+        return new DynamicOrderEntityDTO(storeDetails.getId(),
+                                         storeDetails.getName(),
+                                         toLocationDTO(storeDetails.getLocation()),
+                                         order.getDistanceFromCustomerLocation(),
+                                         storeDetails.getDeliveryPpk(),
+                                         order.getNumOfItemTypes(),
+                                         order.getDeliveryPrice(),
+                                         order.getItemsPrice());
+    }
+
     public GetStoresResponse toGetStoresResponse (Map<Integer, SystemStore> systemStores) {
         Map<Integer, StoreDTO> stores = toDTO(systemStores, this::toStoreDTO, StoreDTO::getId, storeDTO -> storeDTO);
 

@@ -149,7 +149,8 @@ public class SDMService {
     }
 
     private ValidStoreDiscounts getValidStoreDiscounts (UUID orderId, int storeId, UUID currStaticOrderId, SystemStore systemStore) {
-        ValidStoreDiscounts validDiscounts = orderIdToValidDiscounts.get(currStaticOrderId).get(storeId);
+        UUID id = (orderId != null) ? orderId : currStaticOrderId;
+        ValidStoreDiscounts validDiscounts = orderIdToValidDiscounts.get(id).get(storeId);
         if (validDiscounts.getItemIdToValidStoreDiscounts().size() <= 0) {
             throw new RuntimeException(String.format("There is no valid discount from store %s for order with id: %",
                                                      systemStore.getName(),
@@ -253,14 +254,16 @@ public class SDMService {
             throw new FileNotLoadedException();
         }
 
-        Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
+        int customerId = request.getCustomerId();
+        SystemCustomer customer = getSystemCustomer(customerId);
+        Location orderLocation = customer.getLocation();
         List<SystemItem> systemItemsIncludedInOrder = getItemsFromDynamicOrderRequest(request.getOrderItemToAmount());
         Set<SystemStore> storesIncludedInOrder = getIncludedStoresInOrder(systemItemsIncludedInOrder);
         TempOrder tempDynamicOrder = ordersCreator.createDynamicOrderV2(request,
                                                                         orderLocation,
                                                                         systemItemsIncludedInOrder,
                                                                         storesIncludedInOrder,
-                                                                        request.getCustomerId());
+                                                                        customerId);
 
         return createPlaceDynamicOrderResponseV2(tempDynamicOrder);
     }
@@ -308,25 +311,11 @@ public class SDMService {
         List<DynamicOrderEntityDTO> dynamicOrderEntityDTOS = tempDynamicOrder.getStaticOrders()
                                                                              .entrySet()
                                                                              .stream()
-                                                                             .map(this::createDynamicOrderEntity)
+                                                                             .map(entry -> dtoMapper.toDynamicOrderEntityDTO(entry.getKey(),
+                                                                                                                             entry.getValue()))
                                                                              .collect(Collectors.toList());
 
         return new PlaceDynamicOrderResponse(tempDynamicOrder.getOrderId(), dynamicOrderEntityDTOS);
-    }
-
-    private DynamicOrderEntityDTO createDynamicOrderEntity (Map.Entry<StoreDetails, Order> entry) {
-        StoreDetails storeDetails = entry.getKey();
-        Order order = entry.getValue();
-
-        return new DynamicOrderEntityDTO(storeDetails.getId(),
-                                         storeDetails.getName(),
-                                         storeDetails.getLocation().getX(),
-                                         storeDetails.getLocation().getY(),
-                                         order.getDistanceFromCustomerLocation(),
-                                         storeDetails.getDeliveryPpk(),
-                                         order.getNumOfItemTypes(),
-                                         order.getDeliveryPrice(),
-                                         order.getItemsPrice());
     }
 
     private Map<PricedItem, Double> getPricedItemFromStaticRequest (PlaceOrderRequest request) {

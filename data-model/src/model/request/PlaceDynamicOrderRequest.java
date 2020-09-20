@@ -22,14 +22,6 @@ public class PlaceDynamicOrderRequest {
         this.orderItemToAmount = orderItemToAmount;
     }
 
-    public PlaceDynamicOrderRequest (LocalDateTime orderDate, int xCoordinate, int yCoordinate, Map<Integer, Double> orderItemToAmount) {
-        this.orderDate = orderDate;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
-        this.orderItemToAmount = orderItemToAmount;
-        this.customerId = 0;
-    }
-
     public Map<Integer, Double> getOrderItemToAmount () {
         return orderItemToAmount;
     }

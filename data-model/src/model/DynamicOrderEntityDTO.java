@@ -4,18 +4,16 @@ public class DynamicOrderEntityDTO {
 
     private final Integer storeId;
     private final String storeName;
-    private final int xCoordinate;
-    private final int yCoordinate;
     private final Double distanceFromCustomer;
     private final Integer ppk;
     private final Integer totalItemTypes;
     private final Double deliveryPrice;
     private final Double totalItemsPrice;
+    private final LocationDTO location;
 
     public DynamicOrderEntityDTO (Integer storeId,
                                   String storeName,
-                                  int xCoordinate,
-                                  int yCoordinate,
+                                  LocationDTO location,
                                   Double distanceFromCustomer,
                                   Integer ppk,
                                   Integer totalItemTypes,
@@ -23,8 +21,7 @@ public class DynamicOrderEntityDTO {
                                   Double totalPrice) {
         this.storeId = storeId;
         this.storeName = storeName;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+        this.location = location;
         this.distanceFromCustomer = distanceFromCustomer;
         this.ppk = ppk;
         this.totalItemTypes = totalItemTypes;
@@ -38,14 +35,6 @@ public class DynamicOrderEntityDTO {
 
     public final String getStoreName () {
         return storeName;
-    }
-
-    public int getX_Coordinate () {
-        return xCoordinate;
-    }
-
-    public int getY_Coordinate () {
-        return yCoordinate;
     }
 
     public final Double getDistanceFromCustomer () {
@@ -68,15 +57,17 @@ public class DynamicOrderEntityDTO {
         return totalItemsPrice;
     }
 
+    public LocationDTO getLocation () {
+        return location;
+    }
+
     @Override
     public String toString () {
         return new StringBuilder("Store id: ").append(storeId)
                                               .append(",\nStore name: ")
                                               .append(storeName)
                                               .append(",\nStore location: [")
-                                              .append(xCoordinate)
-                                              .append(",")
-                                              .append(yCoordinate)
+                                              .append(location)
                                               .append("],\nDistance from store:")
                                               .append(distanceFromCustomer)
                                               .append(",\nDelivery PPK: ")

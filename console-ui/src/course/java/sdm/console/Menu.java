@@ -265,11 +265,17 @@ public class Menu {
             System.out.println("No items were selected, the order is canceled");
         }
         else {
-            PlaceDynamicOrderResponse response = controller.placeDynamicOrder(new PlaceDynamicOrderRequest(date,
+            PlaceDynamicOrderResponse response = controller.placeDynamicOrder(new PlaceDynamicOrderRequest(1,
+                                                                                                           date,
                                                                                                            location.x,
                                                                                                            location.y,
                                                                                                            orderItemToAmount));
-            displayDynamicOrderOffer(response);
+            UUID orderId = response.getId();
+            Map<Integer, ValidStoreDiscounts> discounts = controller.getDiscounts(orderId);
+            controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceDynamicOrderTest(orderId));
+            controller.completeTheOrder(orderId, true);
+
+//            displayDynamicOrderOffer(response);
             System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
             String userInput = scanner.nextLine();
             if (userInput.equals("Y") || userInput.equals("y")) {
@@ -378,7 +384,7 @@ public class Menu {
                     PlaceOrderResponse response = controller.placeStaticOrder(request);
                     UUID orderId = response.getOrderId();
                     Map<Integer, ValidStoreDiscounts> discounts = controller.getDiscounts(orderId);
-                    controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForTest(orderId));
+                    controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceStaicOrderTest(orderId));
                     controller.completeTheOrder(orderId, true);
 
                     System.out.println("Order created successfully\nOrder id:" + orderId);
@@ -394,7 +400,34 @@ public class Menu {
 
     }
 
-    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForTest (UUID orderId) {
+    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForPlaceDynamicOrderTest (UUID orderId) {
+        Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts1 = new HashMap<>();
+        Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts3 = new HashMap<>();
+
+        ChosenItemDiscount chosenItemDiscount1 = new ChosenItemDiscount("YallA BaLaGaN", 2, Optional.of(1));
+        ChosenItemDiscount chosenItemDiscount2 = new ChosenItemDiscount("YallA BaLaGaN", 3, Optional.of(2));
+        List<ChosenItemDiscount> chosenItemDiscountList1 = new LinkedList<>();
+        chosenItemDiscountList1.add(chosenItemDiscount1);
+        chosenItemDiscountList1.add(chosenItemDiscount2);
+        itemIdToChosenDiscounts1.put(1, chosenItemDiscountList1);
+
+        ChosenItemDiscount chosenItemDiscount3 = new ChosenItemDiscount("Li Ze Ole Yoter !", 3, Optional.empty());
+        List<ChosenItemDiscount> chosenItemDiscountList2 = new LinkedList<>();
+        chosenItemDiscountList2.add(chosenItemDiscount3);
+        itemIdToChosenDiscounts3.put(5, chosenItemDiscountList2);
+
+        ChosenStoreDiscounts chosenStoreDiscounts1 = new ChosenStoreDiscounts(itemIdToChosenDiscounts1);
+        ChosenStoreDiscounts chosenStoreDiscounts3 = new ChosenStoreDiscounts(itemIdToChosenDiscounts3);
+
+        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = new HashMap<>();
+        storeIdToChosenDiscounts.put(1, chosenStoreDiscounts1);
+        storeIdToChosenDiscounts.put(3, chosenStoreDiscounts3);
+
+        AddDiscountsToOrderRequest addDiscountsToOrderRequest = new AddDiscountsToOrderRequest(orderId, storeIdToChosenDiscounts);
+        return addDiscountsToOrderRequest;
+    }
+
+    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForPlaceStaicOrderTest (UUID orderId) {
         Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts = new HashMap<>();
 
         ChosenItemDiscount chosenItemDiscount1 = new ChosenItemDiscount("YallA BaLaGaN", 2, Optional.of(1));

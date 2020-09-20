@@ -17,7 +17,7 @@ import model.request.ValidStoreDiscounts;
 
 public class OrdersCreator {
 
-    private Map<UUID, TempOrder> tempStaticOrders = new TreeMap<>();
+    private Map<UUID, TempOrder> tempOrders = new TreeMap<>();
 
     private static OrdersCreator singletonOrderExecutor = null;
     private final static OrdersCreatorValidator ORDERS_CREATOR_VALIDATOR = new OrdersCreatorValidator();
@@ -47,20 +47,20 @@ public class OrdersCreator {
             TempOrder tempOrder = new TempOrder(newOrder.getId(),
                                                 Collections.singletonMap(systemStore.getStore().getStoreDetails(), newOrder),
                                                 customerId);
-            tempStaticOrders.put(tempOrder.getOrderId(), tempOrder);
+            tempOrders.put(tempOrder.getOrderId(), tempOrder);
         }
 
         return newOrder;
     }
 
     public TempOrder getTempOrder (UUID orderId) {
-        ORDERS_CREATOR_VALIDATOR.validateTempStaticOrderExist(orderId, tempStaticOrders);
-        return tempStaticOrders.get(orderId);
+        ORDERS_CREATOR_VALIDATOR.validateTempStaticOrderExist(orderId, tempOrders);
+        return tempOrders.get(orderId);
     }
 
     public void deleteTempOrder (UUID orderId) {
-        ORDERS_CREATOR_VALIDATOR.validateTempStaticOrderExist(orderId, tempStaticOrders);
-        tempStaticOrders.remove(orderId);
+        ORDERS_CREATOR_VALIDATOR.validateTempStaticOrderExist(orderId, tempOrders);
+        tempOrders.remove(orderId);
     }
 
     /*
@@ -228,7 +228,7 @@ public class OrdersCreator {
                                                                                                                 customerID)));
 
         TempOrder tempOrder = new TempOrder(dynamicOrderId, staticOrders, customerID);
-        tempStaticOrders.put(tempOrder.getOrderId(), tempOrder);
+        tempOrders.put(tempOrder.getOrderId(), tempOrder);
 
         return tempOrder;
     }
