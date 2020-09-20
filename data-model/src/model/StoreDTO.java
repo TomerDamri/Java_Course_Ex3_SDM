@@ -5,31 +5,34 @@ import java.util.List;
 import java.util.Map;
 
 public class StoreDTO {
-    private final Integer id;
+    private final int id;
     private final String name;
-    private final Integer deliveryPpk;
-    private final LocationDTO location;
-    private final Double totalDeliveriesPayment;
+    private final int deliveryPpk;
+    private final int xCoordinate;
+    private final int yCoordinate;
     private final Map<Integer, StoreItemDTO> items;
     private final List<StoreOrderDTO> orders;
+    private final double totalDeliveriesPayment;
 
-    public StoreDTO (Integer id,
+    public StoreDTO (int id,
                      String name,
-                     Integer deliveryPpk,
-                     LocationDTO locationDTO,
+                     int deliveryPpk,
+                     int xCoordinate,
+                     int yCoordinate,
                      Map<Integer, StoreItemDTO> items,
                      List<StoreOrderDTO> orders,
                      double totalDeliveriesPayment) {
         this.id = id;
         this.name = name;
         this.deliveryPpk = deliveryPpk;
-        this.location = locationDTO;
+        this.xCoordinate = xCoordinate;
+        this.yCoordinate = yCoordinate;
         this.items = items;
         this.orders = orders;
         this.totalDeliveriesPayment = totalDeliveriesPayment;
     }
 
-    public Integer getId () {
+    public int getId () {
         return id;
     }
 
@@ -37,8 +40,16 @@ public class StoreDTO {
         return name;
     }
 
-    public Integer getDeliveryPpk () {
+    public int getDeliveryPpk () {
         return deliveryPpk;
+    }
+
+    public int get_X_Coordinate () {
+        return xCoordinate;
+    }
+
+    public int get_Y_Coordinate () {
+        return yCoordinate;
     }
 
     public Map<Integer, StoreItemDTO> getItems () {
@@ -49,12 +60,8 @@ public class StoreDTO {
         return orders;
     }
 
-    public Double getTotalDeliveriesPayment () {
+    public double getTotalDeliveriesPayment () {
         return totalDeliveriesPayment;
-    }
-
-    public LocationDTO getLocation () {
-        return location;
     }
 
     @Override
