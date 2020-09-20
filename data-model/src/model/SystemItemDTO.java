@@ -1,32 +1,32 @@
 package model;
 
 public class SystemItemDTO {
-    private final ItemDTO item;
-    private final int storesCount;
-    private final double avgPrice;
-    private final double ordersCount;
+    private final Integer id;
+    private final String name;
+    private final String purchaseCategory;
+    private final Integer storesCount;
+    private final Double avgPrice;
+    private final Double ordersCount;
 
-    public SystemItemDTO (ItemDTO item, int storesCount, double avgPrice, double ordersCount) {
-        this.item = item;
+    public SystemItemDTO (Integer id, String name, String purchaseCategory, int storesCount, double avgPrice, double ordersCount) {
+        this.id = id;
+        this.name = name;
+        this.purchaseCategory = purchaseCategory;
         this.storesCount = storesCount;
         this.avgPrice = avgPrice;
         this.ordersCount = ordersCount;
     }
 
-    public ItemDTO getItem () {
-        return item;
-    }
-
     public int getId () {
-        return item.getId();
+        return id;
     }
 
     public String getName () {
-        return item.getName();
+        return name;
     }
 
     public String getPurchaseCategory () {
-        return item.getPurchaseCategory();
+        return purchaseCategory;
     }
 
     public int getStoresCount () {
@@ -39,16 +39,5 @@ public class SystemItemDTO {
 
     public double getOrdersCount () {
         return ordersCount;
-    }
-
-    @Override
-    public String toString () {
-        StringBuilder builder = new StringBuilder(item.toString()).append(",\nNumber of stores supplied in: ")
-                                                                  .append(storesCount)
-                                                                  .append(",\nAverage price: ")
-                                                                  .append(avgPrice)
-                                                                  .append(",\nNumber of purchases: ")
-                                                                  .append(ordersCount);
-        return builder.toString();
     }
 }

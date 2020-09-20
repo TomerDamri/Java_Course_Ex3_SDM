@@ -1,35 +1,31 @@
 package model;
 
 public class PricedItemDTO {
-    private final ItemDTO item;
-    private final int price;
+    private final Integer id;
+    private final String name;
+    private final String purchaseCategory;
+    private final Integer price;
 
-    public PricedItemDTO(ItemDTO item, int price) {
-        this.item = item;
+    public PricedItemDTO (Integer id, String name, String purchaseCategory, int price) {
+        this.id = id;
+        this.name = name;
+        this.purchaseCategory = purchaseCategory;
         this.price = price;
     }
-    public int getId() {
-        return item.getId();
+
+    public Integer getId () {
+        return id;
     }
 
-    public String getName() {
-        return item.getName();
+    public String getName () {
+        return name;
     }
 
-    public String getPurchaseCategory() {
-        return item.getPurchaseCategory();
+    public String getPurchaseCategory () {
+        return purchaseCategory;
     }
 
-    public ItemDTO getItem() {
-        return item;
-    }
-
-    public int getPrice() {
+    public int getPrice () {
         return price;
-    }
-
-    @Override
-    public String toString () {
-        return new StringBuilder(item.toString()).append("\nItem price: ").append(price).toString();
     }
 }

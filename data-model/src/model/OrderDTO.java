@@ -6,12 +6,9 @@ import java.util.UUID;
 
 public class OrderDTO {
 
-    private StoreOrderDTO storeOrderDTO;
     private UUID id;
     private LocalDateTime orderDate;
-    private int xCoordinate;
-    private int yCoordinate;
-    private Map<Integer, Double> pricedItems;
+    private LocationDTO location;
     private Integer numOfItemTypes;
     private Integer amountOfItems;
     private Double itemsPrice;
@@ -19,11 +16,11 @@ public class OrderDTO {
     private Double totalPrice;
     private String storeName;
     private Integer storeId;
+    private Map<Integer, Double> pricedItems;
 
     public OrderDTO (UUID id,
                      LocalDateTime orderDate,
-                     int xCoordinate,
-                     int yCoordinate,
+                     LocationDTO locationDTO,
                      Map<Integer, Double> pricedItems,
                      Integer numOfItemTypes,
                      Integer amountOfItems,
@@ -34,8 +31,7 @@ public class OrderDTO {
                      Integer storeId) {
         this.id = id;
         this.orderDate = orderDate;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+        this.location = locationDTO;
         this.pricedItems = pricedItems;
         this.numOfItemTypes = numOfItemTypes;
         this.amountOfItems = amountOfItems;
@@ -54,12 +50,8 @@ public class OrderDTO {
         return orderDate;
     }
 
-    public int getxCoordinate () {
-        return xCoordinate;
-    }
-
-    public int getyCoordinate () {
-        return yCoordinate;
+    public LocationDTO getLocation () {
+        return location;
     }
 
     public Map<Integer, Double> getPricedItems () {

@@ -21,18 +21,18 @@ public class DTOMapper {
     private MappableEntity toMappableEntity (Mappable entity) {
         if (entity instanceof SystemStore) {
             SystemStore systemStore = (SystemStore) entity;
-            return new StoreMappableEntity(systemStore.getId(),
-                                           toLocationDTO(systemStore.getLocation()),
-                                           systemStore.getName(),
-                                           systemStore.getOrders().size(),
-                                           systemStore.getDeliveryPpk());
+            return new StoreMappableEntityDTO(systemStore.getId(),
+                                              toLocationDTO(systemStore.getLocation()),
+                                              systemStore.getName(),
+                                              systemStore.getOrders().size(),
+                                              systemStore.getDeliveryPpk());
         }
         else if (entity instanceof SystemCustomer) {
             SystemCustomer systemCustomer = (SystemCustomer) entity;
-            return new CustomerMappableEntity(systemCustomer.getId(),
-                                              toLocationDTO(systemCustomer.getLocation()),
-                                              systemCustomer.getName(),
-                                              systemCustomer.getNumOfOrders());
+            return new CustomerMappableEntityDTO(systemCustomer.getId(),
+                                                 toLocationDTO(systemCustomer.getLocation()),
+                                                 systemCustomer.getName(),
+                                                 systemCustomer.getNumOfOrders());
         }
 
         throw new RuntimeException("The type of the mappable entity must be SystemCustomer or SystemStore");
@@ -109,26 +109,34 @@ public class DTOMapper {
         return new StoreDTO(systemStore.getId(),
                             systemStore.getName(),
                             systemStore.getDeliveryPpk(),
-                            systemStore.getLocation().getX(),
-                            systemStore.getLocation().getY(),
+                            toLocationDTO(systemStore.getLocation()),
                             items,
                             systemStore.getOrders().stream().map(this::toStoreOrderDTO).collect(Collectors.toList()),
                             systemStore.getTotalDeliveriesPayment());
     }
 
     private SystemItemDTO toSystemItemDTO (SystemItem systemItem) {
-        return new SystemItemDTO(toItemDTO(systemItem.getItem()),
+        Item item = systemItem.getItem();
+        return new SystemItemDTO(item.getId(),
+                                 item.getName(),
+                                 item.getPurchaseCategory().toString(),
                                  systemItem.getStoresCount(),
                                  systemItem.getAvgPrice(),
                                  systemItem.getOrdersCount());
     }
 
     private StoreItemDTO toStoreItemDTO (StoreItem storeItem) {
-        return new StoreItemDTO(toPricedItemDTO(storeItem.getPricedItem()), storeItem.getPurchasesCount());
+        PricedItem pricedItem = storeItem.getPricedItem();
+        return new StoreItemDTO(pricedItem.getId(),
+                                pricedItem.getName(),
+                                pricedItem.getPurchaseCategory().toString(),
+                                pricedItem.getPrice(),
+                                storeItem.getPurchasesCount());
     }
 
     private PricedItemDTO toPricedItemDTO (PricedItem pricedItem) {
-        return new PricedItemDTO(toItemDTO(pricedItem.getItem()), pricedItem.getPrice());
+        Item item = pricedItem.getItem();
+        return new PricedItemDTO(item.getId(), item.getName(), item.getPurchaseCategory().toString(), pricedItem.getPrice());
     }
 
     private ItemDTO toItemDTO (Item item) {
@@ -144,8 +152,7 @@ public class DTOMapper {
                                                                           pricedItem -> systemOrder.getOrderItems().get(pricedItem)));
         return new OrderDTO(systemOrder.getId(),
                             systemOrder.getOrderDate(),
-                            systemOrder.getOrderLocation().getX(),
-                            systemOrder.getOrderLocation().getY(),
+                            toLocationDTO(systemOrder.getOrderLocation()),
                             items,
                             systemOrder.getNumOfItemTypes(),
                             systemOrder.getAmountOfItems(),
@@ -159,15 +166,12 @@ public class DTOMapper {
 
     private StoreOrderDTO toStoreOrderDTO (Order order) {
         Map<PricedItem, Double> pricedItems = order.getPricedItems();
-        Map<Integer, Double> items = pricedItems.keySet()
-                                                .stream()
-                                                .collect(Collectors.toMap(PricedItem::getId, pricedItem -> pricedItems.get(pricedItem)));
+        Map<Integer, Double> items = pricedItems.keySet().stream().collect(Collectors.toMap(PricedItem::getId, pricedItems::get));
 
         return new StoreOrderDTO(order.getParentId(),
                                  order.getId(),
                                  order.getOrderDate(),
-                                 order.getOrderLocation().getX(),
-                                 order.getOrderLocation().getY(),
+                                 toLocationDTO(order.getOrderLocation()),
                                  items,
                                  order.getNumOfItemTypes(),
                                  order.getAmountOfItems(),

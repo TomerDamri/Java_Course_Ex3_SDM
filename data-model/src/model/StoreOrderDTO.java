@@ -8,20 +8,18 @@ public class StoreOrderDTO {
     private UUID parentId;
     private UUID id;
     private LocalDateTime orderDate;
-    private int xCoordinate;
-    private int yCoordinate;
-    private Map<Integer, Double> pricedItems;
+    private LocationDTO location;
     private Integer numOfItemTypes;
     private Integer amountOfItems;
     private Double itemsPrice;
     private Double deliveryPrice;
     private Double totalPrice;
+    private Map<Integer, Double> pricedItems;
 
     public StoreOrderDTO (UUID parentId,
                           UUID id,
                           LocalDateTime orderDate,
-                          int xCoordinate,
-                          int yCoordinate,
+                          LocationDTO locationDTO,
                           Map<Integer, Double> pricedItems,
                           Integer numOfItemTypes,
                           Integer amountOfItems,
@@ -31,8 +29,7 @@ public class StoreOrderDTO {
         this.parentId = parentId;
         this.id = id;
         this.orderDate = orderDate;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+        this.location = locationDTO;
         this.pricedItems = pricedItems;
         this.numOfItemTypes = numOfItemTypes;
         this.amountOfItems = amountOfItems;
@@ -49,12 +46,12 @@ public class StoreOrderDTO {
         return orderDate;
     }
 
-    public int getxCoordinate () {
-        return xCoordinate;
+    public UUID getParentId () {
+        return parentId;
     }
 
-    public int getyCoordinate () {
-        return yCoordinate;
+    public LocationDTO getLocation () {
+        return location;
     }
 
     public Map<Integer, Double> getPricedItems () {

@@ -3,8 +3,8 @@ package model;
 public abstract class MappableEntity {
 
     protected final Integer id;
-    protected final LocationDTO location;
     protected final String name;
+    protected final LocationDTO location;
     protected final Integer numOfOrders;
 
     protected MappableEntity (Integer id, LocationDTO location, String name, Integer numOfOrders) {
