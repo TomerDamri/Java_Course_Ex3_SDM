@@ -8,6 +8,7 @@ public class SystemItem implements Serializable {
     private int storesCount;
     private double avgPrice;
     private double ordersCount;
+    private double discountOrdersCount;
     private int storeSellsInCheapestPrice;
 
     public SystemItem (Item item) {
@@ -15,6 +16,15 @@ public class SystemItem implements Serializable {
         this.storesCount = 0;
         this.avgPrice = 0;
         this.ordersCount = 0;
+        this.discountOrdersCount = 0;
+    }
+
+    public double getDiscountOrdersCount () {
+        return discountOrdersCount;
+    }
+
+    public void setDiscountOrdersCount (double discountOrdersCount) {
+        this.discountOrdersCount = discountOrdersCount;
     }
 
     public int getStoresCount () {

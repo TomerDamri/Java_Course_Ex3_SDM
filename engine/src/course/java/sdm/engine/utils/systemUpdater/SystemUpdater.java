@@ -202,8 +202,8 @@ public class SystemUpdater {
 
             if (storeItems.containsKey(offerItemId)) {
                 StoreItem storeItem = storeItems.get(offerItemId);
-                double prevNumOfPurchases = storeItem.getPurchasesCount();
-                storeItem.setPurchasesCount(prevNumOfPurchases + numOfRealizations * currOffer.getQuantity());
+                double prevDiscountNumOfPurchases = storeItem.getDiscountPurchasesCount();
+                storeItem.setDiscountPurchasesCount(prevDiscountNumOfPurchases + numOfRealizations * currOffer.getQuantity());
             }
         }
 
@@ -217,8 +217,9 @@ public class SystemUpdater {
             Double amount = entry.getValue();
             int itemId = pricedItem.getId();
             SystemItem systemItem = allSystemItems.get(itemId);
+            Double prevOrdersCount = systemItem.getOrdersCount();
 
-            systemItem.setOrdersCount(systemItem.getOrdersCount() + amount);
+            systemItem.setOrdersCount(prevOrdersCount + amount);
         }
 
         // for discount items
@@ -227,8 +228,9 @@ public class SystemUpdater {
             Offer currOffer = entry.getKey();
             Integer numOfRealizations = entry.getValue();
             SystemItem systemItem = allSystemItems.get(currOffer.getItemId());
+            double prevDiscountOrdersCount = systemItem.getDiscountOrdersCount();
 
-            systemItem.setOrdersCount(systemItem.getOrdersCount() + currOffer.getQuantity() * numOfRealizations);
+            systemItem.setDiscountOrdersCount(prevDiscountOrdersCount + currOffer.getQuantity() * numOfRealizations);
         }
     }
 }

@@ -1,8 +1,9 @@
 package course.java.sdm.engine.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Offer {
+public class Offer implements Serializable {
 
     private final int id;
     private double quantity;

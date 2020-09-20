@@ -5,10 +5,12 @@ import java.io.Serializable;
 public class StoreItem implements Serializable {
     private PricedItem pricedItem;
     private double purchasesCount;
+    private double discountPurchasesCount;
 
     public StoreItem (Item item, Integer price) {
         this.pricedItem = new PricedItem(item, price);
         this.purchasesCount = 0;
+        this.discountPurchasesCount = 0;
     }
 
     public int getId () {
@@ -35,16 +37,24 @@ public class StoreItem implements Serializable {
         return purchasesCount;
     }
 
-    public void setPurchasesCount (Double purchasesCount) {
-        this.purchasesCount = purchasesCount;
-    }
-
     public PricedItem getPricedItem () {
         return pricedItem;
     }
 
     public void setPricedItem (PricedItem pricedItem) {
         this.pricedItem = pricedItem;
+    }
+
+    public void setPurchasesCount (double purchasesCount) {
+        this.purchasesCount = purchasesCount;
+    }
+
+    public double getDiscountPurchasesCount () {
+        return discountPurchasesCount;
+    }
+
+    public void setDiscountPurchasesCount (double discountPurchasesCount) {
+        this.discountPurchasesCount = discountPurchasesCount;
     }
 
     @Override

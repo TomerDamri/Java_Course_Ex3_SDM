@@ -7,14 +7,22 @@ public class SystemItemDTO {
     private final Integer storesCount;
     private final Double avgPrice;
     private final Double ordersCount;
+    private final Double discountOrderCount;
 
-    public SystemItemDTO (Integer id, String name, String purchaseCategory, int storesCount, double avgPrice, double ordersCount) {
+    public SystemItemDTO (Integer id,
+                          String name,
+                          String purchaseCategory,
+                          int storesCount,
+                          double avgPrice,
+                          double ordersCount,
+                          double discountOrderCount) {
         this.id = id;
         this.name = name;
         this.purchaseCategory = purchaseCategory;
         this.storesCount = storesCount;
         this.avgPrice = avgPrice;
         this.ordersCount = ordersCount;
+        this.discountOrderCount = discountOrderCount;
     }
 
     public int getId () {
@@ -39,5 +47,9 @@ public class SystemItemDTO {
 
     public double getOrdersCount () {
         return ordersCount;
+    }
+
+    public Double getDiscountOrderCount () {
+        return discountOrderCount;
     }
 }

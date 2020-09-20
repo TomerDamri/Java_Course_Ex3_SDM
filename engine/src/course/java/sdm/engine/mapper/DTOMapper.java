@@ -122,7 +122,8 @@ public class DTOMapper {
                                  item.getPurchaseCategory().toString(),
                                  systemItem.getStoresCount(),
                                  systemItem.getAvgPrice(),
-                                 systemItem.getOrdersCount());
+                                 systemItem.getOrdersCount(),
+                                 systemItem.getDiscountOrdersCount());
     }
 
     private StoreItemDTO toStoreItemDTO (StoreItem storeItem) {
@@ -131,7 +132,8 @@ public class DTOMapper {
                                 pricedItem.getName(),
                                 pricedItem.getPurchaseCategory().toString(),
                                 pricedItem.getPrice(),
-                                storeItem.getPurchasesCount());
+                                storeItem.getPurchasesCount(),
+                                storeItem.getDiscountPurchasesCount());
     }
 
     private PricedItemDTO toPricedItemDTO (PricedItem pricedItem) {
