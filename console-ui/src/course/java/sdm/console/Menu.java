@@ -1,5 +1,10 @@
 package course.java.sdm.console;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
 import model.DynamicOrderEntityDTO;
@@ -8,11 +13,6 @@ import model.StoreDTO;
 import model.SystemItemDTO;
 import model.request.*;
 import model.response.*;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
 public class Menu {
 
@@ -31,7 +31,7 @@ public class Menu {
     private Map<Integer, StoreDTO> stores;
     private Map<Integer, SystemItemDTO> items;
 
-    public void displayMenu() {
+    public void displayMenu () {
         do {
             printMenuOptions();
             // int userChoice = getUserChoice();
@@ -43,30 +43,32 @@ public class Menu {
         while (!quit);
     }
 
-    private void printMenuOptions() {
+    private void printMenuOptions () {
         System.out.println("\n\nPlease choose one of the following options, or press 'q' to quit:\n1. Load system data from file\n2. Display stores\n3. Display items\n4. Place new order\n5. Display orders history\n6. Save orders history to file\n7. Load orders history from file\n");
     }
 
-    private int getUserChoice() {
+    private int getUserChoice () {
         String userInput;
         int userChoice = 0;
         boolean isValidChoice = true;
         do {
             if (!isValidChoice) {
                 System.out.println(String.format("Your Choice is not valid, please enter a value between %s-%s or press 'q' to quit",
-                        MIN_MENU_OPTION,
-                        MAX_MENU_OPTION));
+                                                 MIN_MENU_OPTION,
+                                                 MAX_MENU_OPTION));
             }
             userInput = scanner.nextLine();
 
             if (userInput.equals("q") || userInput.equals("Q")) {
                 this.quit = true;
                 isValidChoice = true;
-            } else {
+            }
+            else {
                 try {
                     userChoice = Integer.parseInt(userInput);
                     isValidChoice = (userChoice >= MIN_MENU_OPTION && userChoice <= MAX_MENU_OPTION);
-                } catch (NumberFormatException ex) {
+                }
+                catch (NumberFormatException ex) {
                     isValidChoice = false;
                 }
             }
@@ -75,81 +77,86 @@ public class Menu {
         return userChoice;
     }
 
-    private void handleUserChoice(int userChoice) {
+    private void handleUserChoice (int userChoice) {
         if (userChoice == 1) {
             handleLoadData();
-        } else {
+        }
+        else {
             if (!controller.isFileLoaded()) {
                 System.out.println("Your request could not be processed, please load system data first");
-            } else {
+            }
+            else {
                 switch (userChoice) {
-                    case 2:
-                        handleDisplayStores();
-                        break;
-                    case 3:
-                        handleDisplayItems();
-                        break;
-                    case 4:
-                        handlePlaceOrder();
-                        break;
-                    case 5:
-                        handleDisplayOrders();
-                        break;
-                    case 6:
-                        handleSaveOrdersHistory();
-                        break;
-                    case 7:
-                        handleLoadOrdersHistory();
-                        break;
-                    case 8:
-                        GetCustomersResponse customers = controller.getCustomers();
-                        System.out.println(9);
-                        break;
-                    case 9:
-                        GetMapEntitiesResponse systemMappableEntities = controller.getSystemMappableEntities();
-                        System.out.println(systemMappableEntities.getAllSystemMappableEntities());
-                        break;
-                    default:
-                        break;
+                case 2:
+                    handleDisplayStores();
+                    break;
+                case 3:
+                    handleDisplayItems();
+                    break;
+                case 4:
+                    handlePlaceOrder();
+                    break;
+                case 5:
+                    handleDisplayOrders();
+                    break;
+                case 6:
+                    handleSaveOrdersHistory();
+                    break;
+                case 7:
+                    handleLoadOrdersHistory();
+                    break;
+                case 8:
+                    GetCustomersResponse customers = controller.getCustomers();
+                    System.out.println(9);
+                    break;
+                case 9:
+                    GetMapEntitiesResponse systemMappableEntities = controller.getSystemMappableEntities();
+                    System.out.println(systemMappableEntities.getAllSystemMappableEntities());
+                    break;
+                default:
+                    break;
                 }
             }
         }
     }
 
-    private void handleLoadOrdersHistory() {
+    private void handleLoadOrdersHistory () {
         System.out.println("Please insert the path where you want to load orders history from");
         String userInput = scanner.nextLine();
         try {
             controller.loadOrdersHistoryFromFile(userInput);
             System.out.println("System data loaded from file successfully");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("Failed loading from file.\nError message : " + e.getMessage());
         }
     }
 
-    private void handleSaveOrdersHistory() {
+    private void handleSaveOrdersHistory () {
         System.out.println("Please insert the path where you want to store the orders history");
         String userInput = scanner.nextLine();
         try {
             controller.saveOrdersHistoryToFile(userInput);
             System.out.println("Orders history saved to file successfully");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("Failed saving orders history to file.\n" + e.getMessage());
         }
     }
 
-    private void handleLoadData() {
+    private void handleLoadData () {
         System.out.println("Please enter full path of XML data file");
         String userInput = scanner.nextLine();
         try {
             controller.loadFile(userInput);
             System.out.println("File loaded successfully");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("Failed loading file.\n" + e.getMessage());
         }
     }
 
-    private void handleDisplayStores() {
+    private void handleDisplayStores () {
         try {
             GetStoresResponse response = controller.getStores();
             this.stores = response.getStores();
@@ -162,15 +169,17 @@ public class Menu {
                         System.out.println(",");
                     }
                 }
-            } else {
+            }
+            else {
                 System.out.println("No stored have yet been loaded");
             }
-        } catch (Exception exception) {
+        }
+        catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
     }
 
-    private void handleDisplayItems() {
+    private void handleDisplayItems () {
         try {
             GetItemsResponse response = controller.getItems();
             this.items = response.getItems();
@@ -183,15 +192,17 @@ public class Menu {
                         System.out.println(",");
                     }
                 }
-            } else {
+            }
+            else {
                 System.out.println("No items have yet been loaded");
             }
-        } catch (Exception exception) {
+        }
+        catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
     }
 
-    private void handleDisplayOrders() {
+    private void handleDisplayOrders () {
         try {
             GetOrdersResponse response = controller.getOrders();
             if (response.getOrders() == null || response.getOrders().isEmpty()) {
@@ -199,7 +210,7 @@ public class Menu {
                 return;
             }
 
-            response.getOrders().forEach((key, orders) -> {
+            response.getOrders().forEach( (key, orders) -> {
                 Iterator<OrderDTO> iterator = orders.iterator();
                 String message = (orders.size() > 1) ? String.format("\nDynamic order id : %s [", key) : "\nStatic Order:";
                 System.out.printf(message);
@@ -218,45 +229,47 @@ public class Menu {
                 System.out.print("\n\n");
             });
 
-        } catch (Exception exception) {
+        }
+        catch (Exception exception) {
             System.out.println(exception.getMessage());
         }
     }
 
-    private void handlePlaceOrder() {
+    private void handlePlaceOrder () {
         boolean stop;
         do {
             System.out.println("Press 1 for static order or 2 for dynamic order");
             String userInput = scanner.nextLine();
             switch (userInput) {
-                case "1":
-                    stop = true;
-                    handleStaticOrder();
-                    break;
-                case "2":
-                    stop = true;
-                    handleDynamicOrder();
-                    break;
-                default:
-                    stop = false;
-                    System.out.println("Invalid choice");
+            case "1":
+                stop = true;
+                handleStaticOrder();
+                break;
+            case "2":
+                stop = true;
+                handleDynamicOrder();
+                break;
+            default:
+                stop = false;
+                System.out.println("Invalid choice");
             }
         }
         while (!stop);
     }
 
-    private void handleDynamicOrder() {
+    private void handleDynamicOrder () {
         LocalDateTime date = getOrderDate();
         Location location = getOrderLocation();
         Map<Integer, Double> orderItemToAmount = getDynamicOrderItems();
         if (orderItemToAmount.isEmpty()) {
             System.out.println("No items were selected, the order is canceled");
-        } else {
+        }
+        else {
             PlaceDynamicOrderResponse response = controller.placeDynamicOrder(new PlaceDynamicOrderRequest(1,
-                    date,
-                    location.x,
-                    location.y,
-                    orderItemToAmount));
+                                                                                                           date,
+                                                                                                           location.x,
+                                                                                                           location.y,
+                                                                                                           orderItemToAmount));
             UUID orderId = response.getId();
             GetDiscountsResponse discounts = controller.getDiscounts(orderId);
             controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceDynamicOrderTest(orderId));
@@ -268,14 +281,15 @@ public class Menu {
             if (userInput.equals("Y") || userInput.equals("y")) {
                 controller.completeDynamicOrder(response.getId(), true);
                 System.out.println("Order created successfully\nOrder id:" + response.getId());
-            } else {
+            }
+            else {
                 controller.completeDynamicOrder(response.getId(), false);
                 System.out.println("Order creation canceled");
             }
         }
     }
 
-    private void displayDynamicOrderOffer(PlaceDynamicOrderResponse response) {
+    private void displayDynamicOrderOffer (PlaceDynamicOrderResponse response) {
         System.out.println("The order offer:");
         Iterator<DynamicOrderEntityDTO> iterator = response.getDynamicOrderEntity().iterator();
         while (iterator.hasNext()) {
@@ -288,7 +302,7 @@ public class Menu {
         System.out.println();
     }
 
-    private Map<Integer, Double> getDynamicOrderItems() {
+    private Map<Integer, Double> getDynamicOrderItems () {
         Map<Integer, Double> orderItemToAmount = new HashMap<>();
         boolean doneSelectingItems = false;
         int itemId;
@@ -298,7 +312,8 @@ public class Menu {
             itemId = selectDynamicItem();
             if (itemId == -1) {
                 doneSelectingItems = true;
-            } else {
+            }
+            else {
                 itemAmount = getItemAmount(itemId);
                 // Updating amount in case the item is already in the order
                 if (orderItemToAmount.containsKey(itemId)) {
@@ -312,7 +327,7 @@ public class Menu {
         return orderItemToAmount;
     }
 
-    private int selectDynamicItem() {
+    private int selectDynamicItem () {
         boolean isValidItem;
         String userInput;
         int itemId = -1;
@@ -323,14 +338,16 @@ public class Menu {
             if (userInput.equals("q") || userInput.equals("Q")) {
                 itemId = -1;
                 isValidItem = true;
-            } else {
+            }
+            else {
                 try {
                     itemId = Integer.parseInt(userInput);
                     isValidItem = this.items.containsKey(itemId);
                     if (!isValidItem) {
                         System.out.println("The item id does not exist");
                     }
-                } catch (Exception exception) {
+                }
+                catch (Exception exception) {
                     isValidItem = false;
                     System.out.println("Item id should be an integer");
                 }
@@ -341,23 +358,24 @@ public class Menu {
         return itemId;
     }
 
-    private void displayDynamicItems() {
+    private void displayDynamicItems () {
         items = controller.getItems().getItems();
         items.values().forEach(item -> {
             // System.out.println("{" + item.getItem() + "}");
         });
     }
 
-    private void handleStaticOrder() {
+    private void handleStaticOrder () {
         int orderStoreId = getOrderStore();
         LocalDateTime date = getOrderDate();
         Location location = getOrderLocation();
         Map<Integer, Double> orderItemToAmount = getOrderItems(orderStoreId);
         if (orderItemToAmount.isEmpty()) {
             System.out.println("No items were selected, the order is canceled");
-        } else {
+        }
+        else {
             // TODO: 05/09/2020 - add customer ID to request
-            PlaceOrderRequest request = new PlaceOrderRequest(1, orderStoreId, date, location.x, location.y, orderItemToAmount);
+            PlaceOrderRequest request = new PlaceOrderRequest(1, orderStoreId, date, orderItemToAmount);
             printOrderSummary(request);
             System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
             String userInput = scanner.nextLine();
@@ -370,17 +388,19 @@ public class Menu {
                     controller.completeTheOrder(orderId, true);
 
                     System.out.println("Order created successfully\nOrder id:" + orderId);
-                } catch (Exception exception) {
+                }
+                catch (Exception exception) {
                     System.out.println(exception.getMessage());
                 }
-            } else {
+            }
+            else {
                 System.out.println("Order creation canceled");
             }
         }
 
     }
 
-    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForPlaceDynamicOrderTest(UUID orderId) {
+    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForPlaceDynamicOrderTest (UUID orderId) {
         Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts1 = new HashMap<>();
         Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts3 = new HashMap<>();
 
@@ -407,7 +427,7 @@ public class Menu {
         return addDiscountsToOrderRequest;
     }
 
-    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForPlaceStaicOrderTest(UUID orderId) {
+    private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForPlaceStaicOrderTest (UUID orderId) {
         Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts = new HashMap<>();
 
         ChosenItemDiscount chosenItemDiscount1 = new ChosenItemDiscount("YallA BaLaGaN", 2, Optional.of(1));
@@ -425,7 +445,7 @@ public class Menu {
         return addDiscountsToOrderRequest;
     }
 
-    private int getOrderStore() {
+    private int getOrderStore () {
         int id = 0;
         boolean validStore = true;
         do {
@@ -438,7 +458,8 @@ public class Menu {
                 id = scanner.nextInt();
                 scanner.nextLine();
                 validStore = validateStoreId(id);
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 validStore = false;
                 scanner.nextLine();
             }
@@ -447,25 +468,25 @@ public class Menu {
         return id;
     }
 
-    private void displayStoresBeforePlacingOrder() {
+    private void displayStoresBeforePlacingOrder () {
         if (this.stores == null || this.stores.isEmpty()) {
             this.stores = controller.getStores().getStores();
         }
         this.stores.values()
-                .forEach(store -> System.out.println(String.format("{Id: %s\nName: %s\nDelivery PPK: %s},",
-                        store.getId(),
-                        store.getName(),
-                        store.getDeliveryPpk())));
+                   .forEach(store -> System.out.println(String.format("{Id: %s\nName: %s\nDelivery PPK: %s},",
+                                                                      store.getId(),
+                                                                      store.getName(),
+                                                                      store.getDeliveryPpk())));
     }
 
-    private boolean validateStoreId(int id) {
+    private boolean validateStoreId (int id) {
         if (this.stores == null || this.stores.isEmpty()) {
             this.stores = controller.getStores().getStores();
         }
         return stores.containsKey(id);
     }
 
-    private LocalDateTime getOrderDate() {
+    private LocalDateTime getOrderDate () {
         LocalDateTime localDateTime = null;
         boolean stop;
         do {
@@ -475,7 +496,8 @@ public class Menu {
                 String dateWithYear = concatYearToDate(userInput);
                 localDateTime = LocalDateTime.parse(dateWithYear, formatter);
                 stop = true;
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 System.out.println(exception.getMessage());
                 stop = false;
             }
@@ -484,7 +506,7 @@ public class Menu {
         return localDateTime;
     }
 
-    private Location getOrderLocation() {
+    private Location getOrderLocation () {
         boolean validLocation;
         int x;
         int y;
@@ -502,7 +524,7 @@ public class Menu {
         return new Location(x, y);
     }
 
-    private int getCoordinate() {
+    private int getCoordinate () {
         int coordinate = 0;
         boolean validCoordinate = true;
         do {
@@ -514,7 +536,8 @@ public class Menu {
                 coordinate = scanner.nextInt();
                 scanner.nextLine();
                 validCoordinate = validateCoordinateRange(coordinate);
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 validCoordinate = false;
                 scanner.nextLine();
             }
@@ -523,11 +546,11 @@ public class Menu {
         return coordinate;
     }
 
-    private boolean validateCoordinateRange(int coordinate) {
+    private boolean validateCoordinateRange (int coordinate) {
         return (coordinate >= COORDINATE_MIN_VALUE && coordinate <= COORDINATE_MAX_VALUE);
     }
 
-    private Map<Integer, Double> getOrderItems(int storeId) {
+    private Map<Integer, Double> getOrderItems (int storeId) {
         Map<Integer, Double> itemsToAmount = new HashMap<>();
         boolean doneSelectingItems = false;
         int itemId;
@@ -537,7 +560,8 @@ public class Menu {
             itemId = staticSelectItem(storeId);
             if (itemId == -1) {
                 doneSelectingItems = true;
-            } else {
+            }
+            else {
                 itemAmount = getItemAmount(itemId);
                 // Updating amount in case the item is already in the order
                 if (itemsToAmount.containsKey(itemId)) {
@@ -551,7 +575,7 @@ public class Menu {
         return itemsToAmount;
     }
 
-    private int staticSelectItem(int storeId) {
+    private int staticSelectItem (int storeId) {
         boolean isValidItem;
         String userInput;
         int itemId = -1;
@@ -562,14 +586,16 @@ public class Menu {
             if (userInput.equals("q") || userInput.equals("Q")) {
                 itemId = -1;
                 isValidItem = true;
-            } else {
+            }
+            else {
                 try {
                     itemId = Integer.parseInt(userInput);
                     isValidItem = validateItemId(itemId, storeId);
                     if (!isValidItem) {
                         System.out.println("The item is not supplied by the selected store");
                     }
-                } catch (Exception exception) {
+                }
+                catch (Exception exception) {
                     isValidItem = false;
                     System.out.println("Item id should be an integer");
                 }
@@ -580,24 +606,26 @@ public class Menu {
         return itemId;
     }
 
-    private void displayItemsBeforePlacingOrder(int storeId) {
+    private void displayItemsBeforePlacingOrder (int storeId) {
         stores = controller.getStores().getStores();
         items = controller.getItems().getItems();
         StoreDTO store = this.stores.get(storeId);
         items.keySet().forEach(itemId -> {
             if (store.getItems().containsKey(itemId)) {
-//                System.out.println("{" + store.getItems().get(itemId).getPricedItem().toString() + "}");
-            } else {
-//                System.out.print("{" + items.get(itemId).getItem().toString() + ",\nThis item is not supplied in the store}\n");
+                // System.out.println("{" + store.getItems().get(itemId).getPricedItem().toString() + "}");
+            }
+            else {
+                // System.out.print("{" + items.get(itemId).getItem().toString() + ",\nThis item is not supplied in
+                // the store}\n");
             }
         });
     }
 
-    private boolean validateItemId(int itemId, int storeId) {
+    private boolean validateItemId (int itemId, int storeId) {
         return this.stores.get(storeId).getItems().containsKey(itemId);
     }
 
-    private double getItemAmount(int itemId) {
+    private double getItemAmount (int itemId) {
         boolean isValidAmount;
         double itemAmount = 0;
         do {
@@ -609,7 +637,8 @@ public class Menu {
                 if (!isValidAmount) {
                     System.out.println("Invalid amount!\nAmount should be positive. For quantity purchase category, amount should also be an integer");
                 }
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 isValidAmount = false;
                 System.out.println("Invalid amount");
                 scanner.nextLine();
@@ -619,7 +648,7 @@ public class Menu {
         return itemAmount;
     }
 
-    private boolean validateItemAmount(int itemId, Double itemAmount) {
+    private boolean validateItemAmount (int itemId, Double itemAmount) {
         if (itemAmount < 0) {
             return false;
         }
@@ -630,7 +659,7 @@ public class Menu {
         return true;
     }
 
-    private void printOrderSummary(PlaceOrderRequest request) {
+    private void printOrderSummary (PlaceOrderRequest request) {
         System.out.println("Order summary:\nOrder items:");
         Iterator<Integer> iterator = request.getOrderItemToAmount().keySet().iterator();
         double totalItemsPrice = 0;
@@ -641,49 +670,51 @@ public class Menu {
             int itemPrice = stores.get(request.getStoreId()).getItems().get(itemId).getPrice();
             double totalItemPrice = round(amount * itemPrice, 2);
             System.out.print(String.format("{Item id: %s,\nItem name: %s,\nPurchase category: %s,\nPrice: %s,\nAmount: %s,\nTotal item price: %s}",
-                    itemId,
-                    item.getName(),
-                    item.getPurchaseCategory(),
-                    itemPrice,
-                    amount,
-                    round(itemPrice * amount, 2)));
+                                           itemId,
+                                           item.getName(),
+                                           item.getPurchaseCategory(),
+                                           itemPrice,
+                                           amount,
+                                           round(itemPrice * amount, 2)));
             if (iterator.hasNext()) {
                 System.out.println(",");
             }
             totalItemsPrice += totalItemPrice;
         }
         System.out.println();
-        double distance = calculateDistance((this.stores.get(request.getStoreId()).getLocation().getxCoordinate()),
-                request.getxCoordinate(),
-                this.stores.get(request.getStoreId()).getLocation().getyCoordinate(),
-                request.getyCoordinate());
+        double distance = 4.2;
+        // calculateDistance((this.stores.get(request.getStoreId()).getLocation().getxCoordinate()),
+        // request.,
+        // this.stores.get(request.getStoreId()).getLocation().getyCoordinate(),
+        // request.getyCoordinate());
 
         int ppk = this.stores.get(request.getStoreId()).getDeliveryPpk();
         double deliveryPrice = round(distance * ppk, 2);
         System.out.println(String.format("Distance form store: %s\nStore PPK: %s\nDelivery price: %s,\nOrder total price: %s ",
-                distance,
-                ppk,
-                deliveryPrice,
-                deliveryPrice + totalItemsPrice));
+                                         distance,
+                                         ppk,
+                                         deliveryPrice,
+                                         deliveryPrice + totalItemsPrice));
     }
 
-    private double calculateDistance(int x1, int x2, int y1, int y2) {
+    private double calculateDistance (int x1, int x2, int y1, int y2) {
         return round(Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)), 2);
     }
 
-    public static String concatYearToDate(String dateTime) {
+    public static String concatYearToDate (String dateTime) {
         int year = LocalDateTime.now().getYear();
         try {
             String[] date = dateTime.split("-");
             date[0] = date[0] + "/" + year + "-";
             return date[0] + date[1];
-        } catch (Exception exception) {
+        }
+        catch (Exception exception) {
             throw new RuntimeException("Invalid date format");
         }
 
     }
 
-    public static double round(double value, int places) {
+    public static double round (double value, int places) {
         if (places < 0)
             throw new IllegalArgumentException();
 
@@ -697,7 +728,7 @@ public class Menu {
         private int x;
         private int y;
 
-        public Location(int x, int y) {
+        public Location (int x, int y) {
             this.x = x;
             this.y = y;
         }

@@ -7,7 +7,7 @@ import javafx.concurrent.Task;
 import java.util.function.Consumer;
 
 public class LoadFileTask extends Task<Boolean> {
-    private final long SLEEP_TIME = 1000;
+    private final long SLEEP_TIME = 0;
 
     private String fileName;
     private final ISDMController beController;

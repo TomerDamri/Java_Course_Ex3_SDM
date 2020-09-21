@@ -1,22 +1,23 @@
 package components.app;
 
+import java.net.URL;
+
 import components.mapComponent.MapController;
 import components.placeOrderComponent.PlaceOrderController;
 import components.sdmComponent.SDMController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import logic.BusinessLogic;
 
-import java.net.URL;
-
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start (Stage primaryStage) throws Exception {
 
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource("/components/sdmComponent/SDM.fxml");
@@ -35,7 +36,7 @@ public class Main extends Application {
         fxmlLoader = new FXMLLoader();
         url = getClass().getResource("/components/mapComponent/Map.fxml");
         fxmlLoader.setLocation(url);
-        GridPane mapComponent = fxmlLoader.load(url.openStream());
+        ScrollPane mapComponent = fxmlLoader.load(url.openStream());
         MapController mapController = fxmlLoader.getController();
 
         // load sdm component and controller from fxml
@@ -46,13 +47,19 @@ public class Main extends Application {
         BorderPane root = fxmlLoader.load(url.openStream());
         AppController appController = fxmlLoader.getController();
 
+        appController.setMapComponentController(mapController);
+        appController.setPlaceOrderComponentController(placeOrderController);
+        appController.setSdmComponentController(sdmController);
+
         BusinessLogic businessLogic = new BusinessLogic(sdmController);
         root = sdmComponent;
 
-//        sdmController.setPrimaryStage(primaryStage);
+        // sdmController.setPrimaryStage(primaryStage);
         sdmController.setBusinessLogic(businessLogic);
         sdmController.setPlaceOrderPane(placeOrderComponent);
-        sdmController.setMapGridPane(mapComponent);
+        sdmController.setMapScrollPane(mapComponent);
+        sdmController.setMapGridPane(mapController.getLocationsGridPane());
+        sdmController.setAppController(appController);
 
         // set stage
         primaryStage.setTitle("Super Duper Market");
@@ -61,9 +68,7 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
+    public static void main (String[] args) {
         launch(args);
     }
 }
-
-
