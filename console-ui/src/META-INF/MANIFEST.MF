@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: course.java.sdm.console.Main
+components.app.Main-Class: course.java.sdm.console.components.app.Main
 Class-Path: engine.jar data-model.jar
 

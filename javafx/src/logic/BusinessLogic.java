@@ -1,6 +1,6 @@
 package logic;
 
-import components.sdm.SDMController;
+import components.sdmComponent.SDMController;
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
 import javafx.concurrent.Task;
@@ -41,10 +41,11 @@ public class BusinessLogic {
         return beController.getOrders();
     }
 
-    PlaceOrderResponse placeStaticOrder(PlaceOrderRequest request){
+    public PlaceOrderResponse placeStaticOrder(PlaceOrderRequest request) {
         return beController.placeStaticOrder(request);
     }
-//
+
+    //
 //    GetDiscountsResponse getDiscounts(UUID orderId);
 //
 //    void addDiscountsToOrder(AddDiscountsToOrderRequest request);
@@ -55,7 +56,9 @@ public class BusinessLogic {
 //
 //    boolean isValidLocation(final int xCoordinate, final int yCoordinate);
 //
-//    GetSystemMappableEntitiesResponse getSystemMappableEntities();
+    public GetMapEntitiesResponse getSystemMappableEntities() {
+        return beController.getSystemMappableEntities();
+    }
 //
 //    PlaceDynamicOrderResponse placeDynamicOrder(PlaceDynamicOrderRequest request);
 //

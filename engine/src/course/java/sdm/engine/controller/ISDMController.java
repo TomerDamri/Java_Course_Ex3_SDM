@@ -29,7 +29,7 @@ public interface ISDMController {
 
     boolean isValidLocation (final int xCoordinate, final int yCoordinate);
 
-    GetSystemMappableEntitiesResponse getSystemMappableEntities ();
+    GetMapEntitiesResponse getSystemMappableEntities ();
 
     PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request);
 

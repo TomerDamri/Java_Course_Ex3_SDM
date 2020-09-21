@@ -56,7 +56,7 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
-    public GetSystemMappableEntitiesResponse getSystemMappableEntities () {
+    public GetMapEntitiesResponse getSystemMappableEntities () {
         return service.getSystemMappableEntities();
     }
 

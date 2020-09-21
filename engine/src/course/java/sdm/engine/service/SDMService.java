@@ -52,7 +52,7 @@ public class SDMService {
         return dtoMapper.toGetCustomersResponse(systemCustomers);
     }
 
-    public GetSystemMappableEntitiesResponse getSystemMappableEntities () {
+    public GetMapEntitiesResponse getSystemMappableEntities () {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }

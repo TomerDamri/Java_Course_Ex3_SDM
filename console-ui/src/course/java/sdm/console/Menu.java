@@ -106,7 +106,7 @@ public class Menu {
                         System.out.println(9);
                         break;
                     case 9:
-                        GetSystemMappableEntitiesResponse systemMappableEntities = controller.getSystemMappableEntities();
+                        GetMapEntitiesResponse systemMappableEntities = controller.getSystemMappableEntities();
                         System.out.println(systemMappableEntities.getAllSystemMappableEntities());
                         break;
                     default:
