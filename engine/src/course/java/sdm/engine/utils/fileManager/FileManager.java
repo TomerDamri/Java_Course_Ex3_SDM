@@ -1,18 +1,17 @@
 package course.java.sdm.engine.utils.fileManager;
 
-import java.io.*;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.exceptions.FileNotSaveException;
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 public class FileManager {
 
@@ -22,10 +21,10 @@ public class FileManager {
 
     private static FileManager singletonFileManager = null;
 
-    private FileManager () {
+    private FileManager() {
     }
 
-    public static FileManager getFileManager () {
+    public static FileManager getFileManager() {
         if (singletonFileManager == null) {
             singletonFileManager = new FileManager();
         }
@@ -33,20 +32,19 @@ public class FileManager {
         return singletonFileManager;
     }
 
-    public SuperDuperMarketDescriptor generateDataFromXmlFile (String xml_file_path) throws FileNotFoundException {
+    public SuperDuperMarketDescriptor generateDataFromXmlFile(String xml_file_path) throws FileNotFoundException {
         FILE_MANAGER_VALIDATOR.validateFile(xml_file_path);
         InputStream inputStream = new FileInputStream(new File(xml_file_path));
         SuperDuperMarketDescriptor superDuperMarketDescriptor = null;
         try {
             superDuperMarketDescriptor = deserializeFrom(inputStream);
-        }
-        catch (JAXBException e) {
+        } catch (JAXBException e) {
             e.printStackTrace();
         }
         return superDuperMarketDescriptor;
     }
 
-    public Descriptor loadDataFromGeneratedData (SuperDuperMarketDescriptor superDuperMarketDescriptor) {
+    public Descriptor loadDataFromGeneratedData(SuperDuperMarketDescriptor superDuperMarketDescriptor) {
         Map<Integer, Item> items = GENERATED_DATA_MAPPER.generatedItemsToItems(superDuperMarketDescriptor.getSDMItems());
         // TODO: 02/09/2020 - add discounts to stores
         Map<Integer, Store> stores = GENERATED_DATA_MAPPER.generatedStoresToStores(superDuperMarketDescriptor.getSDMStores(), items);
@@ -56,7 +54,7 @@ public class FileManager {
         return GENERATED_DATA_MAPPER.toDescriptor(items, stores, customers);
     }
 
-    public void saveOrdersHistoryToFile (Descriptor descriptor, String path) {
+    public void saveOrdersHistoryToFile(Descriptor descriptor, String path) {
         if (descriptor == null) {
             throw new FileNotLoadedException();
         }
@@ -68,16 +66,14 @@ public class FileManager {
             objectOutputStream.writeObject(systemOrdersHistory);
             objectOutputStream.flush();
             objectOutputStream.close();
-        }
-        catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             throw new FileNotSaveException(String.format("Failed to save file : %s because the file not found", path));
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             throw new FileNotSaveException(String.format("Failed to save file : %s.\nError message: %s ", path, ex.getMessage()));
         }
     }
 
-    public SystemOrdersHistory loadDataFromFile (String path) {
+    public SystemOrdersHistory loadDataFromFile(String path) {
         try {
             FileInputStream fileInputStream = new FileInputStream(path);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
@@ -85,21 +81,18 @@ public class FileManager {
             objectInputStream.close();
 
             return systemOrdersHistory;
-        }
-        catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             throw new FileNotLoadedException(String.format("Failed to load file : %s because the file not found", path));
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             throw new FileNotLoadedException(String.format("Failed to load file : %s because the class %s not found",
-                                                           path,
-                                                           SystemOrdersHistory.class.getSimpleName()));
-        }
-        catch (IOException ex) {
+                    path,
+                    SystemOrdersHistory.class.getSimpleName()));
+        } catch (IOException ex) {
             throw new FileNotLoadedException(ex.getMessage());
         }
     }
 
-    private SuperDuperMarketDescriptor deserializeFrom (InputStream in) throws JAXBException {
+    private SuperDuperMarketDescriptor deserializeFrom(InputStream in) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         return (SuperDuperMarketDescriptor) u.unmarshal(in);

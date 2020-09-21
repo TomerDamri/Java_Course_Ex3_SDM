@@ -1,11 +1,10 @@
 import components.sdm.SDMController;
-import course.java.sdm.engine.controller.ISDMController;
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.application.Application;
+import logic.BusinessLogic;
 
 import java.net.URL;
 
@@ -24,12 +23,12 @@ public class Main extends Application {
 
         // wire up controller
         SDMController sdmController = loader.getController();
-        ISDMController businessLogic = new SDMControllerImpl();
+        BusinessLogic businessLogic = new BusinessLogic(sdmController);
         sdmController.setPrimaryStage(primaryStage);
         sdmController.setBusinessLogic(businessLogic);
 
 
-        Scene scene = new Scene(root, 1200, 800);
+        Scene scene = new Scene(root, 1800, 1000);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

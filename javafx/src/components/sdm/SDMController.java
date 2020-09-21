@@ -1,35 +1,34 @@
 package components.sdm;
 
-import course.java.sdm.engine.controller.ISDMController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.StoreDTO;
-import model.StoreItemDTO;
-import model.StoreOrderDTO;
-import model.SystemItemDTO;
+import logic.BusinessLogic;
+import model.*;
+import model.response.GetCustomersResponse;
 import model.response.GetItemsResponse;
+import model.response.GetOrdersResponse;
 import model.response.GetStoresResponse;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class SDMController {
+
+    @FXML
+    private BorderPane borderPane;
 
     @FXML
     private Text sdmTitle;
@@ -41,15 +40,41 @@ public class SDMController {
     private ComboBox<String> menuBox;
 
     @FXML
+    private ScrollPane centerScrollPane;
+
+    @FXML
     private FlowPane buttonsContainer;
 
     @FXML
     private GridPane displayArea;
 
+    @FXML
+    private Text loadFileIndicator;
+
+    private BorderPane centerBorderPane;
+
+    private HBox placeOrderBox;
+
+    private ComboBox<String> customerBox;
+
+    private DatePicker datePicker;
+
+    private ComboBox<String> orderTypeBox;
+
+    private ScrollPane itemsScrollPane;
+
+    private TableView<PricedItemDTO> staticOrderItemsView;
+
+    private TableView<ItemDTO> dynamicOrderItemsView;
+
+
     private SimpleBooleanProperty isFileSelected;
+    private SimpleBooleanProperty isFileBeingLoaded;
+
     private SimpleStringProperty selectedFileProperty;
 
-    private ISDMController businessLogic;
+
+    private BusinessLogic businessLogic;
     private Stage primaryStage;
     final ObservableList<String> menuOptions =
             FXCollections.observableArrayList("Display Stores", "Display Items", "Display Customers", "Display Orders", "Place Order");
@@ -57,32 +82,37 @@ public class SDMController {
     public SDMController() {
         isFileSelected = new SimpleBooleanProperty(false);
         selectedFileProperty = new SimpleStringProperty();
+        isFileBeingLoaded = new SimpleBooleanProperty(false);
     }
 
+    public void setBusinessLogic(BusinessLogic businessLogic) {
+        this.businessLogic = businessLogic;
+    }
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
-    }
-
-    public void setBusinessLogic(ISDMController businessLogic) {
-        this.businessLogic = businessLogic;
     }
 
     @FXML
     private void initialize() {
         menuBox.getItems().addAll(menuOptions);
         menuBox.disableProperty().bind(isFileSelected.not());
-//        menuBox.getItems().addAll(menuOptions);
-//        buttonsContainer.getStyleClass().add("jfx-decorator-button
-//        s-container");
-        buttonsContainer.setMinSize(100, 100);
+        loadFileIndicator.visibleProperty().bind(isFileBeingLoaded);
         AnchorPane.setLeftAnchor(displayArea, 5.0);
-        sdmTitle.getStyleClass().add("components.sdm-title");
+    }
 
+    public void bindTaskToUIComponents(Task<Boolean> aTask, Runnable onFinish) {
+        loadFileIndicator.textProperty().bind(aTask.messageProperty());
+        aTask.valueProperty().addListener((observable, oldValue, newValue) -> onTaskFinished(Optional.ofNullable(onFinish)));
+    }
+
+    public void onTaskFinished(Optional<Runnable> onFinish) {
+        loadFileIndicator.textProperty().unbind();
+        onFinish.ifPresent(Runnable::run);
     }
 
     @FXML
-    void loadFileButtonAction(ActionEvent event) throws FileNotFoundException {
+    void loadFileButtonAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select xml file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
@@ -93,13 +123,26 @@ public class SDMController {
 
         String absolutePath = selectedFile.getAbsolutePath();
         selectedFileProperty.set(absolutePath);
-        isFileSelected.set(true);
-        businessLogic.loadFile(selectedFileProperty.getValue());
+        isFileBeingLoaded.set(true);
+        Consumer<String> fileErrorConsumer = status -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("File Status information");
+            alert.setHeaderText("Error Loading File:");
+            alert.setContentText(status);
+            alert.showAndWait();
+            isFileSelected.set(false);
+            isFileBeingLoaded.set(false);
+        };
+        businessLogic.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, () -> {
+            isFileSelected.set(true);
+            isFileBeingLoaded.set(false);
+        });
     }
-
 
     @FXML
     void menuBoxAction(ActionEvent event) {
+        displayArea.getChildren().clear();
+        buttonsContainer.getChildren().clear();
         String selection = menuBox.getValue();
         switch (selection) {
             case "Display Stores":
@@ -108,15 +151,15 @@ public class SDMController {
             case "Display Items":
                 handleDisplayItems();
                 break;
-//            case "Display Customers":
-//                handleDisplayCustomers();
-//                break;
-//            case "Display Orders":
-//                handleDisplayOrders();
-//                break;
-//                case 6:
-//                    handleSaveOrdersHistory();
-//                    break;
+            case "Display Customers":
+                handleDisplayCustomers();
+                break;
+            case "Display Orders":
+                handleDisplayOrders();
+                break;
+            case "Place Order":
+                handlePlaceOrder();
+                break;
 //                case 7:
 //                    handleLoadOrdersHistory();
 //                    break;
@@ -126,23 +169,80 @@ public class SDMController {
 
     }
 
+    private void setCenterToButtonsContainer() {
+        borderPane.setCenter(centerScrollPane);
+    }
+
+    private void setCenterToPlaceOrder() {
+        borderPane.setCenter(centerScrollPane);
+    }
+
+
+    private void handlePlaceOrder() {
+
+    }
+
+    private void handleDisplayCustomers() {
+        setCenterToButtonsContainer();
+        GetCustomersResponse response = businessLogic.getCustomers();
+        response.getSystemCustomers().values().forEach(customer -> {
+            Button button = new Button(customer.getName());
+            button.getStyleClass().add("display-button");
+            button.setId(Integer.toString(customer.getId()));
+            buttonsContainer.getChildren().add(button);
+            button.setOnAction(event -> {
+                displayArea.getChildren().clear();
+                CustomerDTO customer1 = (response.getSystemCustomers().get(Integer.parseInt(button.getId())));
+                displayObject(customer1, displayArea);
+            });
+        });
+
+    }
+
     private void handleDisplayStores() {
-        buttonsContainer.getChildren().clear();
+        setCenterToButtonsContainer();
         GetStoresResponse response = businessLogic.getStores();
         response.getStores().values().forEach(storeDTO -> {
             Button button = new Button(storeDTO.getName());
             button.getStyleClass().add("display-button");
             button.setId(Integer.toString(storeDTO.getId()));
             buttonsContainer.getChildren().add(button);
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    displayArea.getChildren().clear();
-                    StoreDTO store = (response.getStores().get(Integer.parseInt(button.getId())));
-                    displayObject(store, displayArea);
-                }
+            button.setOnAction(event -> {
+                displayArea.getChildren().clear();
+                StoreDTO store = (response.getStores().get(Integer.parseInt(button.getId())));
+                displayObject(store, displayArea);
             });
         });
+    }
+
+    private void handleDisplayOrders() {
+        setCenterToButtonsContainer();
+        GetOrdersResponse response = businessLogic.getOrders();
+        response.getOrders().keySet().forEach(orderId -> {
+            Button button = new Button(orderId.toString());
+            button.getStyleClass().add("display-button");
+            button.setId(orderId.toString());
+            buttonsContainer.getChildren().add(button);
+            button.setOnAction(event -> {
+                displayArea.getChildren().clear();
+                List<OrderDTO> order = (response.getOrders().get(UUID.fromString(button.getId())));
+                displayArea.add(new Label("Id"), 0, 0);
+                displayArea.add(new TextField(button.getId()), 1, 0);
+                final int[] rowIndex = {1};
+                order.forEach(staticOrder -> {
+                    Accordion accordion = new Accordion();
+                    GridPane gridObjects = new GridPane();
+                    gridObjects.setHgap(10);
+                    gridObjects.setVgap(10);
+                    TitledPane titledPane = new TitledPane(staticOrder.getStoreName(), gridObjects);
+                    accordion.getPanes().add(titledPane);
+                    displayArea.add(accordion, 0, rowIndex[0]);
+                    displayObject(staticOrder, gridObjects);
+                    rowIndex[0]++;
+                });
+            });
+        });
+
     }
 
     private void displayObject(Object object, GridPane gridPane) {
@@ -152,17 +252,13 @@ public class SDMController {
             field.setAccessible(true);
             Label key = new Label(field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1) + ":");
             gridPane.add(key, 0, rowIndex);
-//            ParameterizedType pt = (ParameterizedType) field.getGenericType();
-//            Type concreteType = pt.getActualTypeArguments()[0];
             if (field.getGenericType().getTypeName().contains("Map")) {
                 try {
                     gridPane.add(displayList(new ArrayList<>(((HashMap<Integer, Object>) field.get(object)).values())), 1, rowIndex);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-            }
-//                        if (field.getGenericType().equals()
-            else if (field.getGenericType().getTypeName().contains("List")) {
+            } else if (field.getGenericType().getTypeName().contains("List")) {
                 try {
                     displayList(((ArrayList<Object>) field.get(object)));
                 } catch (IllegalAccessException e) {
@@ -249,15 +345,11 @@ public class SDMController {
             button.getStyleClass().add("display-button");
             button.setId(Integer.toString(itemDTO.getId()));
             buttonsContainer.getChildren().add(button);
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    displayArea.getChildren().clear();
-                    SystemItemDTO item = (response.getItems().get(Integer.parseInt(button.getId())));
-                    displayObject(item, displayArea);
-                }
+            button.setOnAction(event -> {
+                displayArea.getChildren().clear();
+                SystemItemDTO item = (response.getItems().get(Integer.parseInt(button.getId())));
+                displayObject(item, displayArea);
             });
         });
     }
-
 }
