@@ -68,10 +68,10 @@ public class PlaceOrderController {
 
     @FXML
     private void initialize() {
-        datePicker.disableProperty().bind(iCustomerSelected);
+        datePicker.disableProperty().bind(iCustomerSelected.not());
         orderTypeBox.disableProperty().bind(isDatePicked.not());
-        storesBox.disableProperty().bind(isStaticOrder);
-        storesBox.visibleProperty().bind(isStaticOrder);
+        storesBox.disableProperty().bind(isStaticOrder.not());
+        storesBox.visibleProperty().bind(isStaticOrder.not());
         orderTypeBox.setItems(orderTypes);
     }
 
