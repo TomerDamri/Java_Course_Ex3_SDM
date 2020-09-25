@@ -52,18 +52,14 @@ public class AddButtonToMapTask extends Task<Boolean> {
         for (int i = 1; i <= maxLocationOnMap.getxCoordinate(); i++) {
             String buttonText = Integer.toString(i);
             Button hButton = new Button(buttonText);
-            hButton.setPrefHeight(50);
-            hButton.setPrefWidth(200);
-
+            hButton.setPrefWidth(120);
             newMap.add(hButton, i, 0);
         }
 
         for (int i = 1; i <= maxLocationOnMap.getyCoordinate(); i++) {
             String buttonText = Integer.toString(i);
             Button vButton = new Button(buttonText);
-            vButton.setPrefHeight(50);
-            vButton.setPrefWidth(200);
-
+            vButton.setPrefWidth(120);
             newMap.add(vButton, 0, i);
         }
 
@@ -77,23 +73,20 @@ public class AddButtonToMapTask extends Task<Boolean> {
         return Boolean.TRUE;
     }
 
-    private Button createEmptyButton () {
-        Button button = new Button();
-        button.setDisable(true);
-        button.prefHeight(50);
-        button.prefWidth(50);
-
-        return button;
-    }
+//    private Button createEmptyButton () {
+//        Button button = new Button();
+//        button.setDisable(true);
+//        button.prefHeight(50);
+//        button.prefWidth(50);
+//
+//        return button;
+//    }
 
     private Button createButtonForMapEntity (MapEntity mapEntity) {
         Button button = new Button(mapEntity.getName());
         button.setId(Integer.toString(mapEntity.getId()));
-        button.setMinWidth(20);
-        button.setMinHeight(20);
-        // ImageView view = getButtonImageView(mapEntity);
-        // button.setGraphic(view);
-
+        button.setPrefWidth(120);
+//        if(mapEntity)
         button.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Map entity information");

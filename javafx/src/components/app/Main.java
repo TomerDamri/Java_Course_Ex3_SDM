@@ -22,7 +22,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource("/components/sdmComponent/SDM.fxml");
         fxmlLoader.setLocation(url);
-        ScrollPane sdmComponent = fxmlLoader.load(url.openStream());
+        BorderPane sdmComponent = fxmlLoader.load(url.openStream());
         SDMController sdmController = fxmlLoader.getController();
 
         // load place order component and controller from fxml
@@ -52,7 +52,7 @@ public class Main extends Application {
         appController.setSdmComponentController(sdmController);
 
         BusinessLogic businessLogic = new BusinessLogic(appController);
-        root = sdmComponent;
+        root.setContent(sdmComponent);
 
         // sdmController.setPrimaryStage(primaryStage);
         sdmController.setBusinessLogic(businessLogic);
