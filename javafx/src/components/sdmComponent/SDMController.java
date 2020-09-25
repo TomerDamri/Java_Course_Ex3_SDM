@@ -34,6 +34,10 @@ public class SDMController {
 
     private AppController mainController;
 
+    public BorderPane getMainBorderPane() {
+        return mainBorderPane;
+    }
+
     @FXML
     private BorderPane mainBorderPane;
 
@@ -125,15 +129,11 @@ public class SDMController {
         this.mainController = mainController;
     }
 
-    public void setBusinessLogic (BusinessLogic businessLogic) {
-        this.businessLogic = businessLogic;
-    }
-
     public void setPlaceOrderPane (BorderPane placeOrderPane) {
         this.placeOrderPane = placeOrderPane;
     }
 
-    public void setMapScrollPane(ScrollPane mapScrollPane) {
+    public void setMapScrollPane (ScrollPane mapScrollPane) {
         this.mapScrollPane = mapScrollPane;
     }
 
@@ -164,7 +164,7 @@ public class SDMController {
         onFinish.ifPresent(Runnable::run);
     }
 
-    public void setMapGridPane(GridPane mapGridPane) {
+    public void setMapGridPane (GridPane mapGridPane) {
         this.mapGridPane = mapGridPane;
     }
 
@@ -190,7 +190,7 @@ public class SDMController {
             isFileSelected.set(false);
             isFileBeingLoaded.set(false);
         };
-        businessLogic.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, () -> {
+        mainController.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, () -> {
             isFileSelected.set(true);
             isFileBeingLoaded.set(false);
         });
@@ -246,13 +246,12 @@ public class SDMController {
     }
 
     private void handleDisplayMap () {
-        Consumer<GridPane> addButtonToMapConsumer = gridPane -> mapGridPane.getChildren().addAll(gridPane.getChildren());
-        businessLogic.createMap(addButtonToMapConsumer);
-        mainBorderPane.setCenter(mapScrollPane);
+
+        mainController.createMap();
     }
 
     private void handleDisplayCustomers () {
-        GetCustomersResponse response = businessLogic.getCustomers();
+        GetCustomersResponse response = mainController.getCustomers();
         response.getSystemCustomers().values().forEach(customer -> {
             Button button = new Button(customer.getName());
             button.getStyleClass().add("display-button");
@@ -269,7 +268,7 @@ public class SDMController {
 
     private void handleDisplayStores () {
         setCenterToButtonsContainer();
-        GetStoresResponse response = businessLogic.getStores();
+        GetStoresResponse response = mainController.getStores();
         response.getStores().values().forEach(storeDTO -> {
             Button button = new Button(storeDTO.getName());
             button.getStyleClass().add("display-button");
@@ -285,7 +284,7 @@ public class SDMController {
 
     private void handleDisplayOrders () {
         setCenterToButtonsContainer();
-        GetOrdersResponse response = businessLogic.getOrders();
+        GetOrdersResponse response = mainController.getOrders();
         response.getOrders().keySet().forEach(orderId -> {
             Button button = new Button(orderId.toString());
             button.getStyleClass().add("display-button");
@@ -413,7 +412,7 @@ public class SDMController {
     //
     private void handleDisplayItems () {
         buttonsContainer.getChildren().clear();
-        GetItemsResponse response = businessLogic.getItems();
+        GetItemsResponse response = mainController.getItems();
         response.getItems().values().forEach(itemDTO -> {
             Button button = new Button(itemDTO.getName());
             button.getStyleClass().add("display-button");

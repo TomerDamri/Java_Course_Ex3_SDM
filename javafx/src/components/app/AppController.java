@@ -1,18 +1,52 @@
 package components.app;
 
+import java.awt.*;
+import java.util.function.Consumer;
+
 import components.mapComponent.MapController;
 import components.placeOrderComponent.PlaceOrderController;
 import components.sdmComponent.SDMController;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import logic.BusinessLogic;
+import model.response.GetCustomersResponse;
+import model.response.GetItemsResponse;
+import model.response.GetOrdersResponse;
+import model.response.GetStoresResponse;
 
 public class AppController {
 
     private PlaceOrderController placeOrderComponentController;
-    private BorderPane sdmComponent;
+    private ScrollPane sdmComponent;
     private SDMController sdmComponentController;
     private MapController mapComponentController;
+    private BusinessLogic businessLogic;
+
+    private BorderPane placeOrderPane;
+
+    public void setMainBorderPane(BorderPane mainBorderPane) {
+        this.mainBorderPane = mainBorderPane;
+    }
+
+    private BorderPane mainBorderPane;
+
+    private javafx.scene.control.ScrollPane mapScrollPane;
+
+    private GridPane mapGridPane;
+
+    public void setPlaceOrderPane(BorderPane placeOrderPane) {
+        this.placeOrderPane = placeOrderPane;
+    }
+
+    public void setMapScrollPane(javafx.scene.control.ScrollPane mapScrollPane) {
+        this.mapScrollPane = mapScrollPane;
+    }
+
+    public void setMapGridPane(GridPane mapGridPane) {
+        this.mapGridPane = mapGridPane;
+    }
 
     @FXML
     public void initialize () {
@@ -21,6 +55,10 @@ public class AppController {
             sdmComponentController.setMainController(this);
             mapComponentController.setMainController(this);
         }
+    }
+
+    public void setBusinessLogic (BusinessLogic businessLogic) {
+        this.businessLogic = businessLogic;
     }
 
     public void setSdmComponentController (SDMController sdmComponentController) {
@@ -39,6 +77,32 @@ public class AppController {
     }
 
     public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
-    sdmComponentController.bindTaskToUIComponents(aTask, onFinish);
+        sdmComponentController.bindTaskToUIComponents(aTask, onFinish);
+    }
+
+    public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Runnable onFinish) {
+        businessLogic.loadFile(filePath, fileErrorDelegate, onFinish);
+    }
+
+    public void createMap () {
+        Consumer<GridPane> addButtonConsumer = gridPane -> mapGridPane.getChildren().addAll(gridPane.getChildren());
+        businessLogic.createMap(addButtonConsumer);
+        mainBorderPane.setCenter(mapScrollPane);
+    }
+
+    public GetCustomersResponse getCustomers () {
+        return businessLogic.getCustomers();
+    }
+
+    public GetStoresResponse getStores () {
+        return businessLogic.getStores();
+    }
+
+    public GetOrdersResponse getOrders () {
+        return businessLogic.getOrders();
+    }
+
+    public GetItemsResponse getItems () {
+        return businessLogic.getItems();
     }
 }

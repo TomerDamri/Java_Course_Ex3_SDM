@@ -10,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import logic.BusinessLogic;
 
@@ -22,7 +21,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource("/components/sdmComponent/SDM.fxml");
         fxmlLoader.setLocation(url);
-        ScrollPane sdmComponent = fxmlLoader.load(url.openStream());
+        BorderPane sdmComponent = fxmlLoader.load(url.openStream());
         SDMController sdmController = fxmlLoader.getController();
 
         // load place order component and controller from fxml
@@ -45,27 +44,33 @@ public class Main extends Application {
         url = getClass().getResource("/components/app/app.fxml");
         fxmlLoader.setLocation(url);
         ScrollPane root = fxmlLoader.load(url.openStream());
+        root.setContent(sdmComponent);
         AppController appController = fxmlLoader.getController();
+
+        setAppControllerConfig(sdmController, placeOrderComponent, placeOrderController, mapComponent, mapController, appController);
+
+        sdmController.setAppController(appController);
+        mapController.setMainController(appController);
+        placeOrderController.setMainController(appController);
+
+        // set stage
+        primaryStage.setTitle("Super Duper Market");
+        Scene scene = new Scene(root, 780, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void setAppControllerConfig(SDMController sdmController, BorderPane placeOrderComponent, PlaceOrderController placeOrderController, ScrollPane mapComponent, MapController mapController, AppController appController) {
+        BusinessLogic businessLogic = new BusinessLogic(appController);
+        appController.setBusinessLogic(businessLogic);
 
         appController.setMapComponentController(mapController);
         appController.setPlaceOrderComponentController(placeOrderController);
         appController.setSdmComponentController(sdmController);
-
-        BusinessLogic businessLogic = new BusinessLogic(appController);
-        root = sdmComponent;
-
-        // sdmController.setPrimaryStage(primaryStage);
-        sdmController.setBusinessLogic(businessLogic);
-        sdmController.setPlaceOrderPane(placeOrderComponent);
-        sdmController.setMapScrollPane(mapComponent);
-        sdmController.setMapGridPane(mapController.getLocationsGridPane());
-        sdmController.setAppController(appController);
-
-        // set stage
-        primaryStage.setTitle("Super Duper Market");
-        Scene scene = new Scene(root, 780   , 600);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        appController.setPlaceOrderPane(placeOrderComponent);
+        appController.setMapScrollPane(mapComponent);
+        appController.setMapGridPane(mapController.getLocationsGridPane());
+        appController.setMainBorderPane(sdmController.getMainBorderPane());
     }
 
     public static void main (String[] args) {
