@@ -49,7 +49,7 @@ public class Main extends Application {
 
         setAppControllerConfig(sdmController, placeOrderComponent, placeOrderController, mapComponent, mapController, appController);
 
-        sdmController.setAppController(appController);
+        sdmController.setMainController(appController);
         mapController.setMainController(appController);
         placeOrderController.setMainController(appController);
 
@@ -60,7 +60,12 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private void setAppControllerConfig(SDMController sdmController, BorderPane placeOrderComponent, PlaceOrderController placeOrderController, ScrollPane mapComponent, MapController mapController, AppController appController) {
+    private void setAppControllerConfig (SDMController sdmController,
+                                         BorderPane placeOrderComponent,
+                                         PlaceOrderController placeOrderController,
+                                         ScrollPane mapComponent,
+                                         MapController mapController,
+                                         AppController appController) {
         BusinessLogic businessLogic = new BusinessLogic(appController);
         appController.setBusinessLogic(businessLogic);
 

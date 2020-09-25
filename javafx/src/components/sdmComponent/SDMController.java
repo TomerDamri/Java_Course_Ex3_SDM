@@ -99,8 +99,8 @@ public class SDMController {
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("purchaseCategory"));
 
         TableColumn<ItemDTO, String> amountColumn = new TableColumn<>("Amount");
-        categoryColumn.setMinWidth(20);
-        // categoryColumn.setCellValueFactory(new PropertyValueFactory<>("purchaseCategory"));
+        amountColumn.setMinWidth(20);
+        // amountColumn.setCellValueFactory(new PropertyValueFactory<>(""Amount""));
 
         dynamicOrderItemsView.getColumns().addAll(idColumn, nameColumn, categoryColumn);
 
@@ -110,10 +110,6 @@ public class SDMController {
 
     public void setMainController (AppController mainController) {
         this.mainController = mainController;
-    }
-
-    public void setAppController (AppController appController) {
-        this.mainController = appController;
     }
 
     @FXML
