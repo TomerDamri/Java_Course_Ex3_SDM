@@ -2,6 +2,7 @@ package logic;
 
 import java.util.function.Consumer;
 
+import components.app.AppController;
 import components.sdmComponent.SDMController;
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
@@ -14,11 +15,11 @@ import model.request.PlaceOrderRequest;
 import model.response.*;
 
 public class BusinessLogic {
-    private final SDMController feController;
+    private final AppController feController;
     private final ISDMController beController = new SDMControllerImpl();
     private Task<Boolean> currentRunningTask;
 
-    public BusinessLogic (SDMController controller) {
+    public BusinessLogic (AppController controller) {
         this.feController = controller;
     }
 

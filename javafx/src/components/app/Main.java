@@ -22,7 +22,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource("/components/sdmComponent/SDM.fxml");
         fxmlLoader.setLocation(url);
-        BorderPane sdmComponent = fxmlLoader.load(url.openStream());
+        ScrollPane sdmComponent = fxmlLoader.load(url.openStream());
         SDMController sdmController = fxmlLoader.getController();
 
         // load place order component and controller from fxml
@@ -44,14 +44,14 @@ public class Main extends Application {
         fxmlLoader = new FXMLLoader();
         url = getClass().getResource("/components/app/app.fxml");
         fxmlLoader.setLocation(url);
-        BorderPane root = fxmlLoader.load(url.openStream());
+        ScrollPane root = fxmlLoader.load(url.openStream());
         AppController appController = fxmlLoader.getController();
 
         appController.setMapComponentController(mapController);
         appController.setPlaceOrderComponentController(placeOrderController);
         appController.setSdmComponentController(sdmController);
 
-        BusinessLogic businessLogic = new BusinessLogic(sdmController);
+        BusinessLogic businessLogic = new BusinessLogic(appController);
         root = sdmComponent;
 
         // sdmController.setPrimaryStage(primaryStage);
@@ -63,7 +63,7 @@ public class Main extends Application {
 
         // set stage
         primaryStage.setTitle("Super Duper Market");
-        Scene scene = new Scene(root, 1800, 1000);
+        Scene scene = new Scene(root, 780   , 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

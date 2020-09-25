@@ -3,6 +3,7 @@ package components.app;
 import components.mapComponent.MapController;
 import components.placeOrderComponent.PlaceOrderController;
 import components.sdmComponent.SDMController;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
 
@@ -35,5 +36,9 @@ public class AppController {
     public void setMapComponentController (MapController mapComponentController) {
         this.mapComponentController = mapComponentController;
         mapComponentController.setMainController(this);
+    }
+
+    public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
+    sdmComponentController.bindTaskToUIComponents(aTask, onFinish);
     }
 }

@@ -8,74 +8,84 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.sdmComponent.SDMController">
-   <top>
-      <Text fx:id="sdmTitle" fill="#6f3434" fontSmoothingType="LCD" stroke="#7c3f3f" strokeLineCap="ROUND" strokeLineJoin="BEVEL" strokeWidth="8.0" text="Super Duper Market" textAlignment="CENTER" wrappingWidth="652.29150390625" BorderPane.alignment="CENTER">
-         <font>
-            <Font size="72.0" />
-         </font>
-         <BorderPane.margin>
-            <Insets bottom="50.0" />
-         </BorderPane.margin>
-      </Text>
-   </top>
-   <left>
-      <VBox minHeight="150.0" minWidth="200.0" prefHeight="400.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.sdmComponent.SDMController">
+   <content>
+      <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity">
+         <top>
+            <Text fx:id="sdmTitle" fill="#6f3434" fontSmoothingType="LCD" stroke="#7c3f3f" strokeLineCap="ROUND" strokeLineJoin="BEVEL" strokeWidth="8.0" text="Super Duper Market" textAlignment="CENTER" wrappingWidth="652.29150390625" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="72.0" />
+               </font>
+               <BorderPane.margin>
+                  <Insets bottom="50.0" />
+               </BorderPane.margin>
+            </Text>
+         </top>
+         <left>
+            <VBox minHeight="150.0" minWidth="100.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="loadFileButton" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#loadFileButtonAction" prefHeight="47.0" prefWidth="150.0" text="Load xml file" textAlignment="RIGHT" textOverrun="CLIP" />
-                  <Text fx:id="loadFileIndicator" fill="#6f3434" strokeType="OUTSIDE" strokeWidth="10.0" style="-fx-font-weight: 100px;">
-                     <HBox.margin>
-                        <Insets left="5.0" />
-                     </HBox.margin>
+                  <Button fx:id="loadFileButton" contentDisplay="TEXT_ONLY" mnemonicParsing="false" onAction="#loadFileButtonAction" text="Load xml file" textAlignment="RIGHT" textOverrun="CLIP">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Text fx:id="loadFileIndicator" fill="#721919" strokeType="OUTSIDE" strokeWidth="0.0">
                      <font>
-                        <Font size="18.0" />
+                        <Font size="24.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
                   </Text>
+                  <ComboBox fx:id="menuBox" nodeOrientation="LEFT_TO_RIGHT" onAction="#menuBoxAction" promptText="Menu">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </ComboBox>
                </children>
-            </HBox>
-            <ComboBox fx:id="menuBox" nodeOrientation="LEFT_TO_RIGHT" onAction="#menuBoxAction" prefHeight="44.0" prefWidth="150.0" promptText="Menu" />
-         </children>
-         <BorderPane.margin>
-            <Insets left="10.0" right="10.0" />
-         </BorderPane.margin>
-      </VBox>
-   </left>
-   <center>
-      <ScrollPane fx:id="centerScrollPane" maxHeight="900.0" maxWidth="900.0" prefHeight="600.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-         <content>
-            <FlowPane fx:id="buttonsContainer" hgap="10.0" maxHeight="600.0" maxWidth="600.0" vgap="10.0" />
-         </content>
-      </ScrollPane>
-   </center>
-   <right>
-      <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <content>
-            <GridPane fx:id="displayArea" hgap="5.0" vgap="5.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <padding>
+               <BorderPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </BorderPane.margin>
+            </VBox>
+         </left>
+         <center>
+            <ScrollPane fx:id="centerScrollPane" minHeight="350.0" minWidth="300.0" BorderPane.alignment="CENTER">
+               <content>
+                  <FlowPane fx:id="buttonsContainer" hgap="10.0" maxHeight="600.0" maxWidth="600.0" vgap="10.0" />
+               </content>
+               <BorderPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </GridPane>
-         </content>
-         <BorderPane.margin>
-            <Insets left="10.0" right="10.0" />
-         </BorderPane.margin>
-      </ScrollPane>
-   </right>
-</BorderPane>
+               </BorderPane.margin>
+            </ScrollPane>
+         </center>
+         <right>
+            <ScrollPane minHeight="150.0" minWidth="100.0" BorderPane.alignment="CENTER">
+               <content>
+                  <GridPane fx:id="displayArea" hgap="5.0" vgap="5.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints vgrow="SOMETIMES" />
+                        <RowConstraints vgrow="SOMETIMES" />
+                        <RowConstraints vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </GridPane>
+               </content>
+               <BorderPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </BorderPane.margin>
+            </ScrollPane>
+         </right>
+      </BorderPane>
+   </content>
+</ScrollPane>
