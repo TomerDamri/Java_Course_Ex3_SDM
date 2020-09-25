@@ -1,13 +1,13 @@
 package model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
 public class OrderDTO {
 
     private UUID id;
-    private LocalDateTime orderDate;
+    private LocalDate orderDate;
     private LocationDTO location;
     private Integer numOfItemTypes;
     private Integer amountOfItems;
@@ -18,17 +18,17 @@ public class OrderDTO {
     private Integer storeId;
     private Map<Integer, Double> pricedItems;
 
-    public OrderDTO (UUID id,
-                     LocalDateTime orderDate,
-                     LocationDTO locationDTO,
-                     Map<Integer, Double> pricedItems,
-                     Integer numOfItemTypes,
-                     Integer amountOfItems,
-                     Double itemsPrice,
-                     Double deliveryPrice,
-                     Double totalPrice,
-                     String storeName,
-                     Integer storeId) {
+    public OrderDTO(UUID id,
+                    LocalDate orderDate,
+                    LocationDTO locationDTO,
+                    Map<Integer, Double> pricedItems,
+                    Integer numOfItemTypes,
+                    Integer amountOfItems,
+                    Double itemsPrice,
+                    Double deliveryPrice,
+                    Double totalPrice,
+                    String storeName,
+                    Integer storeId) {
         this.id = id;
         this.orderDate = orderDate;
         this.location = locationDTO;
@@ -42,71 +42,71 @@ public class OrderDTO {
         this.storeId = storeId;
     }
 
-    public UUID getId () {
+    public UUID getId() {
         return id;
     }
 
-    public LocalDateTime getOrderDate () {
+    public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public LocationDTO getLocation () {
+    public LocationDTO getLocation() {
         return location;
     }
 
-    public Map<Integer, Double> getPricedItems () {
+    public Map<Integer, Double> getPricedItems() {
         return pricedItems;
     }
 
-    public Integer getNumOfItemTypes () {
+    public Integer getNumOfItemTypes() {
         return numOfItemTypes;
     }
 
-    public Integer getAmountOfItems () {
+    public Integer getAmountOfItems() {
         return amountOfItems;
     }
 
-    public Double getItemsPrice () {
+    public Double getItemsPrice() {
         return itemsPrice;
     }
 
-    public Double getDeliveryPrice () {
+    public Double getDeliveryPrice() {
         return deliveryPrice;
     }
 
-    public Double getTotalPrice () {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public String getStoreName () {
+    public String getStoreName() {
         return storeName;
     }
 
-    public Integer getStoreId () {
+    public Integer getStoreId() {
         return storeId;
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return new StringBuilder().append("Order id: ")
-                                  .append(id)
-                                  .append(",\nDate: ")
-                                  .append(orderDate)
-                                  .append(",\nNumber of item types: ")
-                                  .append(numOfItemTypes)
-                                  .append(",\nTotal number of items: ")
-                                  .append(amountOfItems)
-                                  .append(",\nTotal items cost: ")
-                                  .append(itemsPrice)
-                                  .append(",\nDelivery price: ")
-                                  .append(deliveryPrice)
-                                  .append(",\nTotal price of the order: ")
-                                  .append(totalPrice)
-                                  .append(",\nStore id: ")
-                                  .append(storeId)
-                                  .append(",\nStore Name: ")
-                                  .append(storeName)
-                                  .toString();
+                .append(id)
+                .append(",\nDate: ")
+                .append(orderDate)
+                .append(",\nNumber of item types: ")
+                .append(numOfItemTypes)
+                .append(",\nTotal number of items: ")
+                .append(amountOfItems)
+                .append(",\nTotal items cost: ")
+                .append(itemsPrice)
+                .append(",\nDelivery price: ")
+                .append(deliveryPrice)
+                .append(",\nTotal price of the order: ")
+                .append(totalPrice)
+                .append(",\nStore id: ")
+                .append(storeId)
+                .append(",\nStore Name: ")
+                .append(storeName)
+                .toString();
     }
 
 }

@@ -41,4 +41,9 @@ public class CustomerDTO {
     public LocationDTO getLocation () {
         return location;
     }
+
+    @Override
+    public String toString(){
+        return String.format("id: %s name: %s", id, name);
+    }
 }

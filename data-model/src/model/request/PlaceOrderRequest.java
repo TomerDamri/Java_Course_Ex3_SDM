@@ -1,37 +1,49 @@
 package model.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Map;
 
 public class PlaceOrderRequest {
-    private final int customerId;
-    private final int storeId;
-    private final LocalDateTime orderDate;
-    private final Map<Integer, Double> orderItemToAmount;
+    private int customerId;
+    private int storeId;
+    private LocalDate orderDate;
 
-    public PlaceOrderRequest (int customerId,
-                              int storeId,
-                              LocalDateTime orderDate,
-                              Map<Integer, Double> orderItemToAmount) {
+    public PlaceOrderRequest(int customerId, LocalDate orderDate) {
         this.customerId = customerId;
-        this.storeId = storeId;
         this.orderDate = orderDate;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public void setOrderItemToAmount(Map<Integer, Double> orderItemToAmount) {
         this.orderItemToAmount = orderItemToAmount;
     }
 
-    public int getStoreId () {
+    private Map<Integer, Double> orderItemToAmount;
+
+    public int getStoreId() {
         return storeId;
     }
 
-    public LocalDateTime getOrderDate () {
+    public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public Map<Integer, Double> getOrderItemToAmount () {
+    public Map<Integer, Double> getOrderItemToAmount() {
         return orderItemToAmount;
     }
 
-    public int getCustomerId () {
+    public int getCustomerId() {
         return customerId;
     }
 

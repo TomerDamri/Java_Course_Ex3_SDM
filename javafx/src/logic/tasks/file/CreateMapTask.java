@@ -1,37 +1,36 @@
 package logic.tasks.file;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-
 import course.java.sdm.engine.controller.ISDMController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Paint;
 import model.LocationDTO;
 import model.MapEntity;
 import model.response.GetMapEntitiesResponse;
 
-public class AddButtonToMapTask extends Task<Boolean> {
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+
+public class CreateMapTask extends Task<Boolean> {
 
     private final ISDMController beController;
-    private final Consumer<GridPane> addButtonConsumer;
+    private final Consumer<GridPane> mapConsumer;
 
-    public AddButtonToMapTask (ISDMController beController, Consumer<GridPane> addButtonConsumer) {
+    public CreateMapTask(ISDMController beController, Consumer<GridPane> mapConsumer) {
         this.beController = beController;
-        this.addButtonConsumer = addButtonConsumer;
+        this.mapConsumer = mapConsumer;
     }
 
     @Override
-    protected Boolean call () throws Exception {
+    protected Boolean call() {
         GetMapEntitiesResponse systemMappableEntities = beController.getSystemMappableEntities();
         List<MapEntity> mapEntities = systemMappableEntities.getAllSystemMappableEntities();
 
-        // TODO: 21/09/2020 - get max X and max Y
         LocationDTO maxLocationOnMap = calculateMaxLocationOnMap(mapEntities);
-        // TODO: 21/09/2020 - set the first line and column to appropriate number
         GridPane newMap = new GridPane();
 
         for (int i = 1; i <= maxLocationOnMap.getxCoordinate(); i++) {
@@ -54,16 +53,16 @@ public class AddButtonToMapTask extends Task<Boolean> {
             newMap.add(button, location.getxCoordinate(), location.getyCoordinate());
         });
 
-        Platform.runLater( () -> addButtonConsumer.accept(newMap));
+        Platform.runLater(() -> mapConsumer.accept(newMap));
         return Boolean.TRUE;
     }
 
 
-    private Button createButtonForMapEntity (MapEntity mapEntity) {
+    private Button createButtonForMapEntity(MapEntity mapEntity) {
         Button button = new Button(mapEntity.getName());
         button.setId(Integer.toString(mapEntity.getId()));
         button.setPrefWidth(120);
-        // if(mapEntity)
+
         button.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Map entity information");
@@ -75,7 +74,7 @@ public class AddButtonToMapTask extends Task<Boolean> {
         return button;
     }
 
-    private LocationDTO calculateMaxLocationOnMap (Collection<MapEntity> mapEntities) {
+    private LocationDTO calculateMaxLocationOnMap(Collection<MapEntity> mapEntities) {
         Integer maxX = null;
         Integer maxY = null;
 

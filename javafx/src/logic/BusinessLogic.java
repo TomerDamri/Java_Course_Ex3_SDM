@@ -3,14 +3,13 @@ package logic;
 import java.util.function.Consumer;
 
 import components.app.AppController;
-import components.sdmComponent.SDMController;
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
 import javafx.concurrent.Task;
-import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import logic.tasks.file.AddButtonToMapTask;
+import logic.tasks.file.CreateMapTask;
 import logic.tasks.file.LoadFileTask;
+import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
 import model.response.*;
 
@@ -29,8 +28,8 @@ public class BusinessLogic {
         new Thread(currentRunningTask).start();
     }
 
-    public void createMap (Consumer<GridPane> addButtonConsumer) {
-        currentRunningTask = new AddButtonToMapTask(beController, addButtonConsumer);
+    public void createMap (Consumer<GridPane> mapConsumer) {
+        currentRunningTask = new CreateMapTask(beController, mapConsumer);
         new Thread(currentRunningTask).start();
     }
 
@@ -52,6 +51,10 @@ public class BusinessLogic {
 
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
         return beController.placeStaticOrder(request);
+    }
+
+    public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request){
+        return beController.placeDynamicOrder(request);
     }
 
     //

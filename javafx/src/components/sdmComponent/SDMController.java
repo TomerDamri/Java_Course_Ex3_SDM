@@ -1,10 +1,5 @@
 package components.sdmComponent;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.function.Consumer;
-
 import components.app.AppController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,7 +9,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -27,11 +21,16 @@ import model.response.GetItemsResponse;
 import model.response.GetOrdersResponse;
 import model.response.GetStoresResponse;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.function.Consumer;
+
 public class SDMController {
 
     private AppController mainController;
 
-    public BorderPane getMainBorderPane () {
+    public BorderPane getMainBorderPane() {
         return mainBorderPane;
     }
 
@@ -47,7 +46,7 @@ public class SDMController {
     @FXML
     private ComboBox<String> menuBox;
 
-    public ScrollPane getDisplayInfoScrollPane () {
+    public ScrollPane getDisplayInfoScrollPane() {
         return displayInfoScrollPane;
     }
 
@@ -69,24 +68,24 @@ public class SDMController {
     private SimpleStringProperty selectedFileProperty;
 
     final ObservableList<String> menuOptions = FXCollections.observableArrayList("Display Stores",
-                                                                                 "Display Items",
-                                                                                 "Display Customers",
-                                                                                 "Display Orders",
-                                                                                 "Place Order",
-                                                                                 "Display Map");
+            "Display Items",
+            "Display Customers",
+            "Display Orders",
+            "Place Order",
+            "Display Map");
 
-    public SDMController () {
+    public SDMController() {
         isFileSelected = new SimpleBooleanProperty(false);
         selectedFileProperty = new SimpleStringProperty();
         isFileBeingLoaded = new SimpleBooleanProperty(false);
     }
 
-    public void setMainController (AppController mainController) {
+    public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
 
     @FXML
-    private void initialize () {
+    private void initialize() {
         menuBox.getItems().addAll(menuOptions);
         menuBox.disableProperty().bind(isFileSelected.not());
         loadFileIndicator.visibleProperty().bind(isFileBeingLoaded);
@@ -94,18 +93,18 @@ public class SDMController {
 
     }
 
-    public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
+    public void bindTaskToUIComponents(Task<Boolean> aTask, Runnable onFinish) {
         loadFileIndicator.textProperty().bind(aTask.messageProperty());
-        aTask.valueProperty().addListener( (observable, oldValue, newValue) -> onTaskFinished(Optional.ofNullable(onFinish)));
+        aTask.valueProperty().addListener((observable, oldValue, newValue) -> onTaskFinished(Optional.ofNullable(onFinish)));
     }
 
-    public void onTaskFinished (Optional<Runnable> onFinish) {
+    public void onTaskFinished(Optional<Runnable> onFinish) {
         loadFileIndicator.textProperty().unbind();
         onFinish.ifPresent(Runnable::run);
     }
 
     @FXML
-    void loadFileButtonAction (ActionEvent event) {
+    void loadFileButtonAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select xml file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
@@ -133,44 +132,44 @@ public class SDMController {
     }
 
     @FXML
-    void menuBoxAction (ActionEvent event) {
+    void menuBoxAction(ActionEvent event) {
         displayArea.getChildren().clear();
         buttonsContainer.getChildren().clear();
         String selection = menuBox.getValue();
         switch (selection) {
-        case "Display Stores":
-            handleDisplayStores();
-            break;
-        case "Display Items":
-            handleDisplayItems();
-            break;
-        case "Display Customers":
-            handleDisplayCustomers();
-            break;
-        case "Display Orders":
-            handleDisplayOrders();
-            break;
-        case "Place Order":
-            handlePlaceOrder();
-            break;
-        case "Display Map":
-            handleDisplayMap();
-            break;
-        default:
-            break;
+            case "Display Stores":
+                handleDisplayStores();
+                break;
+            case "Display Items":
+                handleDisplayItems();
+                break;
+            case "Display Customers":
+                handleDisplayCustomers();
+                break;
+            case "Display Orders":
+                handleDisplayOrders();
+                break;
+            case "Place Order":
+                handlePlaceOrder();
+                break;
+            case "Display Map":
+                handleDisplayMap();
+                break;
+            default:
+                break;
         }
 
     }
 
-    private void handlePlaceOrder () {
-        mainController.setCenterToPlaceOrderPane();
+    private void handlePlaceOrder() {
+        mainController.handlePlaceOrder();
     }
 
-    private void handleDisplayMap () {
+    private void handleDisplayMap() {
         mainController.createMap();
     }
 
-    private void handleDisplayCustomers () {
+    private void handleDisplayCustomers() {
         GetCustomersResponse response = mainController.getCustomers();
         mainController.setCenterToDisplayInfoScrollPane();
         buttonsContainer.getChildren().clear();
@@ -189,11 +188,10 @@ public class SDMController {
 
     }
 
-    private void handleDisplayStores () {
+    private void handleDisplayStores() {
         GetStoresResponse response = mainController.getStores();
         mainController.setCenterToDisplayInfoScrollPane();
         buttonsContainer.getChildren().clear();
-
         response.getStores().values().forEach(storeDTO -> {
             Button button = new Button(storeDTO.getName());
             button.getStyleClass().add("display-button");
@@ -207,7 +205,7 @@ public class SDMController {
         });
     }
 
-    private void handleDisplayOrders () {
+    private void handleDisplayOrders() {
         GetOrdersResponse response = mainController.getOrders();
         mainController.setCenterToDisplayInfoScrollPane();
         buttonsContainer.getChildren().clear();
@@ -222,7 +220,7 @@ public class SDMController {
                 List<OrderDTO> order = (response.getOrders().get(UUID.fromString(button.getId())));
                 displayArea.add(new Label("Id"), 0, 0);
                 displayArea.add(new TextField(button.getId()), 1, 0);
-                final int[] rowIndex = { 1 };
+                final int[] rowIndex = {1};
                 order.forEach(staticOrder -> {
                     Accordion accordion = new Accordion();
                     GridPane gridObjects = new GridPane();
@@ -239,7 +237,7 @@ public class SDMController {
 
     }
 
-    private void displayObject (Object object, GridPane gridPane) {
+    private void displayObject(Object object, GridPane gridPane) {
         Field[] fields = object.getClass().getDeclaredFields();
         int rowIndex = 0;
         for (Field field : fields) {
@@ -249,25 +247,20 @@ public class SDMController {
             if (field.getGenericType().getTypeName().contains("Map")) {
                 try {
                     gridPane.add(displayList(new ArrayList<>(((HashMap<Integer, Object>) field.get(object)).values())), 1, rowIndex);
-                }
-                catch (IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-            }
-            else if (field.getGenericType().getTypeName().contains("List")) {
+            } else if (field.getGenericType().getTypeName().contains("List")) {
                 try {
                     displayList(((ArrayList<Object>) field.get(object)));
-                }
-                catch (IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-            }
-            else {
+            } else {
                 try {
                     TextField value = new TextField(field.get(object).toString());
                     gridPane.add(value, 1, rowIndex);
-                }
-                catch (IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
@@ -276,7 +269,7 @@ public class SDMController {
         }
     }
 
-    private Accordion displayList (List<Object> objects) {
+    private Accordion displayList(List<Object> objects) {
         Accordion accordion = new Accordion();
         if (objects != null && !objects.isEmpty() && objects.get(0).getClass().getName().contains("StoreItem")) {
             objects.forEach(object -> {
@@ -287,8 +280,7 @@ public class SDMController {
                 accordion.getPanes().add(titledPane);
                 displayObject(object, gridObjects);
             });
-        }
-        else if (objects != null && !objects.isEmpty() && objects.get(0).getClass().getName().contains("Order")) {
+        } else if (objects != null && !objects.isEmpty() && objects.get(0).getClass().getName().contains("Order")) {
             objects.forEach(object -> {
                 GridPane gridObjects = new GridPane();
                 gridObjects.setHgap(10);
@@ -302,7 +294,7 @@ public class SDMController {
         return accordion;
     }
 
-    private void handleDisplayItems () {
+    private void handleDisplayItems() {
         GetItemsResponse response = mainController.getItems();
         mainController.setCenterToDisplayInfoScrollPane();
         buttonsContainer.getChildren().clear();

@@ -57,40 +57,45 @@ public class StoreDTO {
         return totalDeliveriesPayment;
     }
 
+//    @Override
+//    public String toString() {
+//        StringBuilder builder = new StringBuilder("Store id: ").append(id)
+//                .append(",\nName: ")
+//                .append(name)
+//                .append(",\nPPK: ")
+//                .append(deliveryPpk)
+//                .append(",\nStore Items:\n");
+//        if (!items.isEmpty()) {
+//            builder.append("[");
+//            Iterator<StoreItemDTO> iterator = items.values().iterator();
+//            while (iterator.hasNext()) {
+//                StoreItemDTO item = iterator.next();
+//                builder.append("{").append(item.toString()).append("}");
+//                if (iterator.hasNext()) {
+//                    builder.append(",\n");
+//                }
+//            }
+//            builder.append("]");
+//
+//            builder.append("\nOrders: [");
+//            Iterator<StoreOrderDTO> storeOrderIterator = orders.iterator();
+//            while (storeOrderIterator.hasNext()) {
+//                StoreOrderDTO storeOrder = storeOrderIterator.next();
+//                builder.append("{").append(storeOrder.toString()).append("}");
+//                if (storeOrderIterator.hasNext()) {
+//                    builder.append(",\n");
+//                }
+//            }
+//            builder.append("]");
+//        } else {
+//            builder.append("There are no items");
+//        }
+//        builder.append("\nTotal deliveries payment: ").append(totalDeliveriesPayment);
+//        return builder.toString();
+//    }
+
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("Store id: ").append(id)
-                .append(",\nName: ")
-                .append(name)
-                .append(",\nPPK: ")
-                .append(deliveryPpk)
-                .append(",\nStore Items:\n");
-        if (!items.isEmpty()) {
-            builder.append("[");
-            Iterator<StoreItemDTO> iterator = items.values().iterator();
-            while (iterator.hasNext()) {
-                StoreItemDTO item = iterator.next();
-                builder.append("{").append(item.toString()).append("}");
-                if (iterator.hasNext()) {
-                    builder.append(",\n");
-                }
-            }
-            builder.append("]");
-
-            builder.append("\nOrders: [");
-            Iterator<StoreOrderDTO> storeOrderIterator = orders.iterator();
-            while (storeOrderIterator.hasNext()) {
-                StoreOrderDTO storeOrder = storeOrderIterator.next();
-                builder.append("{").append(storeOrder.toString()).append("}");
-                if (storeOrderIterator.hasNext()) {
-                    builder.append(",\n");
-                }
-            }
-            builder.append("]");
-        } else {
-            builder.append("There are no items");
-        }
-        builder.append("\nTotal deliveries payment: ").append(totalDeliveriesPayment);
-        return builder.toString();
+        return String.format("id: %s name: %s location: %s", id, name, location.toString());
     }
 }
