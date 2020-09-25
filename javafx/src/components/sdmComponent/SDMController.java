@@ -63,12 +63,6 @@ public class SDMController {
     @FXML
     private Text loadFileIndicator;
 
-    private ScrollPane itemsScrollPane = new ScrollPane();
-
-    private TableView<PricedItemDTO> staticOrderItemsView = new TableView<>();
-
-    private TableView<ItemDTO> dynamicOrderItemsView = new TableView<>();
-
     private SimpleBooleanProperty isFileSelected;
     private SimpleBooleanProperty isFileBeingLoaded;
 
@@ -85,27 +79,6 @@ public class SDMController {
         isFileSelected = new SimpleBooleanProperty(false);
         selectedFileProperty = new SimpleStringProperty();
         isFileBeingLoaded = new SimpleBooleanProperty(false);
-
-        TableColumn<ItemDTO, String> idColumn = new TableColumn<>("Id");
-        idColumn.setMinWidth(20);
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-
-        TableColumn<ItemDTO, String> nameColumn = new TableColumn<>("Name");
-        nameColumn.setMinWidth(20);
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-        TableColumn<ItemDTO, String> categoryColumn = new TableColumn<>("Purchase Category");
-        categoryColumn.setMinWidth(20);
-        categoryColumn.setCellValueFactory(new PropertyValueFactory<>("purchaseCategory"));
-
-        TableColumn<ItemDTO, String> amountColumn = new TableColumn<>("Amount");
-        amountColumn.setMinWidth(20);
-        // amountColumn.setCellValueFactory(new PropertyValueFactory<>(""Amount""));
-
-        dynamicOrderItemsView.getColumns().addAll(idColumn, nameColumn, categoryColumn);
-
-        itemsScrollPane.setContent(dynamicOrderItemsView);
-
     }
 
     public void setMainController (AppController mainController) {
