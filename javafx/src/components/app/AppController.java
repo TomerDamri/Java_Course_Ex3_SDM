@@ -1,6 +1,5 @@
 package components.app;
 
-import java.awt.*;
 import java.util.function.Consumer;
 
 import components.mapComponent.MapController;
@@ -8,6 +7,7 @@ import components.placeOrderComponent.PlaceOrderController;
 import components.sdmComponent.SDMController;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import logic.BusinessLogic;
@@ -26,26 +26,40 @@ public class AppController {
 
     private BorderPane placeOrderPane;
 
-    public void setMainBorderPane(BorderPane mainBorderPane) {
+    public void setMainBorderPane (BorderPane mainBorderPane) {
         this.mainBorderPane = mainBorderPane;
     }
 
     private BorderPane mainBorderPane;
 
-    private javafx.scene.control.ScrollPane mapScrollPane;
+    private ScrollPane mapScrollPane;
 
     private GridPane mapGridPane;
 
-    public void setPlaceOrderPane(BorderPane placeOrderPane) {
+    private ScrollPane displayInfoScrollPane;
+
+    public void setDisplayInfoScrollPane (javafx.scene.control.ScrollPane displayInfoScrollPane) {
+        this.displayInfoScrollPane = displayInfoScrollPane;
+    }
+
+    public void setPlaceOrderPane (BorderPane placeOrderPane) {
         this.placeOrderPane = placeOrderPane;
     }
 
-    public void setMapScrollPane(javafx.scene.control.ScrollPane mapScrollPane) {
+    public void setMapScrollPane (javafx.scene.control.ScrollPane mapScrollPane) {
         this.mapScrollPane = mapScrollPane;
     }
 
-    public void setMapGridPane(GridPane mapGridPane) {
+    public void setMapGridPane (GridPane mapGridPane) {
         this.mapGridPane = mapGridPane;
+    }
+
+    public void setCenterToDisplayInfoScrollPane () {
+        mainBorderPane.setCenter(displayInfoScrollPane);
+    }
+
+    public void setCenterToPlaceOrderPane () {
+        mainBorderPane.setCenter(placeOrderPane);
     }
 
     @FXML

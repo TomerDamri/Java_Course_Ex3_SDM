@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import components.app.AppController;
-import components.placeOrderComponent.PlaceOrderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -22,8 +21,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import logic.BusinessLogic;
 import model.*;
 import model.response.GetCustomersResponse;
 import model.response.GetItemsResponse;
@@ -34,7 +31,7 @@ public class SDMController {
 
     private AppController mainController;
 
-    public BorderPane getMainBorderPane() {
+    public BorderPane getMainBorderPane () {
         return mainBorderPane;
     }
 
@@ -50,8 +47,12 @@ public class SDMController {
     @FXML
     private ComboBox<String> menuBox;
 
+    public ScrollPane getDisplayInfoScrollPane () {
+        return displayInfoScrollPane;
+    }
+
     @FXML
-    private ScrollPane centerScrollPane;
+    private ScrollPane displayInfoScrollPane;
 
     @FXML
     private FlowPane buttonsContainer;
@@ -61,22 +62,6 @@ public class SDMController {
 
     @FXML
     private Text loadFileIndicator;
-
-    private BorderPane placeOrderPane;
-
-    private ScrollPane mapScrollPane;
-
-    private GridPane mapGridPane;
-    //
-    // private HBox placeOrderBox;
-    //
-    // private ComboBox<String> customerBox;
-    //
-    // private DatePicker datePicker;
-    //
-    // private ComboBox<String> orderTypeBox;
-
-    private PlaceOrderController placeOrderController;
 
     private ScrollPane itemsScrollPane = new ScrollPane();
 
@@ -89,8 +74,6 @@ public class SDMController {
 
     private SimpleStringProperty selectedFileProperty;
 
-    private BusinessLogic businessLogic;
-    private Stage primaryStage;
     final ObservableList<String> menuOptions = FXCollections.observableArrayList("Display Stores",
                                                                                  "Display Items",
                                                                                  "Display Customers",
@@ -129,20 +112,8 @@ public class SDMController {
         this.mainController = mainController;
     }
 
-    public void setPlaceOrderPane (BorderPane placeOrderPane) {
-        this.placeOrderPane = placeOrderPane;
-    }
-
-    public void setMapScrollPane (ScrollPane mapScrollPane) {
-        this.mapScrollPane = mapScrollPane;
-    }
-
     public void setAppController (AppController appController) {
         this.mainController = appController;
-    }
-
-    public void setPrimaryStage (Stage primaryStage) {
-        this.primaryStage = primaryStage;
     }
 
     @FXML
@@ -164,16 +135,12 @@ public class SDMController {
         onFinish.ifPresent(Runnable::run);
     }
 
-    public void setMapGridPane (GridPane mapGridPane) {
-        this.mapGridPane = mapGridPane;
-    }
-
     @FXML
     void loadFileButtonAction (ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select xml file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
-        File selectedFile = fileChooser.showOpenDialog(primaryStage);
+        File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile == null) {
             return;
         }
@@ -226,32 +193,19 @@ public class SDMController {
 
     }
 
-    private void setCenterToButtonsContainer () {
-        mainBorderPane.setCenter(centerScrollPane);
-    }
-
-    private void setCenterToPlaceOrder () {
-        mainBorderPane.setCenter(centerScrollPane);
-    }
-
     private void handlePlaceOrder () {
-        // Consumer<PlaceOrderRequest> placeStaticOrderConsumer = new Consumer<PlaceOrderRequest>() {
-        // @Override
-        // public void accept(PlaceOrderRequest request) {
-        // businessLogic.placeStaticOrder(request);
-        // }
-        // };
-        mainBorderPane.setCenter(placeOrderPane);
-
+        mainController.setCenterToPlaceOrderPane();
     }
 
     private void handleDisplayMap () {
-
         mainController.createMap();
     }
 
     private void handleDisplayCustomers () {
         GetCustomersResponse response = mainController.getCustomers();
+        mainController.setCenterToDisplayInfoScrollPane();
+        buttonsContainer.getChildren().clear();
+
         response.getSystemCustomers().values().forEach(customer -> {
             Button button = new Button(customer.getName());
             button.getStyleClass().add("display-button");
@@ -267,8 +221,10 @@ public class SDMController {
     }
 
     private void handleDisplayStores () {
-        setCenterToButtonsContainer();
         GetStoresResponse response = mainController.getStores();
+        mainController.setCenterToDisplayInfoScrollPane();
+        buttonsContainer.getChildren().clear();
+
         response.getStores().values().forEach(storeDTO -> {
             Button button = new Button(storeDTO.getName());
             button.getStyleClass().add("display-button");
@@ -283,8 +239,10 @@ public class SDMController {
     }
 
     private void handleDisplayOrders () {
-        setCenterToButtonsContainer();
         GetOrdersResponse response = mainController.getOrders();
+        mainController.setCenterToDisplayInfoScrollPane();
+        buttonsContainer.getChildren().clear();
+
         response.getOrders().keySet().forEach(orderId -> {
             Button button = new Button(orderId.toString());
             button.getStyleClass().add("display-button");
@@ -374,45 +332,12 @@ public class SDMController {
         }
         return accordion;
     }
-    // private void handleDisplayOrders() {
-    // GetOrdersResponse response = businessLogic.getOrders();
-    // List<Button> buttonList = new ArrayList<>();
-    // response.getOrders().values().forEach(order -> {
-    // Button button = new Button(order.getId());
-    // button.setOnAction(new EventHandler<ActionEvent>() {
-    // @Override
-    // public void handle(ActionEvent event) {
-    // DisplayDetails.clear();
-    // DisplayDetails.setText((response.getStores().get(Integer.parseInt(button.getText()))).toString());
-    // }
-    // });
-    //
-    // buttonList.add(button);
-    // });
-    //
-    // }
 
-    // private void handleDisplayCustomers() {
-    // GetStoresResponse response = businessLogic.getStores();
-    // List<Button> buttonList = new ArrayList<>();
-    // response.getStores().values().forEach(storeDTO -> {
-    // Button button = new Button(Integer.toString(storeDTO.getId()));
-    // button.setOnAction(new EventHandler<ActionEvent>() {
-    // @Override
-    // public void handle(ActionEvent event) {
-    // DisplayDetails.clear();
-    // DisplayDetails.setText((response.getStores().get(Integer.parseInt(button.getText()))).toString());
-    // }
-    // });
-    //
-    // buttonList.add(button);
-    // });
-    //
-    // }
-    //
     private void handleDisplayItems () {
-        buttonsContainer.getChildren().clear();
         GetItemsResponse response = mainController.getItems();
+        mainController.setCenterToDisplayInfoScrollPane();
+        buttonsContainer.getChildren().clear();
+
         response.getItems().values().forEach(itemDTO -> {
             Button button = new Button(itemDTO.getName());
             button.getStyleClass().add("display-button");

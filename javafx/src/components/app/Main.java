@@ -71,6 +71,7 @@ public class Main extends Application {
         appController.setMapScrollPane(mapComponent);
         appController.setMapGridPane(mapController.getLocationsGridPane());
         appController.setMainBorderPane(sdmController.getMainBorderPane());
+        appController.setDisplayInfoScrollPane(sdmController.getDisplayInfoScrollPane());
     }
 
     public static void main (String[] args) {
