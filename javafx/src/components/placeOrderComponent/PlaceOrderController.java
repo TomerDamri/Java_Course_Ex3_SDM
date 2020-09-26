@@ -272,21 +272,34 @@ public class PlaceOrderController {
 
     @FXML
     void createOrderButtonAction (ActionEvent event) {
+        String title, header, message;
         if (isStaticOrder.get()) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Place Order Confirmation");
-            alert.setHeaderText("Press OK to confirm Order Creation");
-            alert.setContentText(getStaticOrderSummary());
-            alert.showAndWait();
+            title = "Place Order Confirmation";
+            header = "Press Ok to confirm";
+            message = getStaticOrderSummary();
         }
         else {
             PlaceDynamicOrderResponse response = mainController.placeDynamicOrder(placeDynamicOrderRequest);
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Place Order offer");
-            alert.setHeaderText("Press Ok to confirm");
-            alert.setContentText(getSDynamicOrderSummary(response));
-            alert.showAndWait();
+            title = "Place Order offer";
+            header = "Press Ok to confirm";
+            message = getSDynamicOrderSummary(response);
         }
+
+        Alert MidSummaryForOrder = createMidSummaryForOrder(title, header, message);
+        MidSummaryForOrder.showAndWait();
+    }
+
+    private Alert createMidSummaryForOrder (String title, String header, String message) {
+        Alert alert;
+        alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        TextArea area = new TextArea(message);
+        area.setWrapText(true);
+        area.setEditable(false);
+        alert.getDialogPane().setContent(area);
+        alert.setResizable(true);
+        return alert;
     }
 
     private String getStaticOrderSummary () {
