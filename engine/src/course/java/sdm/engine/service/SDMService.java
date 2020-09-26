@@ -12,7 +12,6 @@ import course.java.sdm.engine.utils.fileManager.FileManager;
 import course.java.sdm.engine.utils.ordersCreator.OrdersCreator;
 import course.java.sdm.engine.utils.systemUpdater.SystemUpdater;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
-import model.DiscountDTO;
 import model.DynamicOrderEntityDTO;
 import model.request.*;
 import model.response.*;
@@ -94,7 +93,7 @@ public class SDMService {
         }
 
         orderIdToValidDiscounts.put(orderId, returnDiscounts);
-        return dtoMapper.createGetDiscountsResponse(returnDiscounts);
+        return dtoMapper.createGetDiscountsResponse(returnDiscounts, descriptor.getSystemStores());
     }
 
     private ValidStoreDiscounts getStoreDiscounts (Map<PricedItem, Double> pricedItems, int storeId) {
@@ -304,7 +303,7 @@ public class SDMService {
 
         List<Discount> removedDiscounts = systemUpdater.deleteItemFromStore(itemId, storeId, systemStores, systemItems);
 
-        return createDeleteItemFromStoreResponse(removedDiscounts);
+        return dtoMapper.createDeleteItemFromStoreResponse(removedDiscounts, systemStores.get(storeId));
     }
 
     public void updateItemPrice (UpdateStoreRequest request) {
@@ -315,14 +314,5 @@ public class SDMService {
         Map<Integer, SystemItem> systemItems = descriptor.getSystemItems();
 
         systemUpdater.updateItemPrice(itemId, storeId, itemPrice, systemStores, systemItems);
-    }
-
-    private DeleteItemFromStoreResponse createDeleteItemFromStoreResponse (List<Discount> removedDiscounts) {
-        List<DiscountDTO> removedDiscountsDTO = null;
-        if (removedDiscounts != null) {
-            removedDiscountsDTO = removedDiscounts.stream().map(dtoMapper::toDiscountDTO).collect(Collectors.toList());
-        }
-
-        return new DeleteItemFromStoreResponse(removedDiscountsDTO);
     }
 }

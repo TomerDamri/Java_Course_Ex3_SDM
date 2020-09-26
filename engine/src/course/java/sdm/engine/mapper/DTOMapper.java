@@ -1,9 +1,6 @@
 package course.java.sdm.engine.mapper;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,11 +11,15 @@ import model.response.*;
 
 public class DTOMapper {
 
-    public GetDiscountsResponse createGetDiscountsResponse (Map<Integer, ValidStoreDiscounts> returnDiscounts) {
+    public GetDiscountsResponse createGetDiscountsResponse (Map<Integer, ValidStoreDiscounts> returnDiscounts,
+                                                            Map<Integer, SystemStore> systemStores) {
         Map<Integer, ValidStoreDiscountsDTO> returnDiscountDTO = returnDiscounts.entrySet()
                                                                                 .stream()
-                                                                                .collect(Collectors.toMap(Map.Entry::getKey,
-                                                                                                          entry -> toValidStoreDiscountsDTO(entry.getValue())));
+                                                                                .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+                                                                                    SystemStore systemStore = systemStores.get(entry.getKey());
+                                                                                    return toValidStoreDiscountsDTO(entry.getValue(),
+                                                                                                                    systemStore);
+                                                                                }));
 
         return new GetDiscountsResponse(returnDiscountDTO);
     }
@@ -33,17 +34,17 @@ public class DTOMapper {
         if (entity instanceof SystemStore) {
             SystemStore systemStore = (SystemStore) entity;
             return new StoreMapEntityDTO(systemStore.getId(),
-                                              toLocationDTO(systemStore.getLocation()),
-                                              systemStore.getName(),
-                                              systemStore.getOrders().size(),
-                                              systemStore.getDeliveryPpk());
+                                         toLocationDTO(systemStore.getLocation()),
+                                         systemStore.getName(),
+                                         systemStore.getOrders().size(),
+                                         systemStore.getDeliveryPpk());
         }
         else if (entity instanceof SystemCustomer) {
             SystemCustomer systemCustomer = (SystemCustomer) entity;
             return new CustomerMapEntityDTO(systemCustomer.getId(),
-                                                 toLocationDTO(systemCustomer.getLocation()),
-                                                 systemCustomer.getName(),
-                                                 systemCustomer.getNumOfOrders());
+                                            toLocationDTO(systemCustomer.getLocation()),
+                                            systemCustomer.getName(),
+                                            systemCustomer.getNumOfOrders());
         }
 
         throw new RuntimeException("The type of the mappable entity must be SystemCustomer or SystemStore");
@@ -117,13 +118,21 @@ public class DTOMapper {
                                                       .stream()
                                                       .map(this::toStoreItemDTO)
                                                       .collect(Collectors.toMap(StoreItemDTO::getId, storeItemDTO -> storeItemDTO));
+
+        List<Discount> storeDiscounts = new LinkedList<>();
+        systemStore.getStoreDiscounts().values().forEach(storeDiscounts::addAll);
+        List<DiscountDTO> storeDiscountsDTO = storeDiscounts.stream()
+                                                            .map(discount -> toDiscountDTO(discount, systemStore))
+                                                            .collect(Collectors.toList());
+
         return new StoreDTO(systemStore.getId(),
                             systemStore.getName(),
                             systemStore.getDeliveryPpk(),
                             toLocationDTO(systemStore.getLocation()),
                             items,
                             systemStore.getOrders().stream().map(this::toStoreOrderDTO).collect(Collectors.toList()),
-                            systemStore.getTotalDeliveriesPayment());
+                            systemStore.getTotalDeliveriesPayment(),
+                            storeDiscountsDTO);
     }
 
     private SystemItemDTO toSystemItemDTO (SystemItem systemItem) {
@@ -137,20 +146,43 @@ public class DTOMapper {
                                  systemItem.getDiscountOrdersCount());
     }
 
-    public DiscountDTO toDiscountDTO (Discount discount) {
+    public DeleteItemFromStoreResponse createDeleteItemFromStoreResponse (List<Discount> removedDiscounts, SystemStore systemStore) {
+        List<DiscountDTO> removedDiscountsDTO = null;
+        if (removedDiscounts != null) {
+            removedDiscountsDTO = removedDiscounts.stream()
+                                                  .map(discount -> toDiscountDTO(discount, systemStore))
+                                                  .collect(Collectors.toList());
+        }
+
+        return new DeleteItemFromStoreResponse(removedDiscountsDTO);
+    }
+
+    public DiscountDTO toDiscountDTO (Discount discount, SystemStore systemStore) {
+        Map<Integer, StoreItem> itemIdToStoreItem = systemStore.getItemIdToStoreItem();
+
+        String storeName = systemStore.getName();
         IfYouBy ifYouBuy = discount.getIfYouBuy();
+        int ifYouBuyItemId = ifYouBuy.getItemId();
+        String ifYouBuyItemName = itemIdToStoreItem.get(ifYouBuyItemId).getName();
+
         ThenYouGet thenYouGet = discount.getThenYouGet();
-        String name = discount.getName();
+        String discountName = discount.getName();
         Map<Integer, OfferDTO> offers = thenYouGet.getOffers()
                                                   .values()
                                                   .stream()
-                                                  .map(this::toOfferDTO)
+                                                  .map(offer -> toOfferDTO(offer, itemIdToStoreItem))
                                                   .collect(Collectors.toMap(OfferDTO::getId, offerDTO -> offerDTO));
 
-        return new DiscountDTO(name, ifYouBuy.getItemId(), ifYouBuy.getQuantity(), thenYouGet.getOperator().toString(), offers);
+        return new DiscountDTO(storeName,
+                               discountName,
+                               ifYouBuyItemId,
+                               ifYouBuyItemName,
+                               ifYouBuy.getQuantity(),
+                               thenYouGet.getOperator().toString(),
+                               offers);
     }
 
-    public ValidStoreDiscountsDTO toValidStoreDiscountsDTO (ValidStoreDiscounts validStoreDiscounts) {
+    public ValidStoreDiscountsDTO toValidStoreDiscountsDTO (ValidStoreDiscounts validStoreDiscounts, SystemStore systemStore) {
         Map<Integer, List<Discount>> itemIdToValidStoreDiscounts = validStoreDiscounts.getItemIdToValidStoreDiscounts();
 
         return new ValidStoreDiscountsDTO(itemIdToValidStoreDiscounts.entrySet()
@@ -158,7 +190,8 @@ public class DTOMapper {
                                                                      .collect(Collectors.toMap(Map.Entry::getKey,
                                                                                                integerListEntry -> integerListEntry.getValue()
                                                                                                                                    .stream()
-                                                                                                                                   .map(this::toDiscountDTO)
+                                                                                                                                   .map(discount -> toDiscountDTO(discount,
+                                                                                                                                                                  systemStore))
                                                                                                                                    .collect(Collectors.toList()))));
     }
 
@@ -172,8 +205,11 @@ public class DTOMapper {
                                 storeItem.getDiscountPurchasesCount());
     }
 
-    private OfferDTO toOfferDTO (Offer offer) {
-        return new OfferDTO(offer.getId(), offer.getQuantity(), offer.getItemId(), offer.getForAdditional());
+    private OfferDTO toOfferDTO (Offer offer, Map<Integer, StoreItem> itemIdToStoreItem) {
+        int offerItemId = offer.getItemId();
+        String offerItemName = itemIdToStoreItem.get(offerItemId).getName();
+
+        return new OfferDTO(offer.getId(), offer.getQuantity(), offerItemId, offerItemName, offer.getForAdditional());
     }
 
     private PricedItemDTO toPricedItemDTO (PricedItem pricedItem) {

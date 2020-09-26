@@ -56,6 +56,10 @@ public class SystemStore implements Serializable, Mappable {
         return orders;
     }
 
+    public Map<Integer, List<Discount>> getStoreDiscounts () {
+        return store.getStoreDiscounts();
+    }
+
     @Override
     public String toString () {
         StringBuilder builder = new StringBuilder(store.toString()).append("\nStore Orders:\n");
