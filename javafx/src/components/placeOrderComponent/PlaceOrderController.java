@@ -283,20 +283,22 @@ public class PlaceOrderController {
     }
 
     @FXML
-    void createOrderButtonAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    void createOrderButtonAction (ActionEvent event) {
+        String title, header, message;
         if (isStaticOrder.get()) {
-            alert.setTitle("Place Order Confirmation");
-            alert.setHeaderText("Press OK to confirm order and continue to select discounts");
-            alert.setContentText(getStaticOrderSummary());
-        } else {
-            PlaceDynamicOrderResponse response = mainController.placeDynamicOrder(placeDynamicOrderRequest);
-            orderId = response.getId();
-            alert.setTitle("Place Order offer");
-            alert.setHeaderText("Press OK to confirm order and continue to select discounts");
-            alert.setContentText(getSDynamicOrderSummary(response));
+            title = "Place Order Confirmation";
+            header = "Press Ok to confirm";
+            message = getStaticOrderSummary();
         }
-        Optional<ButtonType> result = alert.showAndWait();
+        else {
+            PlaceDynamicOrderResponse response = mainController.placeDynamicOrder(placeDynamicOrderRequest);
+            title = "Place Order offer";
+            header = "Press Ok to confirm";
+            message = getSDynamicOrderSummary(response);
+        }
+
+        Alert MidSummaryForOrder = createMidSummaryForOrder(title, header, message);
+        Optional<ButtonType> result =  MidSummaryForOrder.showAndWait();
         if (result.isPresent()) {
             if (result.get() == ButtonType.OK) {
                 handleSelectDiscounts();
@@ -307,118 +309,17 @@ public class PlaceOrderController {
         }
     }
 
-    private void handleCancelOrder() {
-        resetPlaceOrderComponent();
-        mainController.completeTheOrder(orderId, false);
-    }
-
-    private void handleSelectDiscounts() {
-        if (isStaticOrder.get()) {
-            PlaceOrderResponse response = mainController.placeStaticOrder(placeOrderRequest);
-            orderId = response.getOrderId();
-        }
-        GetDiscountsResponse response = mainController.getDiscounts(orderId);
-        handleDisplayDiscounts(response);
-    }
-
-    private void handleDisplayDiscounts(GetDiscountsResponse response) {
-        GridPane itemsGridPane = new GridPane();
-        GridPane storeDiscountsGridPane = new GridPane();
-        GridPane discountDetailsGridPane = new GridPane();
-        if (response.getStoreIdToValidDiscounts() != null && !response.getStoreIdToValidDiscounts().isEmpty()) {
-            int storeRowIndex = 0;
-            for (Integer storeId : response.getStoreIdToValidDiscounts().keySet()) {
-                Accordion storeAccordion = new Accordion();
-                int itemRowIndex = 0;
-                for (Integer itemId : response.getStoreIdToValidDiscounts().get(storeId).getItemIdToValidStoreDiscounts().keySet()) {
-                    Accordion itemAccordion = new Accordion();
-                    List<DiscountDTO> discounts = response.getStoreIdToValidDiscounts().get(storeId).getItemIdToValidStoreDiscounts().get(itemId);
-                    populateDiscounts(discounts, discountDetailsGridPane);
-                    TitledPane discountsTitledPane = new TitledPane(Integer.toString(itemId), discountDetailsGridPane);
-                    itemAccordion.getPanes().add(discountsTitledPane);
-                    itemsGridPane.add(itemAccordion, 0, itemRowIndex);
-                    itemRowIndex++;
-                }
-                TitledPane itemsTitledPane = new TitledPane(Integer.toString(storeId), itemsGridPane);
-                storeAccordion.getPanes().add(itemsTitledPane);
-                storeDiscountsGridPane.add(storeAccordion, 0, storeRowIndex);
-                storeRowIndex++;
-            }
-            Button submitDiscountButton = new Button("Submit Discounts");
-            submitDiscountButton.setOnAction(event -> {
-                //todo: check discounts legal in be and display order summery
-            });
-            VBox discountsVBox = new VBox(storeDiscountsGridPane, submitDiscountButton);
-            itemsAndDiscountsScrollPane.setContent(discountsVBox);
-        } else {
-            alertNoDiscountsAndConfirmOrder();
-            //todo alert that there are no discounts and confirm
-        }
-    }
-
-    private void alertNoDiscountsAndConfirmOrder() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Place Order Confirmation");
-        alert.setHeaderText("There are no available discounts for your order\n Press OK to confirm order creation");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent()) {
-            if (result.get() == ButtonType.OK) {
-                handleConfirmOrder();
-            } else if (result.get() == ButtonType.CANCEL) {
-                handleCancelOrder();
-            }
-        }
-    }
-
-    private void handleConfirmOrder() {
-        mainController.completeTheOrder(orderId, true);
-    }
-
-    private void populateDiscounts(List<DiscountDTO> discounts, GridPane discountDetailsGridPane) {
-
-        for (DiscountDTO discount : discounts) {
-            Accordion discountAccordion = new Accordion();
-            discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
-            discountDetailsGridPane.add(new TextField(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemId())), 1, 0);
-            discountDetailsGridPane.add(new Label("Then You Get:"), 0, 1);
-
-            if (discount.getOperator().equals(DiscountDTO.DiscountType.IRRELEVANT)) {
-                OfferDTO offer = (new ArrayList<>(discount.getOffers().values())).get(0);
-                discountDetailsGridPane.add(new TextField(String.format("%s %s", offer.getQuantity(), offer.getItemId())), 1, 1);
-            } else if (discount.getOperator().equals(DiscountDTO.DiscountType.ALL_OR_NOTHING)) {
-                List<OfferDTO> offers = new ArrayList<>(discount.getOffers().values());
-                StringBuilder stringBuilder = new StringBuilder();
-                double additionalPrice = 0;
-                for (OfferDTO offer : offers) {
-                    stringBuilder.append(offer.getQuantity());
-                    stringBuilder.append(" ");
-                    stringBuilder.append(offer.getItemId());
-                    stringBuilder.append("and ");
-                    additionalPrice += offer.getQuantity() * offer.getForAdditional();
-                }
-
-                stringBuilder.append("for additional");
-                stringBuilder.append(additionalPrice);
-                discountDetailsGridPane.add(new TextField(stringBuilder.toString()), 1, 1);
-
-            } else if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
-                List<OfferDTO> offers = new ArrayList<>(discount.getOffers().values());
-                ComboBox<String> offerOptionsBox = new ComboBox<>();
-                ObservableList<String> offerOptionsList = FXCollections.observableArrayList();
-                offers.forEach(offer -> {
-                    offerOptionsList.add(String.format("%s %s for additional %s ", offer.getQuantity(), offer.getItemId(), offer.getForAdditional()));
-                });
-                offerOptionsBox.setItems(offerOptionsList);
-                discountDetailsGridPane.add(offerOptionsBox, 1, 1);
-            }
-
-            discountDetailsGridPane.add(new Label("Quantity"), 0, 2);
-            TextField quantityField = new TextField();
-            quantityField.setPromptText("Enter number of desired discount realizations");
-            discountDetailsGridPane.add(quantityField, 1, 2);
-            TitledPane discountTitledPane = new TitledPane(discount.getName(), discountDetailsGridPane);
-            discountAccordion.getPanes().add(discountTitledPane);
-        }
+    private Alert createMidSummaryForOrder (String title, String header, String message) {
+        Alert alert;
+        alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        TextArea area = new TextArea(message);
+        area.setWrapText(true);
+        area.setEditable(false);
+        alert.getDialogPane().setContent(area);
+        alert.setResizable(true);
+        return alert;
     }
 
     private String getStaticOrderSummary () {
