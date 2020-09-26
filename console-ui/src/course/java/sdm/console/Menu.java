@@ -258,35 +258,35 @@ public class Menu {
     }
 
     private void handleDynamicOrder () {
-        LocalDateTime date = getOrderDate();
-        Location location = getOrderLocation();
-        Map<Integer, Double> orderItemToAmount = getDynamicOrderItems();
-        if (orderItemToAmount.isEmpty()) {
-            System.out.println("No items were selected, the order is canceled");
-        }
-        else {
-            PlaceDynamicOrderResponse response = controller.placeDynamicOrder(new PlaceDynamicOrderRequest(1,
-                                                                                                           date,
-                                                                                                           location.x,
-                                                                                                           location.y,
-                                                                                                           orderItemToAmount));
-            UUID orderId = response.getId();
-            GetDiscountsResponse discounts = controller.getDiscounts(orderId);
-            controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceDynamicOrderTest(orderId));
-            controller.completeTheOrder(orderId, true);
-
-            // displayDynamicOrderOffer(response);
-            System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
-            String userInput = scanner.nextLine();
-            if (userInput.equals("Y") || userInput.equals("y")) {
-                controller.completeDynamicOrder(response.getId(), true);
-                System.out.println("Order created successfully\nOrder id:" + response.getId());
-            }
-            else {
-                controller.completeDynamicOrder(response.getId(), false);
-                System.out.println("Order creation canceled");
-            }
-        }
+//        LocalDateTime date = getOrderDate();
+//        Location location = getOrderLocation();
+//        Map<Integer, Double> orderItemToAmount = getDynamicOrderItems();
+//        if (orderItemToAmount.isEmpty()) {
+//            System.out.println("No items were selected, the order is canceled");
+//        }
+//        else {
+////            PlaceDynamicOrderResponse response = controller.placeDynamicOrder(new PlaceDynamicOrderRequest(1,
+////                                                                                                           date,
+////                                                                                                           location.x,
+////                                                                                                           location.y,
+////                                                                                                           orderItemToAmount));
+////            UUID orderId = response.getId();
+//            GetDiscountsResponse discounts = controller.getDiscounts(orderId);
+//            controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceDynamicOrderTest(orderId));
+//            controller.completeTheOrder(orderId, true);
+//
+//            // displayDynamicOrderOffer(response);
+//            System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
+//            String userInput = scanner.nextLine();
+//            if (userInput.equals("Y") || userInput.equals("y")) {
+//                controller.completeDynamicOrder(response.getId(), true);
+//                System.out.println("Order created successfully\nOrder id:" + response.getId());
+//            }
+//            else {
+//                controller.completeDynamicOrder(response.getId(), false);
+//                System.out.println("Order creation canceled");
+//            }
+//        }
     }
 
     private void displayDynamicOrderOffer (PlaceDynamicOrderResponse response) {
@@ -366,38 +366,38 @@ public class Menu {
     }
 
     private void handleStaticOrder () {
-        int orderStoreId = getOrderStore();
-        LocalDateTime date = getOrderDate();
-        Location location = getOrderLocation();
-        Map<Integer, Double> orderItemToAmount = getOrderItems(orderStoreId);
-        if (orderItemToAmount.isEmpty()) {
-            System.out.println("No items were selected, the order is canceled");
-        }
-        else {
-            // TODO: 05/09/2020 - add customer ID to request
-            PlaceOrderRequest request = new PlaceOrderRequest(1, orderStoreId, date, orderItemToAmount);
-            printOrderSummary(request);
-            System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
-            String userInput = scanner.nextLine();
-            if (userInput.equals("Y") || userInput.equals("y")) {
-                try {
-                    PlaceOrderResponse response = controller.placeStaticOrder(request);
-                    UUID orderId = response.getOrderId();
-                    GetDiscountsResponse discounts = controller.getDiscounts(orderId);
-                    controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceStaicOrderTest(orderId));
-                    controller.completeTheOrder(orderId, true);
-
-                    System.out.println("Order created successfully\nOrder id:" + orderId);
-                }
-                catch (Exception exception) {
-                    System.out.println(exception.getMessage());
-                }
-            }
-            else {
-                System.out.println("Order creation canceled");
-            }
-        }
-
+//        int orderStoreId = getOrderStore();
+//        LocalDateTime date = getOrderDate();
+//        Location location = getOrderLocation();
+//        Map<Integer, Double> orderItemToAmount = getOrderItems(orderStoreId);
+//        if (orderItemToAmount.isEmpty()) {
+//            System.out.println("No items were selected, the order is canceled");
+//        }
+//        else {
+//            // TODO: 05/09/2020 - add customer ID to request
+//            PlaceOrderRequest request = new PlaceOrderRequest(1, orderStoreId, date, orderItemToAmount);
+//            printOrderSummary(request);
+//            System.out.println(("Enter 'Y' to confirm or any other key to cancel the order"));
+//            String userInput = scanner.nextLine();
+//            if (userInput.equals("Y") || userInput.equals("y")) {
+//                try {
+//                    PlaceOrderResponse response = controller.placeStaticOrder(request);
+//                    UUID orderId = response.getOrderId();
+//                    GetDiscountsResponse discounts = controller.getDiscounts(orderId);
+//                    controller.addDiscountsToOrder(createAddDiscountsToOrderRequestForPlaceStaicOrderTest(orderId));
+//                    controller.completeTheOrder(orderId, true);
+//
+//                    System.out.println("Order created successfully\nOrder id:" + orderId);
+//                }
+//                catch (Exception exception) {
+//                    System.out.println(exception.getMessage());
+//                }
+//            }
+//            else {
+//                System.out.println("Order creation canceled");
+//            }
+//        }
+//
     }
 
     private AddDiscountsToOrderRequest createAddDiscountsToOrderRequestForPlaceDynamicOrderTest (UUID orderId) {

@@ -1,6 +1,9 @@
 package model;
 
 public class ItemDTO {
+    public static String QUANTITY = "QUANTITY";
+    public static String WEIGHT = "WEIGHT";
+
     private final Integer id;
     private final String name;
     private final String purchaseCategory;
