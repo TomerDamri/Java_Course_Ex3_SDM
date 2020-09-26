@@ -21,7 +21,7 @@ public interface ISDMController {
 
     GetDiscountsResponse getDiscounts (UUID orderId);
 
-    void addDiscountsToOrder (AddDiscountsToOrderRequest request);
+    FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request);
 
     void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder);
 

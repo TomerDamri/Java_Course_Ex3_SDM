@@ -10,7 +10,7 @@ import course.java.sdm.engine.model.*;
 
 public class OrdersCreatorValidator {
     public void validateOffersForOneOfOperator (Map<Integer, Offer> discountOffers, Optional<Integer> chosenOfferId, String discountName) {
-        if (!chosenOfferId.isPresent()) {
+        if (chosenOfferId == null || !chosenOfferId.isPresent()) {
             throw new RuntimeException(String.format("For discount: %s, you need to choose one possible offer (choose an Id between 1-%s)",
                                                      discountName,
                                                      discountOffers.size()));

@@ -63,8 +63,8 @@ public class BusinessLogic {
         return beController.placeStaticOrder(request);
     }
 
-    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
-        beController.addDiscountsToOrder(request);
+    public FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+         return beController.addDiscountsToOrder(request);
     }
 
     public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {

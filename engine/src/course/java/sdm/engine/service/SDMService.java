@@ -126,15 +126,16 @@ public class SDMService {
         }
     }
 
-    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+    public FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request) {
         UUID orderId = request.getOrderID();
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
         Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = request.getStoreIdToChosenDiscounts();
+        Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
 
         staticOrders.forEach(( (storeDetails, order) -> {
             int storeId = storeDetails.getId();
-            SystemStore systemStore = descriptor.getSystemStores().get(storeId);
+            SystemStore systemStore = systemStores.get(storeId);
             UUID currStaticOrderId = order.getId();
 
             if (storeIdToChosenDiscounts != null && storeIdToChosenDiscounts.containsKey(storeId)) {
@@ -146,6 +147,8 @@ public class SDMService {
 
             ordersCreator.completeTheOrderV2(systemStore, order);
         }));
+
+        return dtoMapper.createFinalSummaryForOrder(staticOrders, systemStores);
 
     }
 

@@ -11,6 +11,76 @@ import model.response.*;
 
 public class DTOMapper {
 
+    public FinalSummaryForOrder createFinalSummaryForOrder (Map<StoreDetails, Order> staticOrders, Map<Integer, SystemStore> systemStores) {
+        List<StoreSummaryForOrder> storesSummaryForOrder = staticOrders.entrySet()
+                                                                       .stream()
+                                                                       .map(entry -> toStoreSummaryForOrder(entry.getKey(),
+                                                                                                            entry.getValue(),
+                                                                                                            systemStores.get(entry.getKey()
+                                                                                                                                  .getId())))
+                                                                       .collect(Collectors.toList());
+
+        return new FinalSummaryForOrder(storesSummaryForOrder);
+    }
+
+    private StoreSummaryForOrder toStoreSummaryForOrder (StoreDetails storeDetails, Order order, SystemStore systemStore) {
+
+        List<ItemSummaryForOrder> notPartOfDiscountItemsSummary = getNotPartOfDiscountItemsSummary(order);
+        List<ItemSummaryForOrder> partOfDiscountItemsSummary = getPartOfDiscountItemsSummary(order, systemStore);
+
+        List<ItemSummaryForOrder> allItemsSummary = new LinkedList<>();
+        allItemsSummary.addAll(notPartOfDiscountItemsSummary);
+        allItemsSummary.addAll(partOfDiscountItemsSummary);
+
+        return new StoreSummaryForOrder(storeDetails.getId(),
+                                        storeDetails.getName(),
+                                        storeDetails.getDeliveryPpk(),
+                                        order.getDistanceFromCustomerLocation(),
+                                        order.getDeliveryPrice(),
+                                        allItemsSummary);
+    }
+
+    private List<ItemSummaryForOrder> getNotPartOfDiscountItemsSummary (Order order) {
+        return order.getPricedItems()
+                    .entrySet()
+                    .stream()
+                    .map(entry -> getNotPartOfDiscountItemSummary(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
+    }
+
+    private List<ItemSummaryForOrder> getPartOfDiscountItemsSummary (Order order, SystemStore systemStore) {
+        return order.getSelectedOfferToNumOfRealization().entrySet().stream().map(entry -> {
+            Offer currOffer = entry.getKey();
+            Integer numOfRealizations = entry.getValue();
+            StoreItem storeItem = systemStore.getItemIdToStoreItem().get(currOffer.getItemId());
+
+            return getPartOfDiscountItemSummary(storeItem, currOffer, numOfRealizations);
+        }).collect(Collectors.toList());
+    }
+
+    private ItemSummaryForOrder getPartOfDiscountItemSummary (StoreItem storeItem, Offer currOffer, Integer numOfRealizations) {
+        Double itemAmount = currOffer.getQuantity() * numOfRealizations;
+
+        return new ItemSummaryForOrder(storeItem.getId(),
+                                       storeItem.getName(),
+                                       storeItem.getPurchaseCategory().toString(),
+                                       itemAmount,
+                                       currOffer.getForAdditional(),
+                                       itemAmount * currOffer.getForAdditional(),
+                                       true);
+    }
+
+    private ItemSummaryForOrder getNotPartOfDiscountItemSummary (PricedItem pricedItem, Double itemAmount) {
+
+        return new ItemSummaryForOrder(pricedItem.getId(),
+                                       pricedItem.getName(),
+                                       pricedItem.getPurchaseCategory().toString(),
+                                       itemAmount,
+                                       pricedItem.getPrice(),
+                                       itemAmount * pricedItem.getPrice(),
+                                       false);
+    }
+
     public GetDiscountsResponse createGetDiscountsResponse (Map<Integer, ValidStoreDiscounts> returnDiscounts,
                                                             Map<Integer, SystemStore> systemStores) {
         Map<Integer, ValidStoreDiscountsDTO> returnDiscountDTO = returnDiscounts.entrySet()

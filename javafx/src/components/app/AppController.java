@@ -194,8 +194,8 @@ public class AppController {
         return businessLogic.getDiscounts(orderId);
     }
 
-    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
-        businessLogic.addDiscountsToOrder(request);
+    public FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+        return businessLogic.addDiscountsToOrder(request);
     }
 
     public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {

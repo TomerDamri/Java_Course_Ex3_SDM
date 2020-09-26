@@ -43,8 +43,7 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
-        PlaceOrderResponse placeOrderResponse = service.placeStaticOrderV2(request);
-        return placeOrderResponse;
+        return service.placeStaticOrderV2(request);
     }
 
     @Override
@@ -59,7 +58,6 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {
-        // return service.placeDynamicOrder(request);
         return service.placeDynamicOrderV2(request);
     }
 
@@ -83,8 +81,8 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
-    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
-        service.addDiscountsToOrder(request);
+    public FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+        return service.addDiscountsToOrder(request);
     }
 
     @Override
