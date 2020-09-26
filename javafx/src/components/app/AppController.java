@@ -140,18 +140,6 @@ public class AppController {
         placeOrderComponentController.setCustomersList(customersObservableList);
     }
 
-    public void resetPlaceOrderComponent() {
-        //todo: reset place order requests and order id and table view
-//        placeOrderComponentController.setCustomersList(null);
-        placeOrderComponentController.setStoresList(null);
-        placeOrderComponentController.setIsCustomerSelected(false);
-        placeOrderComponentController.setIsDatePicked(false);
-        placeOrderComponentController.setIsStoreSelected(false);
-        placeOrderComponentController.setIsStaticOrder(false);
-        placeOrderComponentController.setIsOrderTypeSelected(false);
-        placeOrderComponentController.setSelectedCustomer(0);
-        placeOrderComponentController.setSelectedDate(null);
-    }
 
     public void setStoresList() {
         GetStoresResponse storesResponse = businessLogic.getStores();
@@ -186,6 +174,16 @@ public class AppController {
 
     public PlaceDynamicOrderResponse placeDynamicOrder(PlaceDynamicOrderRequest placeDynamicOrderRequest) {
         return businessLogic.placeDynamicOrder(placeDynamicOrderRequest);
+    }
+
+    public static double round (double value, int places) {
+        if (places < 0)
+            throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {

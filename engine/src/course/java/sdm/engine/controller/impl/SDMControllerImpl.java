@@ -43,10 +43,7 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
-        // return service.placeStaticOrder(request);
         PlaceOrderResponse placeOrderResponse = service.placeStaticOrderV2(request);
-        // Map<Integer, StoreValidDiscounts> orderDiscounts =
-        // service.getOrderDiscounts(placeOrderResponse.getOrderId());
         return placeOrderResponse;
     }
 
