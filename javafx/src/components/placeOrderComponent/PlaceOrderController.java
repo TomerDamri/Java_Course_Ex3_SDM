@@ -12,16 +12,21 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
+import model.DiscountDTO;
 import model.ItemDTO;
+import model.OfferDTO;
 import model.PricedItemDTO;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
+import model.response.GetDiscountsResponse;
 import model.response.PlaceDynamicOrderResponse;
+import model.response.PlaceOrderResponse;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.function.Consumer;
+import java.util.*;
 
 public class PlaceOrderController {
 
@@ -45,18 +50,18 @@ public class PlaceOrderController {
     private ComboBox<String> storesBox;
 
     @FXML
-    private ScrollPane itemsScrollPane;
+    private ScrollPane itemsAndDiscountsScrollPane;
 
     @FXML
     private Button createOrderButton;
 
-    private Consumer<PlaceOrderRequest> placeOrderRequestConsumer;
-
-    private Consumer<PlaceDynamicOrderRequest> placeDynamicOrderRequestConsumer;
-
     private TableView<PricedItemDTO> staticOrderItemsView = new TableView<>();
 
     private TableView<ItemDTO> dynamicOrderItemsView = new TableView<>();
+
+    private GridPane selectDiscountsPane = new GridPane();
+
+    private UUID orderId;
 
     private SimpleBooleanProperty isCustomerSelected;
     private SimpleBooleanProperty isDatePicked;
@@ -126,6 +131,11 @@ public class PlaceOrderController {
 
         initItemsTable();
         initPricedItemsTable();
+        initSelectDiscountsPane();
+    }
+
+    private void initSelectDiscountsPane() {
+
     }
 
     private void initPricedItemsTable() {
@@ -192,8 +202,6 @@ public class PlaceOrderController {
 
         dynamicOrderItemsView.getColumns().addAll(idColumn, nameColumn, categoryColumn, amountColumn);
         dynamicOrderItemsView.setEditable(true);
-
-
     }
 
     @FXML
@@ -206,19 +214,140 @@ public class PlaceOrderController {
 
     @FXML
     void createOrderButtonAction(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         if (isStaticOrder.get()) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Place Order Confirmation");
-            alert.setHeaderText("Press OK to confirm Order Creation");
+            alert.setHeaderText("Press OK to confirm order and continue to select discounts");
             alert.setContentText(placeOrderRequest.toString());
-            alert.showAndWait();
         } else {
             PlaceDynamicOrderResponse response = mainController.placeDynamicOrder(placeDynamicOrderRequest);
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            orderId = response.getId();
             alert.setTitle("Place Order offer");
-            alert.setHeaderText("Press Ok to confirm");
+            alert.setHeaderText("Press OK to confirm order and continue to select discounts");
             alert.setContentText(response.toString());
-            alert.showAndWait();
+        }
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent()) {
+            if (result.get() == ButtonType.OK) {
+                handleSelectDiscounts();
+            } else if (result.get() == ButtonType.CANCEL) {
+                handleCancelOrder();
+
+            }
+        }
+    }
+
+    private void handleCancelOrder() {
+        mainController.resetPlaceOrderComponent();
+        mainController.completeTheOrder(orderId, false);
+    }
+
+    private void handleSelectDiscounts() {
+        if (isStaticOrder.get()) {
+            PlaceOrderResponse response = mainController.placeStaticOrder(placeOrderRequest);
+            orderId = response.getOrderId();
+        }
+        GetDiscountsResponse response = mainController.getDiscounts(orderId);
+        handleDisplayDiscounts(response);
+    }
+
+    private void handleDisplayDiscounts(GetDiscountsResponse response) {
+        GridPane itemsGridPane = new GridPane();
+        GridPane storeDiscountsGridPane = new GridPane();
+        GridPane discountDetailsGridPane = new GridPane();
+        if (response.getStoreIdToValidDiscounts() != null && !response.getStoreIdToValidDiscounts().isEmpty()) {
+            int storeRowIndex = 0;
+            for (Integer storeId : response.getStoreIdToValidDiscounts().keySet()) {
+                Accordion storeAccordion = new Accordion();
+                int itemRowIndex = 0;
+                for (Integer itemId : response.getStoreIdToValidDiscounts().get(storeId).getItemIdToValidStoreDiscounts().keySet()) {
+                    Accordion itemAccordion = new Accordion();
+                    List<DiscountDTO> discounts = response.getStoreIdToValidDiscounts().get(storeId).getItemIdToValidStoreDiscounts().get(itemId);
+                    populateDiscounts(discounts, discountDetailsGridPane);
+                    TitledPane discountsTitledPane = new TitledPane(Integer.toString(itemId), discountDetailsGridPane);
+                    itemAccordion.getPanes().add(discountsTitledPane);
+                    itemsGridPane.add(itemAccordion, 0, itemRowIndex);
+                    itemRowIndex++;
+                }
+                TitledPane itemsTitledPane = new TitledPane(Integer.toString(storeId), itemsGridPane);
+                storeAccordion.getPanes().add(itemsTitledPane);
+                storeDiscountsGridPane.add(storeAccordion, 0, storeRowIndex);
+                storeRowIndex++;
+            }
+            Button submitDiscountButton = new Button("Submit Discounts");
+            submitDiscountButton.setOnAction(event -> {
+                //todo: check discounts legal in be and display order summery
+            });
+            VBox discountsVBox = new VBox(storeDiscountsGridPane, submitDiscountButton);
+            itemsAndDiscountsScrollPane.setContent(discountsVBox);
+        } else {
+            alertNoDiscountsAndConfirmOrder();
+            //todo alert that there are no discounts and confirm
+        }
+    }
+
+    private void alertNoDiscountsAndConfirmOrder() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Place Order Confirmation");
+        alert.setHeaderText("There are no available discounts for your order\n Press OK to confirm order creation");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent()) {
+            if (result.get() == ButtonType.OK) {
+                handleConfirmOrder();
+            } else if (result.get() == ButtonType.CANCEL) {
+                handleCancelOrder();
+            }
+        }
+    }
+
+    private void handleConfirmOrder() {
+        mainController.completeTheOrder(orderId, true);
+    }
+
+    private void populateDiscounts(List<DiscountDTO> discounts, GridPane discountDetailsGridPane) {
+
+        for (DiscountDTO discount : discounts) {
+            Accordion discountAccordion = new Accordion();
+            discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
+            discountDetailsGridPane.add(new TextField(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemId())), 1, 0);
+            discountDetailsGridPane.add(new Label("Then You Get:"), 0, 1);
+
+            if (discount.getOperator().equals(DiscountDTO.DiscountType.IRRELEVANT)) {
+                OfferDTO offer = (new ArrayList<>(discount.getOffers().values())).get(0);
+                discountDetailsGridPane.add(new TextField(String.format("%s %s", offer.getQuantity(), offer.getItemId())), 1, 1);
+            } else if (discount.getOperator().equals(DiscountDTO.DiscountType.ALL_OR_NOTHING)) {
+                List<OfferDTO> offers = new ArrayList<>(discount.getOffers().values());
+                StringBuilder stringBuilder = new StringBuilder();
+                double additionalPrice = 0;
+                for (OfferDTO offer : offers) {
+                    stringBuilder.append(offer.getQuantity());
+                    stringBuilder.append(" ");
+                    stringBuilder.append(offer.getItemId());
+                    stringBuilder.append("and ");
+                    additionalPrice += offer.getQuantity() * offer.getForAdditional();
+                }
+
+                stringBuilder.append("for additional");
+                stringBuilder.append(additionalPrice);
+                discountDetailsGridPane.add(new TextField(stringBuilder.toString()), 1, 1);
+
+            } else if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
+                List<OfferDTO> offers = new ArrayList<>(discount.getOffers().values());
+                ComboBox<String> offerOptionsBox = new ComboBox<>();
+                ObservableList<String> offerOptionsList = FXCollections.observableArrayList();
+                offers.forEach(offer -> {
+                    offerOptionsList.add(String.format("%s %s for additional %s ", offer.getQuantity(), offer.getItemId(), offer.getForAdditional()));
+                });
+                offerOptionsBox.setItems(offerOptionsList);
+                discountDetailsGridPane.add(offerOptionsBox, 1, 1);
+            }
+
+            discountDetailsGridPane.add(new Label("Quantity"), 0, 2);
+            TextField quantityField = new TextField();
+            quantityField.setPromptText("Enter number of desired discount realizations");
+            discountDetailsGridPane.add(quantityField, 1, 2);
+            TitledPane discountTitledPane = new TitledPane(discount.getName(), discountDetailsGridPane);
+            discountAccordion.getPanes().add(discountTitledPane);
         }
     }
 
@@ -246,18 +375,19 @@ public class PlaceOrderController {
         } else {
             isStaticOrder.set(false);
             mainController.setItemsList();
-            itemsScrollPane.setContent(dynamicOrderItemsView);
+            itemsAndDiscountsScrollPane.setContent(dynamicOrderItemsView);
             placeDynamicOrderRequest = new PlaceDynamicOrderRequest(selectedCustomer.getValue(), selectedDate);
         }
     }
 
     @FXML
     void storesBoxAction(ActionEvent event) {
-        isStoreSelected.set(true);
-        int storeId = Integer.parseInt(storesBox.getValue().substring(4, 5));
-        mainController.setPricedItemsList(storeId);
-        itemsScrollPane.setContent(staticOrderItemsView);
-        placeOrderRequest.setStoreId(storeId);
+        if (storesBox.getValue() != null) {
+            isStoreSelected.set(true);
+            int storeId = Integer.parseInt(storesBox.getValue().substring(4, 5));
+            mainController.setPricedItemsList(storeId);
+            itemsAndDiscountsScrollPane.setContent(staticOrderItemsView);
+            placeOrderRequest.setStoreId(storeId);
+        }
     }
-
 }

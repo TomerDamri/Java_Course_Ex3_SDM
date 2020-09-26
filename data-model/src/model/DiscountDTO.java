@@ -9,6 +9,7 @@ public class DiscountDTO {
     protected final DiscountDTO.DiscountType operator;
     protected final Map<Integer, OfferDTO> offers;
 
+
     public DiscountDTO(String name, int ifYouBuyItemId, double ifYouBuyQuantity, String operator, Map<Integer, OfferDTO> offers) {
         this.name = name;
         this.ifYouBuyItemId = ifYouBuyItemId;

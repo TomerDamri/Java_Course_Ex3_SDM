@@ -12,11 +12,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import logic.BusinessLogic;
 import model.*;
+import model.request.AddDiscountsToOrderRequest;
 import model.request.PlaceDynamicOrderRequest;
+import model.request.PlaceOrderRequest;
 import model.response.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class AppController {
@@ -137,8 +140,9 @@ public class AppController {
         placeOrderComponentController.setCustomersList(customersObservableList);
     }
 
-    private void resetPlaceOrderComponent() {
-        placeOrderComponentController.setCustomersList(null);
+    public void resetPlaceOrderComponent() {
+        //todo: reset place order requests and order id and table view
+//        placeOrderComponentController.setCustomersList(null);
         placeOrderComponentController.setStoresList(null);
         placeOrderComponentController.setIsCustomerSelected(false);
         placeOrderComponentController.setIsDatePicked(false);
@@ -183,4 +187,21 @@ public class AppController {
     public PlaceDynamicOrderResponse placeDynamicOrder(PlaceDynamicOrderRequest placeDynamicOrderRequest) {
         return businessLogic.placeDynamicOrder(placeDynamicOrderRequest);
     }
+
+    public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
+        return businessLogic.placeStaticOrder(request);
+    }
+
+    public GetDiscountsResponse getDiscounts (UUID orderId){
+        return businessLogic.getDiscounts(orderId);
+    }
+
+    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+        businessLogic.addDiscountsToOrder(request);
+    }
+
+    public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {
+        businessLogic.completeTheOrder(orderId, toConfirmNewDynamicOrder);
+    }
+
 }

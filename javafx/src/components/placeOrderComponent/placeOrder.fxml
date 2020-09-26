@@ -39,7 +39,7 @@
       </Button>
    </bottom>
    <center>
-      <ScrollPane fx:id="itemsScrollPane" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="itemsAndDiscountsScrollPane" BorderPane.alignment="CENTER">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
         </content>

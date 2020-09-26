@@ -289,7 +289,6 @@ public class SDMController {
                 accordion.getPanes().add(titledPane);
                 displayObject(object, gridObjects);
             });
-            //
         }
         return accordion;
     }

@@ -1,5 +1,6 @@
 package logic;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import components.app.AppController;
@@ -9,6 +10,7 @@ import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
 import logic.tasks.file.CreateMapTask;
 import logic.tasks.file.LoadFileTask;
+import model.request.AddDiscountsToOrderRequest;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
 import model.response.*;
@@ -49,15 +51,25 @@ public class BusinessLogic {
         return beController.getOrders();
     }
 
-    public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
-        return beController.placeStaticOrder(request);
-    }
-
     public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request){
         return beController.placeDynamicOrder(request);
     }
 
-    //
+    public GetDiscountsResponse getDiscounts(UUID orderId){
+        return beController.getDiscounts(orderId);
+    }
+
+    public PlaceOrderResponse placeStaticOrder(PlaceOrderRequest request) {
+        return beController.placeStaticOrder(request);
+    }
+
+    public void addDiscountsToOrder (AddDiscountsToOrderRequest request) {
+        beController.addDiscountsToOrder(request);
+    }
+
+    public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {
+        beController.completeTheOrder(orderId, toConfirmNewDynamicOrder);
+    }    //
     // GetDiscountsResponse getDiscounts(UUID orderId);
     //
     // void addDiscountsToOrder(AddDiscountsToOrderRequest request);
