@@ -16,7 +16,6 @@ public class OrderDTO {
     private Double totalPrice;
     private String storeName;
     private Integer storeId;
-    private Map<Integer, Double> pricedItems;
 
     public OrderDTO(UUID id,
                     LocalDate orderDate,
@@ -32,7 +31,6 @@ public class OrderDTO {
         this.id = id;
         this.orderDate = orderDate;
         this.location = locationDTO;
-        this.pricedItems = pricedItems;
         this.numOfItemTypes = numOfItemTypes;
         this.amountOfItems = amountOfItems;
         this.itemsPrice = itemsPrice;
@@ -52,10 +50,6 @@ public class OrderDTO {
 
     public LocationDTO getLocation() {
         return location;
-    }
-
-    public Map<Integer, Double> getPricedItems() {
-        return pricedItems;
     }
 
     public Integer getNumOfItemTypes() {

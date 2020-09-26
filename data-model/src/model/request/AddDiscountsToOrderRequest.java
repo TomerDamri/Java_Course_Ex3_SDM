@@ -5,7 +5,6 @@ import java.util.UUID;
 
 public class AddDiscountsToOrderRequest {
     private UUID orderID;
-    // <storeId,
     private Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts;
 
     public AddDiscountsToOrderRequest (UUID orderID, Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts) {

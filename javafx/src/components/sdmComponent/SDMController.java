@@ -218,8 +218,7 @@ public class SDMController {
             button.setOnAction(event -> {
                 displayArea.getChildren().clear();
                 List<OrderDTO> order = (response.getOrders().get(UUID.fromString(button.getId())));
-                displayArea.add(new Label("Id"), 0, 0);
-                displayArea.add(new TextField(button.getId()), 1, 0);
+                displayArea.add(new Label(String.format("OrderId: %s", button.getId())), 0, 0);
                 final int[] rowIndex = {1};
                 order.forEach(staticOrder -> {
                     Accordion accordion = new Accordion();
@@ -267,6 +266,10 @@ public class SDMController {
             rowIndex++;
 
         }
+    }
+
+    private void handleDisplayOrderInStore() {
+
     }
 
     private Accordion displayList(List<Object> objects) {

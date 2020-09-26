@@ -125,7 +125,7 @@ public class AppController {
     }
 
     public void handlePlaceOrder() {
-        resetPlaceOrderComponent();
+        placeOrderComponentController.resetPlaceOrderComponent();
         mainBorderPane.setCenter(placeOrderPane);
         setCustomersList();
     }
