@@ -17,10 +17,9 @@ import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
 import model.response.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class AppController {
 
@@ -140,15 +139,45 @@ public class AppController {
         placeOrderComponentController.setCustomersList(customersObservableList);
     }
 
-
-    public void setStoresList() {
+    public ObservableList<String> getStoresList(){
         GetStoresResponse storesResponse = businessLogic.getStores();
         List<StoreDTO> stores = new ArrayList<>(storesResponse.getStores().values());
         ObservableList<String> storesObservableList = FXCollections.observableArrayList();
         stores.forEach(storeDTO -> {
             storesObservableList.add(storeDTO.toString());
         });
-        placeOrderComponentController.setStoresList(storesObservableList);
+        return storesObservableList;
+    }
+
+    public ObservableList<String> getItemsInStoreObservableList(int storeId){
+        GetStoresResponse storesResponse = businessLogic.getStores();
+        StoreDTO store = storesResponse.getStores().get(storeId);
+        ObservableList<String> itemsInStoreObservableList = FXCollections.observableArrayList();
+        store.getItems().values().forEach(item -> {
+            itemsInStoreObservableList.add(String.format("Id: %s Name: %s", item.getId(), item.getName()));
+        });
+
+        return itemsInStoreObservableList;
+    }
+
+    public ObservableList<String> getItemsNotInStoreObservableList(int storeId){
+        GetStoresResponse storesResponse = businessLogic.getStores();
+        StoreDTO store = storesResponse.getStores().get(storeId);
+        Set<Integer> itemsInStore = store.getItems().keySet();
+        GetItemsResponse getItemsResponse = businessLogic.getItems();
+        List<SystemItemDTO> itemsInSystems = new ArrayList<>(getItemsResponse.getItems().values());
+        itemsInSystems.stream().filter(itemDTO -> !itemsInStore.contains(itemDTO.getId())).collect(Collectors.toList());
+        ObservableList<String> itemsNotInStoreObservableList = FXCollections.observableArrayList();
+        itemsInSystems.forEach(item -> {
+            itemsNotInStoreObservableList.add(String.format("Id: %s Name: %s", item.getId(), item.getName()));
+
+        });
+        return itemsNotInStoreObservableList;
+
+    }
+
+    public void setStoresList() {
+        placeOrderComponentController.setStoresList(getStoresList());
     }
 
     public void setItemsList() {

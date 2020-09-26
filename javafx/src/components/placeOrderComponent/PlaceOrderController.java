@@ -19,6 +19,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import model.*;
 import model.request.*;
 import model.response.*;
@@ -66,6 +68,8 @@ public class PlaceOrderController {
     private SimpleBooleanProperty isStaticOrder;
     private SimpleBooleanProperty isOrderTypeSelected;
     private SimpleIntegerProperty selectedCustomer;
+    private SimpleBooleanProperty enableCreateOrder;
+
     private LocalDate selectedDate;
     final ObservableList<String> orderTypes = FXCollections.observableArrayList("From Chosen Store", "Cheapest Shopping Cart");
     private boolean areItemsSelected = false;
@@ -126,6 +130,7 @@ public class PlaceOrderController {
         isOrderTypeSelected = new SimpleBooleanProperty(false);
         isStoreSelected = new SimpleBooleanProperty(false);
         selectedCustomer = new SimpleIntegerProperty();
+        enableCreateOrder = new SimpleBooleanProperty(false);
 
         initItemsTable();
         initPricedItemsTable();
@@ -172,8 +177,8 @@ public class PlaceOrderController {
                     validateAmount(pricedItemDTO.getPurchaseCategory(), amountStr, pricedItemDTO.getId());
                     placeOrderRequest.getOrderItemToAmount().put(pricedItemDTO.getId(), Double.parseDouble(amountStr));
                     areItemsSelected = true;
-                }
-                catch (Exception ex) {
+                    enableCreateOrder.set(true);
+                } catch (Exception ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setWidth(150);
                     alert.setTitle("Invalid Amount");
@@ -199,8 +204,8 @@ public class PlaceOrderController {
                     validateAmount(itemDTO.getPurchaseCategory(), amountStr, itemDTO.getId());
                     placeDynamicOrderRequest.getOrderItemToAmount().put(itemDTO.getId(), Double.parseDouble(amountStr));
                     areItemsSelected = true;
-                }
-                catch (Exception ex) {
+                    enableCreateOrder.set(true);
+                } catch (Exception ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Amount");
                     alert.setContentText(ex.getMessage());
@@ -269,18 +274,18 @@ public class PlaceOrderController {
         orderTypeBox.disableProperty().bind(isDatePicked.not());
         storesBox.visibleProperty().bind(isStaticOrder);
         orderTypeBox.setItems(orderTypes);
+        createOrderButton.visibleProperty().bind(enableCreateOrder);
     }
 
     @FXML
-    void createOrderButtonAction (ActionEvent event) {
+    void createOrderButtonAction(ActionEvent event) {
         if (areItemsSelected) {
             String title, header, message;
             if (isStaticOrder.get()) {
                 title = "Place Order Confirmation";
                 header = "Press Ok to confirm";
                 message = getStaticOrderSummary();
-            }
-            else {
+            } else {
                 PlaceDynamicOrderResponse response = mainController.placeDynamicOrder(placeDynamicOrderRequest);
                 title = "Place Order offer";
                 header = "Press Ok to confirm";
@@ -292,9 +297,10 @@ public class PlaceOrderController {
             if (result.isPresent()) {
                 if (result.get() == ButtonType.OK) {
                     handleSelectDiscounts();
-                }
-                else if (result.get() == ButtonType.CANCEL) {
+
+                } else if (result.get() == ButtonType.CANCEL) {
                     handleCancelOrder();
+                    resetPlaceOrderComponent();
 
                 }
             }
@@ -345,6 +351,7 @@ public class PlaceOrderController {
         storeDiscountsGridPane.setHgap(5);
         discountsGridPane.setVgap(5);
         discountsGridPane.setHgap(5);
+        enableCreateOrder.set(false);
 
         if (response.getStoreIdToValidDiscounts() != null && !response.getStoreIdToValidDiscounts().isEmpty()) {
             int storeRowIndex = 0;
@@ -397,14 +404,16 @@ public class PlaceOrderController {
 
                 }
 
-                // todo: check discounts legal in be and display order summery
+                //todo: check discounts legal in be and display order summery
             });
-            VBox discountsVBox = new VBox(storeDiscountsGridPane, submitDiscountButton);
+            Text selectItemsTitle = new Text("Select Discounts");
+            selectItemsTitle.setFont(new Font(36));
+            VBox discountsVBox = new VBox(selectItemsTitle,storeDiscountsGridPane, submitDiscountButton);
+            discountsVBox.setSpacing(5);
             itemsAndDiscountsScrollPane.setContent(discountsVBox);
         }
         else {
             alertNoDiscountsAndConfirmOrder();
-            // todo alert that there are no discounts and confirm
         }
     }
 
@@ -438,7 +447,7 @@ public class PlaceOrderController {
         resetPlaceOrderComponent();
     }
 
-    private void populateDiscounts (List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
+    private void populateDiscounts(List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
         GridPane discountDetailsGridPane = new GridPane();
         discountDetailsGridPane.setVgap(5);
         discountDetailsGridPane.setHgap(5);
@@ -446,13 +455,9 @@ public class PlaceOrderController {
         for (DiscountDTO discount : discounts) {
             Accordion discountAccordion = new Accordion();
             discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
-            discountDetailsGridPane.add(new TextField(String.format("%s %s",
-                                                                    discount.getIfYouBuyQuantity(),
-                                                                    discount.getIfYouBuyItemName())),
-                                        1,
-                                        0);
+            discountDetailsGridPane.add(new TextField(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemName())), 1, 0);
             discountDetailsGridPane.add(new Label("Then You Get:"), 0, 1);
-
+            ComboBox<String> offerOptionsBox = new ComboBox<>();
             if (discount.getOperator().equals(DiscountDTO.DiscountType.IRRELEVANT)) {
                 OfferDTO offer = (new ArrayList<>(discount.getOffers().values())).get(0);
                 discountDetailsGridPane.add(new TextField(String.format("%s %s", offer.getQuantity(), offer.getOfferItemName())), 1, 1);
@@ -476,7 +481,7 @@ public class PlaceOrderController {
             }
             else if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
                 List<OfferDTO> offers = new ArrayList<>(discount.getOffers().values());
-                ComboBox<String> offerOptionsBox = new ComboBox<>();
+
                 ObservableList<String> offerOptionsList = FXCollections.observableArrayList();
                 offers.forEach(offer -> {
                     offerOptionsList.add(String.format("%s %s for additional %s ",
@@ -496,23 +501,25 @@ public class PlaceOrderController {
                 if (orderDiscounts == null) {
                     orderDiscounts = new HashMap<>();
                 }
-                // todo handle the case of operator or
+
+                ChosenItemDiscount chosenItemDiscount;
+                if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
+                    Integer orOfferId = Integer.parseInt(offerOptionsBox.getValue().substring(0, 1));
+                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), Integer.parseInt(newValue), Optional.of(orOfferId));
+                } else {
+                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), Integer.parseInt(newValue), Optional.empty());
+                }
                 List<ChosenItemDiscount> chosenItemDiscountList;
-                ChosenItemDiscount chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(),
-                                                                               Integer.parseInt(newValue),
-                                                                               null);
                 if (orderDiscounts.get(storeId) != null) {
                     chosenItemDiscountList = orderDiscounts.get(storeId).getItemIdToChosenDiscounts().get(itemId);
                     if (chosenItemDiscountList != null && !chosenItemDiscountList.isEmpty()) {
                         chosenItemDiscountList.add(chosenItemDiscount);
-                    }
-                    else {
+                    } else {
                         chosenItemDiscountList = new ArrayList<>();
                         chosenItemDiscountList.add(chosenItemDiscount);
                         orderDiscounts.get(storeId).getItemIdToChosenDiscounts().put(itemId, chosenItemDiscountList);
                     }
-                }
-                else {
+                } else {
                     chosenItemDiscountList = new ArrayList<>();
                     chosenItemDiscountList.add(chosenItemDiscount);
                     Map chosenStoreDiscountsMap = new HashMap<>();
@@ -633,7 +640,11 @@ public class PlaceOrderController {
             else {
                 isStaticOrder.set(false);
                 mainController.setItemsList();
-                itemsAndDiscountsScrollPane.setContent(dynamicOrderItemsView);
+                Text selectItemsTitle = new Text("Select Items");
+                selectItemsTitle.setFont(new Font(36));
+                VBox itemsVBox = new VBox(selectItemsTitle, dynamicOrderItemsView);
+                itemsVBox.setSpacing(5);
+                itemsAndDiscountsScrollPane.setContent(itemsVBox);
                 placeDynamicOrderRequest = new PlaceDynamicOrderRequest(selectedCustomer.getValue(), selectedDate);
             }
         }
@@ -645,7 +656,10 @@ public class PlaceOrderController {
             isStoreSelected.set(true);
             int storeId = Integer.parseInt(storesBox.getValue().substring(4, 5));
             mainController.setPricedItemsList(storeId);
-            itemsAndDiscountsScrollPane.setContent(staticOrderItemsView);
+            Text selectItemsTitle = new Text("Select Items");
+            selectItemsTitle.setFont(new Font(36));
+            VBox discountsVBox = new VBox(selectItemsTitle, staticOrderItemsView);
+            itemsAndDiscountsScrollPane.setContent(discountsVBox);
             placeOrderRequest.setStoreId(storeId);
         }
     }

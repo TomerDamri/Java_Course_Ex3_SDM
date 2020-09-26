@@ -72,7 +72,8 @@ public class SDMController {
             "Display Customers",
             "Display Orders",
             "Place Order",
-            "Display Map");
+            "Display Map",
+            "Edit Items In Store");
 
     public SDMController() {
         isFileSelected = new SimpleBooleanProperty(false);
@@ -155,9 +156,16 @@ public class SDMController {
             case "Display Map":
                 handleDisplayMap();
                 break;
+            case "Edit Items In Store":
+                handleEditItemsInStore();
+                break;
             default:
                 break;
         }
+
+    }
+
+    private void handleEditItemsInStore() {
 
     }
 
@@ -209,6 +217,14 @@ public class SDMController {
         GetOrdersResponse response = mainController.getOrders();
         mainController.setCenterToDisplayInfoScrollPane();
         buttonsContainer.getChildren().clear();
+        if(response.getOrders().isEmpty()){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Display Orders");
+            alert.setHeaderText("There are no orders to display");
+            alert.setContentText("No orders have been placed yet");
+            alert.showAndWait();
+        }
+
 
         response.getOrders().keySet().forEach(orderId -> {
             Button button = new Button(orderId.toString());
