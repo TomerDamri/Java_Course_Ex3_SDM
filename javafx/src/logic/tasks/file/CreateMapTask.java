@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import model.LocationDTO;
 import model.MapEntity;
+import model.StoreMapEntityDTO;
 import model.response.GetMapEntitiesResponse;
 
 public class CreateMapTask extends Task<Boolean> {
@@ -60,6 +61,13 @@ public class CreateMapTask extends Task<Boolean> {
         Button button = new Button(mapEntity.getName());
         button.setId(Integer.toString(mapEntity.getId()));
         button.setPrefWidth(120);
+
+        if (mapEntity instanceof StoreMapEntityDTO) {
+            button.setStyle("-fx-background-color: red;");
+        }
+        else {
+            button.setStyle("-fx-background-color: green;");
+        }
 
         button.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

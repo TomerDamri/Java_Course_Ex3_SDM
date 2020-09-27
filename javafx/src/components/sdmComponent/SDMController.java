@@ -76,6 +76,12 @@ public class SDMController {
     @FXML
     private Button loadOrdersHistoryButton;
 
+    @FXML
+    private Button storeSignOnMap;
+
+    @FXML
+    private Button customerSignInMap;
+
     private SimpleBooleanProperty isFileSelected;
     private SimpleBooleanProperty isFileBeingLoaded;
     private SimpleStringProperty selectedFileProperty;
@@ -147,6 +153,8 @@ public class SDMController {
         String absolutePath = selectedFile.getAbsolutePath();
         selectedFileProperty.set(absolutePath);
         isFileBeingLoaded.set(true);
+        storeSignOnMap.setVisible(false);
+        customerSignInMap.setVisible(false);
         Consumer<String> fileErrorConsumer = status -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("File Status information");
@@ -175,6 +183,8 @@ public class SDMController {
         isSaveOrdersButtonSelected.set(false);
         displayArea.getChildren().clear();
         buttonsContainer.getChildren().clear();
+        storeSignOnMap.setVisible(false);
+        customerSignInMap.setVisible(false);
 
         String selection = menuBox.getValue();
         switch (selection) {
@@ -266,6 +276,8 @@ public class SDMController {
 
     private void handleDisplayMap () {
         mainController.createMap();
+        storeSignOnMap.setVisible(true);
+        customerSignInMap.setVisible(true);
     }
 
     private void handleDisplayCustomers () {
