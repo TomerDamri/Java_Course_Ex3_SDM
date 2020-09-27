@@ -16,7 +16,7 @@ public class DTOMapper {
 
         List<StoreSummaryForOrder> storesSummaryForOrder = staticOrders.entrySet().stream().map(entry -> {
             Order currOrder = entry.getValue();
-            totalItemsPrice[0] += currOrder.getTotalPrice();
+            totalItemsPrice[0] += currOrder.getItemsPrice();
             totalDeliveryPrice[0] += currOrder.getDeliveryPrice();
             totalPrice[0] += currOrder.getTotalPrice();
 
@@ -323,7 +323,6 @@ public class DTOMapper {
                                  order.getId(),
                                  order.getOrderDate(),
                                  toLocationDTO(order.getOrderLocation()),
-                                 items,
                                  order.getNumOfItemTypes(),
                                  order.getAmountOfItems(),
                                  order.getItemsPrice(),

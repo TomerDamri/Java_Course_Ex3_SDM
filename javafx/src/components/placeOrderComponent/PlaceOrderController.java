@@ -305,8 +305,6 @@ public class PlaceOrderController {
                 }
                 else if (result.get() == ButtonType.CANCEL) {
                     handleCancelOrder();
-                    resetPlaceOrderComponent();
-
                 }
             }
         }
@@ -448,8 +446,9 @@ public class PlaceOrderController {
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
         }
-
-        resetPlaceOrderComponent();
+        finally {
+            resetPlaceOrderComponent();
+        }
     }
 
     private void populateDiscounts (List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
@@ -697,6 +696,7 @@ public class PlaceOrderController {
         orderId = null;
         areItemsSelected = false;
         itemsAndDiscountsScrollPane.setContent(null);
+        orderDiscounts = null;
 
     }
 }
