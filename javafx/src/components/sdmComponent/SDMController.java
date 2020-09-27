@@ -91,6 +91,7 @@ public class SDMController {
         menuBox.disableProperty().bind(isFileSelected.not());
         loadFileIndicator.visibleProperty().bind(isFileBeingLoaded);
         AnchorPane.setLeftAnchor(displayArea, 5.0);
+        mainBorderPane.setRight(null);
 
     }
 
@@ -129,6 +130,10 @@ public class SDMController {
         mainController.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, () -> {
             isFileSelected.set(true);
             isFileBeingLoaded.set(false);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("File Status information");
+            alert.setHeaderText("XML File Loaded Successfully");
+            alert.showAndWait();
         });
     }
 
@@ -151,12 +156,15 @@ public class SDMController {
             handleDisplayOrders();
             break;
         case "Place Order":
+            mainBorderPane.setRight(null);
             handlePlaceOrder();
             break;
         case "Display Map":
+            mainBorderPane.setRight(null);
             handleDisplayMap();
             break;
         case "Edit Items In Store":
+            mainBorderPane.setRight(null);
             handleEditItemsInStore();
             break;
         default:
@@ -191,6 +199,7 @@ public class SDMController {
                 displayArea.getChildren().clear();
                 CustomerDTO customer1 = (response.getSystemCustomers().get(Integer.parseInt(button.getId())));
                 displayObject(customer1, displayArea);
+                mainBorderPane.setRight(displayArea);
             });
         });
 
@@ -209,6 +218,7 @@ public class SDMController {
                 displayArea.getChildren().clear();
                 StoreDTO store = (response.getStores().get(Integer.parseInt(button.getId())));
                 displayObject(store, displayArea);
+                mainBorderPane.setRight(displayArea);
             });
         });
     }
@@ -246,6 +256,7 @@ public class SDMController {
                     displayObject(staticOrder, gridObjects);
                     rowIndex[0]++;
                 });
+                mainBorderPane.setRight(displayArea);
             });
         });
 
@@ -351,6 +362,7 @@ public class SDMController {
                 displayArea.getChildren().clear();
                 SystemItemDTO item = (response.getItems().get(Integer.parseInt(button.getId())));
                 displayObject(item, displayArea);
+                mainBorderPane.setRight(displayArea);
             });
         });
     }

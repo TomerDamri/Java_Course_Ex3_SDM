@@ -52,6 +52,12 @@ public class PlaceOrderController {
     @FXML
     private Button createOrderButton;
 
+    @FXML
+    private Label deliveryPriceLabel;
+
+    @FXML
+    private Text deliveryPriceText;
+
     private TableView<PricedItemDTO> staticOrderItemsView = new TableView<>();
 
     private TableView<ItemDTO> dynamicOrderItemsView = new TableView<>();
@@ -277,6 +283,8 @@ public class PlaceOrderController {
         storesBox.visibleProperty().bind(isStaticOrder);
         orderTypeBox.setItems(orderTypes);
         createOrderButton.visibleProperty().bind(enableCreateOrder);
+        deliveryPriceLabel.visibleProperty().bind(isStoreSelected);
+        deliveryPriceText.visibleProperty().bind(isStoreSelected);
     }
 
     @FXML
@@ -439,6 +447,10 @@ public class PlaceOrderController {
     private void handleConfirmOrder () {
         try {
             mainController.completeTheOrder(orderId, true);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("The order was created successfully");
+            alert.setContentText(String.format("Order id: %s", orderId));
+            alert.showAndWait();
         }
         catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -459,33 +471,23 @@ public class PlaceOrderController {
         for (DiscountDTO discount : discounts) {
             Accordion discountAccordion = new Accordion();
             discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
-            discountDetailsGridPane.add(new TextField(String.format("%s %s",
-                                                                    discount.getIfYouBuyQuantity(),
-                                                                    discount.getIfYouBuyItemName())),
+            discountDetailsGridPane.add(new Text(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemName())),
                                         1,
                                         0);
             discountDetailsGridPane.add(new Label("Then You Get:"), 0, 1);
             ComboBox<String> offerOptionsBox = new ComboBox<>();
-            if (discount.getOperator().equals(DiscountDTO.DiscountType.IRRELEVANT)) {
-                OfferDTO offer = (new ArrayList<>(discount.getOffers().values())).get(0);
-                discountDetailsGridPane.add(new TextField(String.format("%s %s", offer.getQuantity(), offer.getOfferItemName())), 1, 1);
-            }
-            else if (discount.getOperator().equals(DiscountDTO.DiscountType.ALL_OR_NOTHING)) {
+            if (discount.getOperator().equals(DiscountDTO.DiscountType.IRRELEVANT)
+                        || discount.getOperator().equals(DiscountDTO.DiscountType.ALL_OR_NOTHING)) {
+                VBox thenYouGetBox = new VBox();
+                int forAdditional = 0;
                 List<OfferDTO> offers = new ArrayList<>(discount.getOffers().values());
-                StringBuilder stringBuilder = new StringBuilder();
-                double additionalPrice = 0;
                 for (OfferDTO offer : offers) {
-                    stringBuilder.append(offer.getQuantity());
-                    stringBuilder.append(" ");
-                    stringBuilder.append(offer.getOfferItemName());
-                    stringBuilder.append("and ");
-                    additionalPrice += offer.getQuantity() * offer.getForAdditional();
+                    Text offerDetails = new Text(String.format("%s %s", offer.getQuantity(), offer.getOfferItemName()));
+                    thenYouGetBox.getChildren().add(offerDetails);
+                    forAdditional += offer.getForAdditional() * offer.getQuantity();
                 }
-
-                stringBuilder.append("for additional");
-                stringBuilder.append(additionalPrice);
-                discountDetailsGridPane.add(new TextField(stringBuilder.toString()), 1, 1);
-
+                thenYouGetBox.getChildren().add(new Text(String.format("For Additional: %s", Integer.toString(forAdditional))));
+                discountDetailsGridPane.add(thenYouGetBox, 1, 1);
             }
             else if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
                 List<OfferDTO> offers = new ArrayList<>(discount.getOffers().values());
@@ -497,15 +499,35 @@ public class PlaceOrderController {
                                                        offer.getOfferItemName(),
                                                        offer.getForAdditional()));
                 });
+                offerOptionsBox.setPromptText("Select one option");
                 offerOptionsBox.setItems(offerOptionsList);
                 discountDetailsGridPane.add(offerOptionsBox, 1, 1);
             }
 
             discountDetailsGridPane.add(new Label("Quantity"), 0, 2);
             TextField quantityField = new TextField();
-            quantityField.setPromptText("Enter number of desired discount realizations");
-            quantityField.textProperty().addListener( (observable, oldValue, newValue) -> {
+            quantityField.setPromptText("Enter discount realizations quantity");
 
+            discountDetailsGridPane.add(quantityField, 1, 2);
+
+            Button addDiscountButton = new Button("Add Discount");
+            addDiscountButton.setOnAction( (event) -> {
+                int amount = 0;
+                try {
+                    amount = Integer.parseInt(quantityField.getText());
+                }
+                catch (NumberFormatException ex) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Invalid Amount");
+                    alert.setTitle("Invalid Amount");
+                    alert.setContentText("Amount should be an integer");
+                    alert.showAndWait();
+                    quantityField.setText("");
+                    offerOptionsBox.setValue("");
+                    offerOptionsBox.setPromptText("Select one option");
+                    return;
+
+                }
                 if (orderDiscounts == null) {
                     orderDiscounts = new HashMap<>();
                 }
@@ -513,12 +535,10 @@ public class PlaceOrderController {
                 ChosenItemDiscount chosenItemDiscount;
                 if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
                     Integer orOfferId = Integer.parseInt(offerOptionsBox.getValue().substring(0, 1));
-                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(),
-                                                                Integer.parseInt(newValue),
-                                                                Optional.of(orOfferId));
+                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), amount, Optional.of(orOfferId));
                 }
                 else {
-                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), Integer.parseInt(newValue), Optional.empty());
+                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), amount, Optional.empty());
                 }
                 List<ChosenItemDiscount> chosenItemDiscountList;
                 if (orderDiscounts.get(storeId) != null) {
@@ -540,9 +560,15 @@ public class PlaceOrderController {
                     ChosenStoreDiscounts chosenStoreDiscounts = new ChosenStoreDiscounts(chosenStoreDiscountsMap);
                     orderDiscounts.put(storeId, chosenStoreDiscounts);
                 }
+
+                quantityField.setText("");
+                offerOptionsBox.setValue("");
+
             });
-            discountDetailsGridPane.add(quantityField, 1, 2);
+
+            discountDetailsGridPane.add(addDiscountButton, 0, 3);
             TitledPane discountTitledPane = new TitledPane(discount.getDiscountName(), discountDetailsGridPane);
+
             discountAccordion.getPanes().add(discountTitledPane);
             discountsGridPane.add(discountAccordion, 0, rowIndex);
             rowIndex++;
@@ -630,8 +656,15 @@ public class PlaceOrderController {
     @FXML
     void customersBoxAction (ActionEvent event) {
         if (customersBox.getValue() != null) {
+            datePicker.setValue(null);
+            orderTypeBox.setValue(null);
             isCustomerSelected.set(true);
             selectedCustomer.setValue(Integer.valueOf(customersBox.getValue().substring(4, 5)));
+            isStoreSelected.set(false);
+            isStaticOrder.set(false);
+            isDatePicked.set(false);
+            isOrderTypeSelected.set(false);
+            itemsAndDiscountsScrollPane.setContent(null);
         }
     }
 
@@ -667,6 +700,7 @@ public class PlaceOrderController {
     void storesBoxAction (ActionEvent event) {
         if (storesBox.getValue() != null) {
             isStoreSelected.set(true);
+            calculateDeliveryPrice();
             int storeId = Integer.parseInt(storesBox.getValue().substring(4, 5));
             mainController.setPricedItemsList(storeId);
             Text selectItemsTitle = new Text("Select Items");
@@ -675,6 +709,20 @@ public class PlaceOrderController {
             itemsAndDiscountsScrollPane.setContent(discountsVBox);
             placeOrderRequest.setStoreId(storeId);
         }
+    }
+
+    private void calculateDeliveryPrice () {
+        StoreDTO store = mainController.getStores().getStores().get(Integer.parseInt(storesBox.getValue().substring(4, 5)));
+        CustomerDTO customer = mainController.getCustomers().getSystemCustomers().get(placeOrderRequest.getCustomerId());
+        double distance = calculateDistance((store.getLocation().getxCoordinate()),
+                                            customer.getLocation().getxCoordinate(),
+                                            store.getLocation().getyCoordinate(),
+                                            customer.getLocation().getyCoordinate());
+
+        int ppk = store.getDeliveryPpk();
+        double deliveryPrice = round(distance * ppk, 2);
+        deliveryPriceText.setText(String.valueOf(deliveryPrice));
+
     }
 
     public void resetPlaceOrderComponent () {

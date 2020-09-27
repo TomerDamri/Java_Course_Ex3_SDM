@@ -106,6 +106,7 @@ public class AppController {
 
     public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Runnable onFinish) {
         businessLogic.loadFile(filePath, fileErrorDelegate, onFinish);
+        mainBorderPane.setCenter(null);
     }
 
     public void createMap () {
