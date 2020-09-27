@@ -166,7 +166,7 @@ public class SDMController {
     }
 
     private void handleEditItemsInStore() {
-
+        mainController.handleEditItemsInStore();
     }
 
     private void handlePlaceOrder() {

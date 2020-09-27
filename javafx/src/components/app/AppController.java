@@ -1,5 +1,6 @@
 package components.app;
 
+import components.editItemsComponent.EditItemsController;
 import components.mapComponent.MapController;
 import components.placeOrderComponent.PlaceOrderController;
 import components.sdmComponent.SDMController;
@@ -7,14 +8,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import logic.BusinessLogic;
 import model.*;
-import model.request.AddDiscountsToOrderRequest;
-import model.request.PlaceDynamicOrderRequest;
-import model.request.PlaceOrderRequest;
+import model.request.*;
 import model.response.*;
 
 import java.util.*;
@@ -23,8 +24,10 @@ import java.util.stream.Collectors;
 
 public class AppController {
 
-    private PlaceOrderController placeOrderComponentController;
     private SDMController sdmComponentController;
+    private PlaceOrderController placeOrderComponentController;
+    private EditItemsController editItemsController;
+
     private MapController mapComponentController;
     private BusinessLogic businessLogic;
 
@@ -37,6 +40,7 @@ public class AppController {
     private GridPane mapGridPane;
 
     private ScrollPane displayInfoScrollPane;
+    private VBox editItemsComponent;
 
     public void setMainBorderPane(BorderPane mainBorderPane) {
         this.mainBorderPane = mainBorderPane;
@@ -83,6 +87,10 @@ public class AppController {
     public void setPlaceOrderComponentController(PlaceOrderController placeOrderComponentController) {
         this.placeOrderComponentController = placeOrderComponentController;
         placeOrderComponentController.setMainController(this);
+    }
+
+    public void setEditItemsController(EditItemsController editItemsController) {
+        this.editItemsController = editItemsController;
     }
 
     public void setMapComponentController(MapController mapComponentController) {
@@ -166,9 +174,9 @@ public class AppController {
         Set<Integer> itemsInStore = store.getItems().keySet();
         GetItemsResponse getItemsResponse = businessLogic.getItems();
         List<SystemItemDTO> itemsInSystems = new ArrayList<>(getItemsResponse.getItems().values());
-        itemsInSystems.stream().filter(itemDTO -> !itemsInStore.contains(itemDTO.getId())).collect(Collectors.toList());
+        List<SystemItemDTO> filtered = itemsInSystems.stream().filter(itemDTO -> !itemsInStore.contains(itemDTO.getId())).collect(Collectors.toList());
         ObservableList<String> itemsNotInStoreObservableList = FXCollections.observableArrayList();
-        itemsInSystems.forEach(item -> {
+        filtered.forEach(item -> {
             itemsNotInStoreObservableList.add(String.format("Id: %s Name: %s", item.getId(), item.getName()));
 
         });
@@ -231,4 +239,25 @@ public class AppController {
         businessLogic.completeTheOrder(orderId, toConfirmNewDynamicOrder);
     }
 
+    public void addItemToStore(UpdateStoreRequest request) {
+        businessLogic.addItemToStore(request);
+    }
+
+    public void updatePriceOfSelectedItem(UpdateStoreRequest request) {
+        businessLogic.updatePriceOfSelectedItem(request);
+    }
+
+    public DeleteItemFromStoreResponse deleteItemFromStore(BaseUpdateStoreRequest request) {
+        return businessLogic.deleteItemFromStore(request);
+    }
+
+    public void handleEditItemsInStore() {
+        editItemsController.resetEditItemsComponent();
+        mainBorderPane.setCenter(editItemsComponent);
+        editItemsController.startEditItems();
+    }
+
+    public void setEditItemsComponent(VBox editItemsComponent) {
+        this.editItemsComponent = editItemsComponent;
+    }
 }
