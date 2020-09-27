@@ -412,10 +412,8 @@ public class PlaceOrderController {
                     alert.setTitle("Error Placing Order");
                     alert.setContentText(ex.getMessage());
                     alert.showAndWait();
-
+                    resetPlaceOrderComponent();
                 }
-
-                // todo: check discounts legal in be and display order summery
             });
             Text selectItemsTitle = new Text("Select Discounts");
             selectItemsTitle.setFont(new Font(36));
@@ -463,7 +461,7 @@ public class PlaceOrderController {
         }
     }
 
-    private void populateItemsDiscounts(List<DiscountDTO> discounts, GridPane itemDiscountsGridPane, int itemId, int storeId) {
+    private void populateItemsDiscounts (List<DiscountDTO> discounts, GridPane itemDiscountsGridPane, int itemId, int storeId) {
         int rowIndex = 0;
         for (DiscountDTO discount : discounts) {
             Accordion discountAccordion = new Accordion();
@@ -499,7 +497,7 @@ public class PlaceOrderController {
                                                        offer.getOfferItemName(),
                                                        offer.getForAdditional()));
                 });
-                offerOptionsBox.setPromptText("Select one option");
+                offerOptionsBox.setPromptText("Select one offer");
                 offerOptionsBox.setItems(offerOptionsList);
                 discountDetailsGridPane.add(offerOptionsBox, 1, 1);
             }
@@ -522,8 +520,8 @@ public class PlaceOrderController {
                     alert.setContentText("Quantity should be an integer");
                     alert.showAndWait();
                     quantityField.setText("");
-                    offerOptionsBox.setValue("");
-                    offerOptionsBox.setPromptText("Select one option");
+                    offerOptionsBox.setValue(null);
+                    offerOptionsBox.setPromptText("Select one offer");
                     return;
 
                 }
@@ -533,8 +531,20 @@ public class PlaceOrderController {
 
                 ChosenItemDiscount chosenItemDiscount;
                 if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
-                    Integer orOfferId = Integer.parseInt(offerOptionsBox.getValue().substring(0, 1));
-                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), amount, Optional.of(orOfferId));
+                    if (offerOptionsBox.getValue() != null) {
+                        Integer orOfferId = Integer.parseInt(offerOptionsBox.getValue().substring(0, 1));
+                        chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), amount, Optional.of(orOfferId));
+                    }
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText("No offer was selected");
+                        alert.setContentText("Please select offer before adding a discount");
+                        alert.showAndWait();
+                        quantityField.setText("");
+                        offerOptionsBox.setValue(null);
+                        offerOptionsBox.setPromptText("Select one offer");
+                        return;
+                    }
                 }
                 else {
                     chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), amount, Optional.empty());
@@ -562,7 +572,7 @@ public class PlaceOrderController {
 
                 quantityField.setText("");
                 offerOptionsBox.setValue(null);
-                offerOptionsBox.setPromptText("Select one option");
+                offerOptionsBox.setPromptText("Select one offer");
 
             });
 
@@ -572,10 +582,8 @@ public class PlaceOrderController {
             discountAccordion.getPanes().add(discountTitledPane);
             itemDiscountsGridPane.add(discountAccordion, 0, rowIndex);
             rowIndex++;
-            offerOptionsBox.setPromptText("Select one option");
+            offerOptionsBox.setPromptText("Select one offer");
         }
-
-
 
     }
 
