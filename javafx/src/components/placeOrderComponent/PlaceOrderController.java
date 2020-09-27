@@ -353,21 +353,20 @@ public class PlaceOrderController {
     }
 
     private void handleDisplayDiscounts (GetDiscountsResponse response) {
-        GridPane itemsGridPane = new GridPane();
         GridPane storeDiscountsGridPane = new GridPane();
-        GridPane discountsGridPane = new GridPane();
+        GridPane itemsGridPane = new GridPane();
         itemsGridPane.setVgap(5);
         itemsGridPane.setHgap(5);
         storeDiscountsGridPane.setVgap(5);
         storeDiscountsGridPane.setHgap(5);
-        discountsGridPane.setVgap(5);
-        discountsGridPane.setHgap(5);
         enableCreateOrder.set(false);
-
         if (response.getStoreIdToValidDiscounts() != null && !response.getStoreIdToValidDiscounts().isEmpty()) {
             int storeRowIndex = 0;
             GetStoresResponse getStoresResponse = mainController.getStores();
             for (Integer storeId : response.getStoreIdToValidDiscounts().keySet()) {
+                GridPane discountsGridPane = new GridPane();
+                discountsGridPane.setVgap(5);
+                discountsGridPane.setHgap(5);
                 Accordion storeAccordion = new Accordion();
                 String storeName = getStoresResponse.getStores().get(storeId).getName();
                 int itemRowIndex = 0;
@@ -464,11 +463,13 @@ public class PlaceOrderController {
     }
 
     private void populateDiscounts (List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
-        GridPane discountDetailsGridPane = new GridPane();
-        discountDetailsGridPane.setVgap(5);
-        discountDetailsGridPane.setHgap(5);
+
         int rowIndex = 0;
         for (DiscountDTO discount : discounts) {
+            GridPane discountDetailsGridPane = new GridPane();
+            discountDetailsGridPane.setVgap(5);
+            discountDetailsGridPane.setHgap(5);
+
             Accordion discountAccordion = new Accordion();
             discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
             discountDetailsGridPane.add(new Text(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemName())),
