@@ -178,7 +178,8 @@ public class PlaceOrderController {
                     placeOrderRequest.getOrderItemToAmount().put(pricedItemDTO.getId(), Double.parseDouble(amountStr));
                     areItemsSelected = true;
                     enableCreateOrder.set(true);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setWidth(150);
                     alert.setTitle("Invalid Amount");
@@ -205,7 +206,8 @@ public class PlaceOrderController {
                     placeDynamicOrderRequest.getOrderItemToAmount().put(itemDTO.getId(), Double.parseDouble(amountStr));
                     areItemsSelected = true;
                     enableCreateOrder.set(true);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Amount");
                     alert.setContentText(ex.getMessage());
@@ -278,14 +280,15 @@ public class PlaceOrderController {
     }
 
     @FXML
-    void createOrderButtonAction(ActionEvent event) {
+    void createOrderButtonAction (ActionEvent event) {
         if (areItemsSelected) {
             String title, header, message;
             if (isStaticOrder.get()) {
                 title = "Place Order Confirmation";
                 header = "Press Ok to confirm";
                 message = getStaticOrderSummary();
-            } else {
+            }
+            else {
                 PlaceDynamicOrderResponse response = mainController.placeDynamicOrder(placeDynamicOrderRequest);
                 title = "Place Order offer";
                 header = "Press Ok to confirm";
@@ -298,7 +301,8 @@ public class PlaceOrderController {
                 if (result.get() == ButtonType.OK) {
                     handleSelectDiscounts();
 
-                } else if (result.get() == ButtonType.CANCEL) {
+                }
+                else if (result.get() == ButtonType.CANCEL) {
                     handleCancelOrder();
                     resetPlaceOrderComponent();
 
@@ -404,11 +408,11 @@ public class PlaceOrderController {
 
                 }
 
-                //todo: check discounts legal in be and display order summery
+                // todo: check discounts legal in be and display order summery
             });
             Text selectItemsTitle = new Text("Select Discounts");
             selectItemsTitle.setFont(new Font(36));
-            VBox discountsVBox = new VBox(selectItemsTitle,storeDiscountsGridPane, submitDiscountButton);
+            VBox discountsVBox = new VBox(selectItemsTitle, storeDiscountsGridPane, submitDiscountButton);
             discountsVBox.setSpacing(5);
             itemsAndDiscountsScrollPane.setContent(discountsVBox);
         }
@@ -447,7 +451,7 @@ public class PlaceOrderController {
         resetPlaceOrderComponent();
     }
 
-    private void populateDiscounts(List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
+    private void populateDiscounts (List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
         GridPane discountDetailsGridPane = new GridPane();
         discountDetailsGridPane.setVgap(5);
         discountDetailsGridPane.setHgap(5);
@@ -455,7 +459,11 @@ public class PlaceOrderController {
         for (DiscountDTO discount : discounts) {
             Accordion discountAccordion = new Accordion();
             discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
-            discountDetailsGridPane.add(new TextField(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemName())), 1, 0);
+            discountDetailsGridPane.add(new TextField(String.format("%s %s",
+                                                                    discount.getIfYouBuyQuantity(),
+                                                                    discount.getIfYouBuyItemName())),
+                                        1,
+                                        0);
             discountDetailsGridPane.add(new Label("Then You Get:"), 0, 1);
             ComboBox<String> offerOptionsBox = new ComboBox<>();
             if (discount.getOperator().equals(DiscountDTO.DiscountType.IRRELEVANT)) {
@@ -505,8 +513,11 @@ public class PlaceOrderController {
                 ChosenItemDiscount chosenItemDiscount;
                 if (discount.getOperator().equals(DiscountDTO.DiscountType.ONE_OF)) {
                     Integer orOfferId = Integer.parseInt(offerOptionsBox.getValue().substring(0, 1));
-                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), Integer.parseInt(newValue), Optional.of(orOfferId));
-                } else {
+                    chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(),
+                                                                Integer.parseInt(newValue),
+                                                                Optional.of(orOfferId));
+                }
+                else {
                     chosenItemDiscount = new ChosenItemDiscount(discount.getDiscountName(), Integer.parseInt(newValue), Optional.empty());
                 }
                 List<ChosenItemDiscount> chosenItemDiscountList;
@@ -514,12 +525,14 @@ public class PlaceOrderController {
                     chosenItemDiscountList = orderDiscounts.get(storeId).getItemIdToChosenDiscounts().get(itemId);
                     if (chosenItemDiscountList != null && !chosenItemDiscountList.isEmpty()) {
                         chosenItemDiscountList.add(chosenItemDiscount);
-                    } else {
+                    }
+                    else {
                         chosenItemDiscountList = new ArrayList<>();
                         chosenItemDiscountList.add(chosenItemDiscount);
                         orderDiscounts.get(storeId).getItemIdToChosenDiscounts().put(itemId, chosenItemDiscountList);
                     }
-                } else {
+                }
+                else {
                     chosenItemDiscountList = new ArrayList<>();
                     chosenItemDiscountList.add(chosenItemDiscount);
                     Map chosenStoreDiscountsMap = new HashMap<>();

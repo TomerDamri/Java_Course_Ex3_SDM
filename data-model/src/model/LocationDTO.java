@@ -25,16 +25,17 @@ public class LocationDTO {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof LocationDTO)) return false;
+    public boolean equals (Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof LocationDTO))
+            return false;
         LocationDTO that = (LocationDTO) o;
-        return getxCoordinate().equals(that.getxCoordinate()) &&
-                getyCoordinate().equals(that.getyCoordinate());
+        return getxCoordinate().equals(that.getxCoordinate()) && getyCoordinate().equals(that.getyCoordinate());
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode () {
         return Objects.hash(getxCoordinate(), getyCoordinate());
     }
 }

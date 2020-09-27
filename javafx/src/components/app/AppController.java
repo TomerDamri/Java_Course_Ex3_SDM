@@ -1,5 +1,12 @@
 package components.app;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import components.editItemsComponent.EditItemsController;
 import components.mapComponent.MapController;
 import components.placeOrderComponent.PlaceOrderController;
@@ -8,7 +15,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -17,10 +23,6 @@ import logic.BusinessLogic;
 import model.*;
 import model.request.*;
 import model.response.*;
-
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class AppController {
 
@@ -42,32 +44,32 @@ public class AppController {
     private ScrollPane displayInfoScrollPane;
     private VBox editItemsComponent;
 
-    public void setMainBorderPane(BorderPane mainBorderPane) {
+    public void setMainBorderPane (BorderPane mainBorderPane) {
         this.mainBorderPane = mainBorderPane;
     }
 
-    public void setDisplayInfoScrollPane(javafx.scene.control.ScrollPane displayInfoScrollPane) {
+    public void setDisplayInfoScrollPane (javafx.scene.control.ScrollPane displayInfoScrollPane) {
         this.displayInfoScrollPane = displayInfoScrollPane;
     }
 
-    public void setPlaceOrderPane(BorderPane placeOrderPane) {
+    public void setPlaceOrderPane (BorderPane placeOrderPane) {
         this.placeOrderPane = placeOrderPane;
     }
 
-    public void setMapScrollPane(javafx.scene.control.ScrollPane mapScrollPane) {
+    public void setMapScrollPane (javafx.scene.control.ScrollPane mapScrollPane) {
         this.mapScrollPane = mapScrollPane;
     }
 
-    public void setMapGridPane(GridPane mapGridPane) {
+    public void setMapGridPane (GridPane mapGridPane) {
         this.mapGridPane = mapGridPane;
     }
 
-    public void setCenterToDisplayInfoScrollPane() {
+    public void setCenterToDisplayInfoScrollPane () {
         mainBorderPane.setCenter(displayInfoScrollPane);
     }
 
     @FXML
-    public void initialize() {
+    public void initialize () {
         if (placeOrderComponentController != null && sdmComponentController != null && mapComponentController != null) {
             placeOrderComponentController.setMainController(this);
             sdmComponentController.setMainController(this);
@@ -75,38 +77,38 @@ public class AppController {
         }
     }
 
-    public void setBusinessLogic(BusinessLogic businessLogic) {
+    public void setBusinessLogic (BusinessLogic businessLogic) {
         this.businessLogic = businessLogic;
     }
 
-    public void setSdmComponentController(SDMController sdmComponentController) {
+    public void setSdmComponentController (SDMController sdmComponentController) {
         this.sdmComponentController = sdmComponentController;
         sdmComponentController.setMainController(this);
     }
 
-    public void setPlaceOrderComponentController(PlaceOrderController placeOrderComponentController) {
+    public void setPlaceOrderComponentController (PlaceOrderController placeOrderComponentController) {
         this.placeOrderComponentController = placeOrderComponentController;
         placeOrderComponentController.setMainController(this);
     }
 
-    public void setEditItemsController(EditItemsController editItemsController) {
+    public void setEditItemsController (EditItemsController editItemsController) {
         this.editItemsController = editItemsController;
     }
 
-    public void setMapComponentController(MapController mapComponentController) {
+    public void setMapComponentController (MapController mapComponentController) {
         this.mapComponentController = mapComponentController;
         mapComponentController.setMainController(this);
     }
 
-    public void bindTaskToUIComponents(Task<Boolean> aTask, Runnable onFinish) {
+    public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
         sdmComponentController.bindTaskToUIComponents(aTask, onFinish);
     }
 
-    public void loadFile(String filePath, Consumer<String> fileErrorDelegate, Runnable onFinish) {
+    public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Runnable onFinish) {
         businessLogic.loadFile(filePath, fileErrorDelegate, onFinish);
     }
 
-    public void createMap() {
+    public void createMap () {
         Consumer<GridPane> mapConsumer = gridPane -> {
             mapGridPane.getChildren().addAll(gridPane.getChildren());
             mapScrollPane.setContent(mapGridPane);
@@ -115,29 +117,29 @@ public class AppController {
         businessLogic.createMap(mapConsumer);
     }
 
-    public GetCustomersResponse getCustomers() {
+    public GetCustomersResponse getCustomers () {
         return businessLogic.getCustomers();
     }
 
-    public GetStoresResponse getStores() {
+    public GetStoresResponse getStores () {
         return businessLogic.getStores();
     }
 
-    public GetOrdersResponse getOrders() {
+    public GetOrdersResponse getOrders () {
         return businessLogic.getOrders();
     }
 
-    public GetItemsResponse getItems() {
+    public GetItemsResponse getItems () {
         return businessLogic.getItems();
     }
 
-    public void handlePlaceOrder() {
+    public void handlePlaceOrder () {
         placeOrderComponentController.resetPlaceOrderComponent();
         mainBorderPane.setCenter(placeOrderPane);
         setCustomersList();
     }
 
-    private void setCustomersList() {
+    private void setCustomersList () {
         GetCustomersResponse customersResponse = businessLogic.getCustomers();
         List<CustomerDTO> customers = new ArrayList<>(customersResponse.getSystemCustomers().values());
         ObservableList<String> customersObservableList = FXCollections.observableArrayList();
@@ -147,7 +149,7 @@ public class AppController {
         placeOrderComponentController.setCustomersList(customersObservableList);
     }
 
-    public ObservableList<String> getStoresList(){
+    public ObservableList<String> getStoresList () {
         GetStoresResponse storesResponse = businessLogic.getStores();
         List<StoreDTO> stores = new ArrayList<>(storesResponse.getStores().values());
         ObservableList<String> storesObservableList = FXCollections.observableArrayList();
@@ -157,7 +159,7 @@ public class AppController {
         return storesObservableList;
     }
 
-    public ObservableList<String> getItemsInStoreObservableList(int storeId){
+    public ObservableList<String> getItemsInStoreObservableList (int storeId) {
         GetStoresResponse storesResponse = businessLogic.getStores();
         StoreDTO store = storesResponse.getStores().get(storeId);
         ObservableList<String> itemsInStoreObservableList = FXCollections.observableArrayList();
@@ -168,13 +170,15 @@ public class AppController {
         return itemsInStoreObservableList;
     }
 
-    public ObservableList<String> getItemsNotInStoreObservableList(int storeId){
+    public ObservableList<String> getItemsNotInStoreObservableList (int storeId) {
         GetStoresResponse storesResponse = businessLogic.getStores();
         StoreDTO store = storesResponse.getStores().get(storeId);
         Set<Integer> itemsInStore = store.getItems().keySet();
         GetItemsResponse getItemsResponse = businessLogic.getItems();
         List<SystemItemDTO> itemsInSystems = new ArrayList<>(getItemsResponse.getItems().values());
-        List<SystemItemDTO> filtered = itemsInSystems.stream().filter(itemDTO -> !itemsInStore.contains(itemDTO.getId())).collect(Collectors.toList());
+        List<SystemItemDTO> filtered = itemsInSystems.stream()
+                                                     .filter(itemDTO -> !itemsInStore.contains(itemDTO.getId()))
+                                                     .collect(Collectors.toList());
         ObservableList<String> itemsNotInStoreObservableList = FXCollections.observableArrayList();
         filtered.forEach(item -> {
             itemsNotInStoreObservableList.add(String.format("Id: %s Name: %s", item.getId(), item.getName()));
@@ -184,11 +188,11 @@ public class AppController {
 
     }
 
-    public void setStoresList() {
+    public void setStoresList () {
         placeOrderComponentController.setStoresList(getStoresList());
     }
 
-    public void setItemsList() {
+    public void setItemsList () {
         GetItemsResponse itemsResponse = businessLogic.getItems();
         List<SystemItemDTO> items = new ArrayList<>(itemsResponse.getItems().values());
         ObservableList<ItemDTO> storesObservableList = FXCollections.observableArrayList();
@@ -198,18 +202,21 @@ public class AppController {
         placeOrderComponentController.setItemsList(storesObservableList);
     }
 
-    public void setPricedItemsList(int selectedStoreId) {
+    public void setPricedItemsList (int selectedStoreId) {
         GetStoresResponse storesResponse = businessLogic.getStores();
         StoreDTO selectedStore = storesResponse.getStores().get(selectedStoreId);
         ObservableList<PricedItemDTO> pricedItemsObservableList = FXCollections.observableArrayList();
         selectedStore.getItems().values().forEach(storeItemDTO -> {
-            pricedItemsObservableList.add(new PricedItemDTO(storeItemDTO.getId(), storeItemDTO.getName(), storeItemDTO.getPurchaseCategory(), storeItemDTO.getPrice()));
+            pricedItemsObservableList.add(new PricedItemDTO(storeItemDTO.getId(),
+                                                            storeItemDTO.getName(),
+                                                            storeItemDTO.getPurchaseCategory(),
+                                                            storeItemDTO.getPrice()));
         });
         placeOrderComponentController.setPricedItemsList(pricedItemsObservableList);
 
     }
 
-    public PlaceDynamicOrderResponse placeDynamicOrder(PlaceDynamicOrderRequest placeDynamicOrderRequest) {
+    public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest placeDynamicOrderRequest) {
         return businessLogic.placeDynamicOrder(placeDynamicOrderRequest);
     }
 
@@ -227,7 +234,7 @@ public class AppController {
         return businessLogic.placeStaticOrder(request);
     }
 
-    public GetDiscountsResponse getDiscounts (UUID orderId){
+    public GetDiscountsResponse getDiscounts (UUID orderId) {
         return businessLogic.getDiscounts(orderId);
     }
 
@@ -239,25 +246,25 @@ public class AppController {
         businessLogic.completeTheOrder(orderId, toConfirmNewDynamicOrder);
     }
 
-    public void addItemToStore(UpdateStoreRequest request) {
+    public void addItemToStore (UpdateStoreRequest request) {
         businessLogic.addItemToStore(request);
     }
 
-    public void updatePriceOfSelectedItem(UpdateStoreRequest request) {
+    public void updatePriceOfSelectedItem (UpdateStoreRequest request) {
         businessLogic.updatePriceOfSelectedItem(request);
     }
 
-    public DeleteItemFromStoreResponse deleteItemFromStore(BaseUpdateStoreRequest request) {
+    public DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request) {
         return businessLogic.deleteItemFromStore(request);
     }
 
-    public void handleEditItemsInStore() {
+    public void handleEditItemsInStore () {
         editItemsController.resetEditItemsComponent();
         mainBorderPane.setCenter(editItemsComponent);
         editItemsController.startEditItems();
     }
 
-    public void setEditItemsComponent(VBox editItemsComponent) {
+    public void setEditItemsComponent (VBox editItemsComponent) {
         this.editItemsComponent = editItemsComponent;
     }
 }

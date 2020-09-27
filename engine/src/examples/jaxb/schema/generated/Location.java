@@ -5,20 +5,16 @@
 // Generated on: 2020.09.02 at 11:23:17 AM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -47,7 +43,7 @@ public class Location {
      * Gets the value of the y property.
      * 
      */
-    public int getY() {
+    public int getY () {
         return y;
     }
 
@@ -55,7 +51,7 @@ public class Location {
      * Sets the value of the y property.
      * 
      */
-    public void setY(int value) {
+    public void setY (int value) {
         this.y = value;
     }
 
@@ -63,7 +59,7 @@ public class Location {
      * Gets the value of the x property.
      * 
      */
-    public int getX() {
+    public int getX () {
         return x;
     }
 
@@ -71,7 +67,7 @@ public class Location {
      * Sets the value of the x property.
      * 
      */
-    public void setX(int value) {
+    public void setX (int value) {
         this.x = value;
     }
 

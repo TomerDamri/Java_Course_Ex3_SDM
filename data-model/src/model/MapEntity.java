@@ -7,7 +7,7 @@ public abstract class MapEntity {
     protected final LocationDTO location;
     protected final Integer numOfOrders;
 
-    protected MapEntity(Integer id, LocationDTO location, String name, Integer numOfOrders) {
+    protected MapEntity (Integer id, LocationDTO location, String name, Integer numOfOrders) {
         this.id = id;
         this.location = location;
         this.name = name;

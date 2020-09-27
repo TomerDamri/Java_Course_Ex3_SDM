@@ -5,20 +5,16 @@
 // Generated on: 2020.09.02 at 11:23:17 AM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -47,7 +43,7 @@ public class SDMSell {
      * Gets the value of the price property.
      * 
      */
-    public int getPrice() {
+    public int getPrice () {
         return price;
     }
 
@@ -55,7 +51,7 @@ public class SDMSell {
      * Sets the value of the price property.
      * 
      */
-    public void setPrice(int value) {
+    public void setPrice (int value) {
         this.price = value;
     }
 
@@ -63,7 +59,7 @@ public class SDMSell {
      * Gets the value of the itemId property.
      * 
      */
-    public int getItemId() {
+    public int getItemId () {
         return itemId;
     }
 
@@ -71,7 +67,7 @@ public class SDMSell {
      * Sets the value of the itemId property.
      * 
      */
-    public void setItemId(int value) {
+    public void setItemId (int value) {
         this.itemId = value;
     }
 

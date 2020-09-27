@@ -7,7 +7,7 @@ import model.MapEntity;
 public class GetMapEntitiesResponse {
     private final List<MapEntity> allSystemMappableEntities;
 
-    public GetMapEntitiesResponse(List<MapEntity> allSystemMappableEntities) {
+    public GetMapEntitiesResponse (List<MapEntity> allSystemMappableEntities) {
         this.allSystemMappableEntities = allSystemMappableEntities;
     }
 

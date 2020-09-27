@@ -5,7 +5,6 @@
 // Generated on: 2020.09.02 at 11:23:17 AM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
 import javax.xml.bind.JAXBElement;
@@ -13,19 +12,14 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
-
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the examples.jaxb.schema.generated package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
- * provided in this class.
+ * This object contains factory methods for each Java content interface and Java element interface
+ * generated in the examples.jaxb.schema.generated package.
+ * <p>
+ * An ObjectFactory allows you to programatically construct new instances of the Java representation
+ * for XML content. The Java representation of XML content can consist of schema derived interfaces
+ * and classes representing the binding of schema type definitions, element declarations and model
+ * groups. Factory methods for each of these are provided in this class.
  * 
  */
 @XmlRegistry
@@ -36,17 +30,18 @@ public class ObjectFactory {
     private final static QName _PurchaseCategory_QNAME = new QName("", "purchase-category");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: examples.jaxb.schema.generated
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for
+     * package: examples.jaxb.schema.generated
      * 
      */
-    public ObjectFactory() {
+    public ObjectFactory () {
     }
 
     /**
      * Create an instance of {@link SDMDiscounts }
      * 
      */
-    public SDMDiscounts createSDMDiscounts() {
+    public SDMDiscounts createSDMDiscounts () {
         return new SDMDiscounts();
     }
 
@@ -54,7 +49,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMDiscount }
      * 
      */
-    public SDMDiscount createSDMDiscount() {
+    public SDMDiscount createSDMDiscount () {
         return new SDMDiscount();
     }
 
@@ -62,7 +57,7 @@ public class ObjectFactory {
      * Create an instance of {@link IfYouBuy }
      * 
      */
-    public IfYouBuy createIfYouBuy() {
+    public IfYouBuy createIfYouBuy () {
         return new IfYouBuy();
     }
 
@@ -70,7 +65,7 @@ public class ObjectFactory {
      * Create an instance of {@link ThenYouGet }
      * 
      */
-    public ThenYouGet createThenYouGet() {
+    public ThenYouGet createThenYouGet () {
         return new ThenYouGet();
     }
 
@@ -78,7 +73,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMOffer }
      * 
      */
-    public SDMOffer createSDMOffer() {
+    public SDMOffer createSDMOffer () {
         return new SDMOffer();
     }
 
@@ -86,7 +81,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMStore }
      * 
      */
-    public SDMStore createSDMStore() {
+    public SDMStore createSDMStore () {
         return new SDMStore();
     }
 
@@ -94,7 +89,7 @@ public class ObjectFactory {
      * Create an instance of {@link Location }
      * 
      */
-    public Location createLocation() {
+    public Location createLocation () {
         return new Location();
     }
 
@@ -102,7 +97,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMPrices }
      * 
      */
-    public SDMPrices createSDMPrices() {
+    public SDMPrices createSDMPrices () {
         return new SDMPrices();
     }
 
@@ -110,7 +105,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMSell }
      * 
      */
-    public SDMSell createSDMSell() {
+    public SDMSell createSDMSell () {
         return new SDMSell();
     }
 
@@ -118,7 +113,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMStores }
      * 
      */
-    public SDMStores createSDMStores() {
+    public SDMStores createSDMStores () {
         return new SDMStores();
     }
 
@@ -126,7 +121,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMItems }
      * 
      */
-    public SDMItems createSDMItems() {
+    public SDMItems createSDMItems () {
         return new SDMItems();
     }
 
@@ -134,7 +129,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMItem }
      * 
      */
-    public SDMItem createSDMItem() {
+    public SDMItem createSDMItem () {
         return new SDMItem();
     }
 
@@ -142,7 +137,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMCustomers }
      * 
      */
-    public SDMCustomers createSDMCustomers() {
+    public SDMCustomers createSDMCustomers () {
         return new SDMCustomers();
     }
 
@@ -150,7 +145,7 @@ public class ObjectFactory {
      * Create an instance of {@link SDMCustomer }
      * 
      */
-    public SDMCustomer createSDMCustomer() {
+    public SDMCustomer createSDMCustomer () {
         return new SDMCustomer();
     }
 
@@ -158,7 +153,7 @@ public class ObjectFactory {
      * Create an instance of {@link SuperDuperMarketDescriptor }
      * 
      */
-    public SuperDuperMarketDescriptor createSuperDuperMarketDescriptor() {
+    public SuperDuperMarketDescriptor createSuperDuperMarketDescriptor () {
         return new SuperDuperMarketDescriptor();
     }
 
@@ -167,7 +162,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "", name = "delivery-ppk")
-    public JAXBElement<Integer> createDeliveryPpk(Integer value) {
+    public JAXBElement<Integer> createDeliveryPpk (Integer value) {
         return new JAXBElement<Integer>(_DeliveryPpk_QNAME, Integer.class, null, value);
     }
 
@@ -176,7 +171,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "", name = "name")
-    public JAXBElement<String> createName(String value) {
+    public JAXBElement<String> createName (String value) {
         return new JAXBElement<String>(_Name_QNAME, String.class, null, value);
     }
 
@@ -185,7 +180,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "", name = "purchase-category")
-    public JAXBElement<String> createPurchaseCategory(String value) {
+    public JAXBElement<String> createPurchaseCategory (String value) {
         return new JAXBElement<String>(_PurchaseCategory_QNAME, String.class, null, value);
     }
 

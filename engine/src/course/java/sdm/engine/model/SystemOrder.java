@@ -11,62 +11,62 @@ public class SystemOrder implements Serializable {
     private final String storeName;
     private final Integer storeId;
 
-    public SystemOrder(Order order, String storeName, Integer storeId) {
+    public SystemOrder (Order order, String storeName, Integer storeId) {
         this.order = order;
         this.storeName = storeName;
         this.storeId = storeId;
     }
 
-    public Order getOrder() {
+    public Order getOrder () {
         return order;
     }
 
-    public UUID getId() {
+    public UUID getId () {
         return order.getId();
     }
 
-    public LocalDate getOrderDate() {
+    public LocalDate getOrderDate () {
         return order.getOrderDate();
     }
 
-    public Location getOrderLocation() {
+    public Location getOrderLocation () {
         return order.getOrderLocation();
     }
 
-    public Map<PricedItem, Double> getOrderItems() {
+    public Map<PricedItem, Double> getOrderItems () {
         return order.getPricedItems();
     }
 
-    public Integer getNumOfItemTypes() {
+    public Integer getNumOfItemTypes () {
         return order.getNumOfItemTypes();
     }
 
-    public Integer getAmountOfItems() {
+    public Integer getAmountOfItems () {
         return order.getAmountOfItems();
     }
 
-    public Double getItemsPrice() {
+    public Double getItemsPrice () {
         return order.getItemsPrice();
     }
 
-    public Double getDeliveryPrice() {
+    public Double getDeliveryPrice () {
         return order.getDeliveryPrice();
     }
 
-    public Double getTotalPrice() {
+    public Double getTotalPrice () {
         return order.getTotalPrice();
     }
 
-    public String getStoreName() {
+    public String getStoreName () {
         return storeName;
     }
 
-    public Integer getStoreId() {
+    public Integer getStoreId () {
         return storeId;
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         return order.toString() + ",\nStore id: " + storeId + ",\nStore Name: " + storeName;
     }
 }

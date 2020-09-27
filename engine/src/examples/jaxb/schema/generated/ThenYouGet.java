@@ -5,23 +5,19 @@
 // Generated on: 2020.09.02 at 11:23:17 AM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -47,9 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "sdmOffer"
-})
+@XmlType(name = "", propOrder = { "sdmOffer" })
 @XmlRootElement(name = "then-you-get")
 public class ThenYouGet {
 
@@ -62,25 +56,24 @@ public class ThenYouGet {
      * Gets the value of the sdmOffer property.
      * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the sdmOffer property.
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+     * modification you make to the returned list will be present inside the JAXB object. This is why
+     * there is not a <CODE>set</CODE> method for the sdmOffer property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getSDMOffer().add(newItem);
+     * getSDMOffer().add(newItem);
      * </pre>
      * 
      * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link SDMOffer }
+     * Objects of the following type(s) are allowed in the list {@link SDMOffer }
      * 
      * 
      */
-    public List<SDMOffer> getSDMOffer() {
+    public List<SDMOffer> getSDMOffer () {
         if (sdmOffer == null) {
             sdmOffer = new ArrayList<SDMOffer>();
         }
@@ -90,15 +83,14 @@ public class ThenYouGet {
     /**
      * Gets the value of the operator property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
-    public String getOperator() {
+    public String getOperator () {
         if (operator == null) {
             return "IRRELEVANT";
-        } else {
+        }
+        else {
             return operator;
         }
     }
@@ -107,11 +99,10 @@ public class ThenYouGet {
      * Sets the value of the operator property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *        allowed object is {@link String }
+     * 
      */
-    public void setOperator(String value) {
+    public void setOperator (String value) {
         this.operator = value;
     }
 

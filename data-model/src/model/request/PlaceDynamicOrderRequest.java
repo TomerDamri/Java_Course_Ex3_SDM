@@ -9,34 +9,34 @@ public class PlaceDynamicOrderRequest {
     private int xCoordinate;
     private int yCoordinate;
 
-    public PlaceDynamicOrderRequest(int customerId, LocalDate orderDate) {
+    public PlaceDynamicOrderRequest (int customerId, LocalDate orderDate) {
         this.customerId = customerId;
         this.orderDate = orderDate;
     }
 
-    public void setOrderItemToAmount(Map<Integer, Double> orderItemToAmount) {
+    public void setOrderItemToAmount (Map<Integer, Double> orderItemToAmount) {
         this.orderItemToAmount = orderItemToAmount;
     }
 
     private Map<Integer, Double> orderItemToAmount;
 
-    public Map<Integer, Double> getOrderItemToAmount() {
+    public Map<Integer, Double> getOrderItemToAmount () {
         return orderItemToAmount;
     }
 
-    public int getxCoordinate() {
+    public int getxCoordinate () {
         return xCoordinate;
     }
 
-    public int getyCoordinate() {
+    public int getyCoordinate () {
         return yCoordinate;
     }
 
-    public LocalDate getOrderDate() {
+    public LocalDate getOrderDate () {
         return orderDate;
     }
 
-    public int getCustomerId() {
+    public int getCustomerId () {
         return customerId;
     }
 }

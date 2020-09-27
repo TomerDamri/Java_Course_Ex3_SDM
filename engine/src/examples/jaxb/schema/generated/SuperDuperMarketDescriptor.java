@@ -5,20 +5,16 @@
 // Generated on: 2020.09.02 at 11:23:17 AM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -53,12 +49,10 @@ public class SuperDuperMarketDescriptor {
     /**
      * Gets the value of the sdmItems property.
      * 
-     * @return
-     *     possible object is
-     *     {@link SDMItems }
-     *     
+     * @return possible object is {@link SDMItems }
+     * 
      */
-    public SDMItems getSDMItems() {
+    public SDMItems getSDMItems () {
         return sdmItems;
     }
 
@@ -66,23 +60,20 @@ public class SuperDuperMarketDescriptor {
      * Sets the value of the sdmItems property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SDMItems }
-     *     
+     *        allowed object is {@link SDMItems }
+     * 
      */
-    public void setSDMItems(SDMItems value) {
+    public void setSDMItems (SDMItems value) {
         this.sdmItems = value;
     }
 
     /**
      * Gets the value of the sdmStores property.
      * 
-     * @return
-     *     possible object is
-     *     {@link SDMStores }
-     *     
+     * @return possible object is {@link SDMStores }
+     * 
      */
-    public SDMStores getSDMStores() {
+    public SDMStores getSDMStores () {
         return sdmStores;
     }
 
@@ -90,23 +81,20 @@ public class SuperDuperMarketDescriptor {
      * Sets the value of the sdmStores property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SDMStores }
-     *     
+     *        allowed object is {@link SDMStores }
+     * 
      */
-    public void setSDMStores(SDMStores value) {
+    public void setSDMStores (SDMStores value) {
         this.sdmStores = value;
     }
 
     /**
      * Gets the value of the sdmCustomers property.
      * 
-     * @return
-     *     possible object is
-     *     {@link SDMCustomers }
-     *     
+     * @return possible object is {@link SDMCustomers }
+     * 
      */
-    public SDMCustomers getSDMCustomers() {
+    public SDMCustomers getSDMCustomers () {
         return sdmCustomers;
     }
 
@@ -114,11 +102,10 @@ public class SuperDuperMarketDescriptor {
      * Sets the value of the sdmCustomers property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SDMCustomers }
-     *     
+     *        allowed object is {@link SDMCustomers }
+     * 
      */
-    public void setSDMCustomers(SDMCustomers value) {
+    public void setSDMCustomers (SDMCustomers value) {
         this.sdmCustomers = value;
     }
 

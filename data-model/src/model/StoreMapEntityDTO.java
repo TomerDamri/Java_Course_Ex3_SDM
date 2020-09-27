@@ -15,7 +15,8 @@ public class StoreMapEntityDTO extends MapEntity {
 
     @Override
     public String toString () {
-        return new StringBuilder().append("Store details:\n\n").append("id= ")
+        return new StringBuilder().append("Store details:\n\n")
+                                  .append("id= ")
                                   .append(id)
                                   .append(",\nname= '")
                                   .append(name)

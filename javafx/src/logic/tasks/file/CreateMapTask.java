@@ -1,32 +1,31 @@
 package logic.tasks.file;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+
 import course.java.sdm.engine.controller.ISDMController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Paint;
 import model.LocationDTO;
 import model.MapEntity;
 import model.response.GetMapEntitiesResponse;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class CreateMapTask extends Task<Boolean> {
 
     private final ISDMController beController;
     private final Consumer<GridPane> mapConsumer;
 
-    public CreateMapTask(ISDMController beController, Consumer<GridPane> mapConsumer) {
+    public CreateMapTask (ISDMController beController, Consumer<GridPane> mapConsumer) {
         this.beController = beController;
         this.mapConsumer = mapConsumer;
     }
 
     @Override
-    protected Boolean call() {
+    protected Boolean call () {
         GetMapEntitiesResponse systemMappableEntities = beController.getSystemMappableEntities();
         List<MapEntity> mapEntities = systemMappableEntities.getAllSystemMappableEntities();
 
@@ -53,12 +52,11 @@ public class CreateMapTask extends Task<Boolean> {
             newMap.add(button, location.getxCoordinate(), location.getyCoordinate());
         });
 
-        Platform.runLater(() -> mapConsumer.accept(newMap));
+        Platform.runLater( () -> mapConsumer.accept(newMap));
         return Boolean.TRUE;
     }
 
-
-    private Button createButtonForMapEntity(MapEntity mapEntity) {
+    private Button createButtonForMapEntity (MapEntity mapEntity) {
         Button button = new Button(mapEntity.getName());
         button.setId(Integer.toString(mapEntity.getId()));
         button.setPrefWidth(120);
@@ -74,7 +72,7 @@ public class CreateMapTask extends Task<Boolean> {
         return button;
     }
 
-    private LocationDTO calculateMaxLocationOnMap(Collection<MapEntity> mapEntities) {
+    private LocationDTO calculateMaxLocationOnMap (Collection<MapEntity> mapEntities) {
         Integer maxX = null;
         Integer maxY = null;
 

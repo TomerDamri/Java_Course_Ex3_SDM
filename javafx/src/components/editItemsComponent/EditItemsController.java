@@ -1,5 +1,7 @@
 package components.editItemsComponent;
 
+import java.util.Map;
+
 import components.app.AppController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -13,16 +15,13 @@ import model.request.BaseUpdateStoreRequest;
 import model.request.UpdateStoreRequest;
 import model.response.DeleteItemFromStoreResponse;
 
-import java.util.Map;
-
 public class EditItemsController {
 
-    public void setMainController(AppController mainController) {
+    public void setMainController (AppController mainController) {
         this.mainController = mainController;
     }
 
     private AppController mainController;
-
 
     @FXML
     private VBox editItemsVBox;
@@ -44,7 +43,6 @@ public class EditItemsController {
     @FXML
     private Button submitEditItemButton;
 
-
     private SimpleBooleanProperty isStoreSelected;
     private SimpleBooleanProperty isActionSelected;
     private SimpleBooleanProperty isUpdatePriceAction;
@@ -62,7 +60,7 @@ public class EditItemsController {
     private String selectedStoreName;
     private String selectedItemName;
 
-    public EditItemsController() {
+    public EditItemsController () {
         isStoreSelected = new SimpleBooleanProperty(false);
         isActionSelected = new SimpleBooleanProperty(false);
         isUpdatePriceAction = new SimpleBooleanProperty(false);
@@ -72,51 +70,49 @@ public class EditItemsController {
         isNewPriceNeeded = new SimpleBooleanProperty(false);
         isPriceSelected = new SimpleBooleanProperty(false);
 
-
     }
 
     @FXML
-    public void initialize() {
+    public void initialize () {
         newPriceLabel.visibleProperty().bind(isNewPriceNeeded);
         newPriceTextField.visibleProperty().bind(isNewPriceNeeded);
         editItemsOptionsComboBox.disableProperty().bind(isStoreSelected.not());
         itemsComboBox.visibleProperty().bind(isActionSelected);
         submitEditItemButton.visibleProperty().bind(isItemSelected);
-        newPriceTextField.setOnAction((event) -> {
+        newPriceTextField.setOnAction( (event) -> {
             isPriceSelected.setValue(true);
         });
     }
 
-
     @FXML
-    void editItemsOptionsComboBoxAction(ActionEvent event) {
+    void editItemsOptionsComboBoxAction (ActionEvent event) {
         if (editItemsOptionsComboBox.getValue() != null) {
             isActionSelected.set(true);
             String selection = editItemsOptionsComboBox.getValue();
             switch (selection) {
-                case "Add Item To Store":
-                    isNewPriceNeeded.set(true);
-                    isAddItemAction.set(true);
-                    handleAddItem();
-                    break;
-                case "Delete Item From Store":
-                    isDeleteItemAction.set(true);
-                    handleDeleteItem();
-                    break;
-                case "Update Item Price In Store":
-                    isNewPriceNeeded.set(true);
-                    isUpdatePriceAction.set(true);
-                    handleUpdateItemPrice();
-                    break;
-                default:
-                    break;
+            case "Add Item To Store":
+                isNewPriceNeeded.set(true);
+                isAddItemAction.set(true);
+                handleAddItem();
+                break;
+            case "Delete Item From Store":
+                isDeleteItemAction.set(true);
+                handleDeleteItem();
+                break;
+            case "Update Item Price In Store":
+                isNewPriceNeeded.set(true);
+                isUpdatePriceAction.set(true);
+                handleUpdateItemPrice();
+                break;
+            default:
+                break;
 
             }
         }
     }
 
     @FXML
-    void itemsComboBoxAction(ActionEvent event) {
+    void itemsComboBoxAction (ActionEvent event) {
         if (itemsComboBox.getValue() != null) {
             isItemSelected.set(true);
             selectedItemId = Integer.parseInt(itemsComboBox.getValue().substring(4, 5));
@@ -124,8 +120,8 @@ public class EditItemsController {
         }
     }
 
-    private void addItem() {
-        //todo consider change price to double
+    private void addItem () {
+        // todo consider change price to double
         try {
             int price = Integer.parseInt(newPriceTextField.getText());
             UpdateStoreRequest request = new UpdateStoreRequest(selectedStoreId, selectedItemId, price);
@@ -133,44 +129,50 @@ public class EditItemsController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText(String.format("%s was successfully added to %s", selectedItemName, selectedStoreName));
             alert.showAndWait();
-        } catch (NumberFormatException ex) {
+        }
+        catch (NumberFormatException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Price");
             alert.setContentText("The price should be an integer");
             alert.showAndWait();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
-        } finally {
+        }
+        finally {
             resetEditItemsComponent();
         }
     }
 
-    private void deleteItem() {
+    private void deleteItem () {
         try {
             BaseUpdateStoreRequest request = new BaseUpdateStoreRequest(selectedStoreId, selectedItemId);
             DeleteItemFromStoreResponse response = mainController.deleteItemFromStore(request);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             if (response.getRemovedDiscounts() != null && !response.getRemovedDiscounts().isEmpty()) {
-                StringBuilder stringBuilder = new StringBuilder("Deleting ").append(selectedItemName).append(" caused deletion of the following discounts:\n");
+                StringBuilder stringBuilder = new StringBuilder("Deleting ").append(selectedItemName)
+                                                                            .append(" caused deletion of the following discounts:\n");
                 response.getRemovedDiscounts().forEach(discountDTO -> stringBuilder.append(discountDTO.getDiscountName()).append("\n"));
                 alert.setContentText(stringBuilder.toString());
             }
             alert.setHeaderText(String.format("%s was successfully deleted from %s", selectedItemName, selectedStoreName));
             alert.showAndWait();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
-        } finally {
+        }
+        finally {
             resetEditItemsComponent();
         }
 
     }
 
-    private void updateItemPrice() {
+    private void updateItemPrice () {
         try {
             int price = Integer.parseInt(newPriceTextField.getText());
             UpdateStoreRequest request = new UpdateStoreRequest(selectedStoreId, selectedItemId, price);
@@ -178,25 +180,26 @@ public class EditItemsController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText(String.format("%s price was successfully updated to %s", selectedItemName, price));
             alert.showAndWait();
-        } catch (
-                NumberFormatException ex) {
+        }
+        catch (NumberFormatException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Price");
             alert.setContentText("The price should be an integer");
             alert.showAndWait();
-        } catch (
-                Exception ex) {
+        }
+        catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
-        } finally {
+        }
+        finally {
             resetEditItemsComponent();
         }
 
     }
 
     @FXML
-    void storesComboBoxAction(ActionEvent event) {
+    void storesComboBoxAction (ActionEvent event) {
         if (storesComboBox.getValue() != null) {
             isStoreSelected.set(true);
             selectedStoreId = Integer.parseInt(storesComboBox.getValue().substring(4, 5));
@@ -205,35 +208,35 @@ public class EditItemsController {
     }
 
     @FXML
-    void submitEditItemButtonAction(ActionEvent event) {
+    void submitEditItemButtonAction (ActionEvent event) {
         if (isDeleteItemAction.get()) {
             deleteItem();
-        } else if (newPriceTextField.getText() != null) {
+        }
+        else if (newPriceTextField.getText() != null) {
             if (isAddItemAction.get()) {
                 addItem();
-            } else if (isUpdatePriceAction.get()) {
+            }
+            else if (isUpdatePriceAction.get()) {
                 updateItemPrice();
             }
         }
 
     }
 
-
-    private void handleUpdateItemPrice() {
+    private void handleUpdateItemPrice () {
         itemsComboBox.getItems().addAll(mainController.getItemsInStoreObservableList(selectedStoreId));
 
     }
 
-    private void handleDeleteItem() {
+    private void handleDeleteItem () {
         itemsComboBox.getItems().addAll(mainController.getItemsInStoreObservableList(selectedStoreId));
     }
 
-    private void handleAddItem() {
+    private void handleAddItem () {
         itemsComboBox.setItems(mainController.getItemsNotInStoreObservableList(selectedStoreId));
     }
 
-
-    public void resetEditItemsComponent() {
+    public void resetEditItemsComponent () {
 
         isStoreSelected.set(false);
         isActionSelected.set(false);
@@ -255,15 +258,17 @@ public class EditItemsController {
 
     }
 
-    public void initComboBoxes() {
+    public void initComboBoxes () {
         storesComboBox.getItems().clear();
         editItemsOptionsComboBox.getItems().clear();
         storesComboBox.getItems().addAll(mainController.getStoresList());
-        editItemsOptionsComboBox.getItems().addAll(FXCollections.observableArrayList(
-                "Add Item To Store", "Delete Item From Store", "Update Item Price In Store"));
+        editItemsOptionsComboBox.getItems()
+                                .addAll(FXCollections.observableArrayList("Add Item To Store",
+                                                                          "Delete Item From Store",
+                                                                          "Update Item Price In Store"));
     }
 
-    public void startEditItems() {
+    public void startEditItems () {
         stores = mainController.getStores().getStores();
         items = mainController.getItems().getItems();
         initComboBoxes();

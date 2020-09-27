@@ -1,6 +1,6 @@
 package course.java.sdm.engine.model;
 
-public class Customer{
+public class Customer {
 
     private int id;
     private String name;

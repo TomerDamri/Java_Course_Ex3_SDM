@@ -47,11 +47,11 @@ public class DiscountDTO {
         return offers;
     }
 
-    public String getStoreName() {
+    public String getStoreName () {
         return storeName;
     }
 
-    public String getIfYouBuyItemName() {
+    public String getIfYouBuyItemName () {
         return ifYouBuyItemName;
     }
 

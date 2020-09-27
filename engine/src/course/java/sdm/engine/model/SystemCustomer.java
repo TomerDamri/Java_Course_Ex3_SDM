@@ -31,11 +31,11 @@ public class SystemCustomer implements Mappable {
         return numOfOrders;
     }
 
-    public double getTotalItemsPrice() {
+    public double getTotalItemsPrice () {
         return totalItemsPrice;
     }
 
-    public double getTotalDeliveryPrice() {
+    public double getTotalDeliveryPrice () {
         return totalDeliveryPrice;
     }
 
@@ -43,11 +43,11 @@ public class SystemCustomer implements Mappable {
         this.numOfOrders = numOfOrders;
     }
 
-    public void setTotalItemsPrice(double totalItemsPrice) {
+    public void setTotalItemsPrice (double totalItemsPrice) {
         this.totalItemsPrice = totalItemsPrice;
     }
 
-    public void setTotalDeliveryPrice(double totalDeliveryPrice) {
+    public void setTotalDeliveryPrice (double totalDeliveryPrice) {
         this.totalDeliveryPrice = totalDeliveryPrice;
     }
 }

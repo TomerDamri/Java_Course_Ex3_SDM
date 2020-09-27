@@ -16,16 +16,16 @@ public class StoreOrderDTO {
     private Double totalPrice;
     private Map<Integer, Double> pricedItems;
 
-    public StoreOrderDTO(UUID parentId,
-                         UUID id,
-                         LocalDate orderDate,
-                         LocationDTO locationDTO,
-                         Map<Integer, Double> pricedItems,
-                         Integer numOfItemTypes,
-                         Integer amountOfItems,
-                         Double itemsPrice,
-                         Double deliveryPrice,
-                         Double totalPrice) {
+    public StoreOrderDTO (UUID parentId,
+                          UUID id,
+                          LocalDate orderDate,
+                          LocationDTO locationDTO,
+                          Map<Integer, Double> pricedItems,
+                          Integer numOfItemTypes,
+                          Integer amountOfItems,
+                          Double itemsPrice,
+                          Double deliveryPrice,
+                          Double totalPrice) {
         this.parentId = parentId;
         this.id = id;
         this.orderDate = orderDate;
@@ -38,64 +38,64 @@ public class StoreOrderDTO {
         this.totalPrice = totalPrice;
     }
 
-    public UUID getId() {
+    public UUID getId () {
         return id;
     }
 
-    public LocalDate getOrderDate() {
+    public LocalDate getOrderDate () {
         return orderDate;
     }
 
-    public UUID getParentId() {
+    public UUID getParentId () {
         return parentId;
     }
 
-    public LocationDTO getLocation() {
+    public LocationDTO getLocation () {
         return location;
     }
 
-    public Map<Integer, Double> getPricedItems() {
+    public Map<Integer, Double> getPricedItems () {
         return pricedItems;
     }
 
-    public Integer getNumOfItemTypes() {
+    public Integer getNumOfItemTypes () {
         return numOfItemTypes;
     }
 
-    public Integer getAmountOfItems() {
+    public Integer getAmountOfItems () {
         return amountOfItems;
     }
 
-    public Double getItemsPrice() {
+    public Double getItemsPrice () {
         return itemsPrice;
     }
 
-    public Double getDeliveryPrice() {
+    public Double getDeliveryPrice () {
         return deliveryPrice;
     }
 
-    public Double getTotalPrice() {
+    public Double getTotalPrice () {
         return totalPrice;
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         String parentOrderIdStr = parentId != null ? String.format("\nParent order id: %s,", parentId) : "";
         return new StringBuilder().append(parentOrderIdStr)
-                .append("\nOrder id: ")
-                .append(id)
-                .append(",\nDate: ")
-                .append(orderDate)
-                .append(",\nNumber of item types: ")
-                .append(numOfItemTypes)
-                .append(",\nTotal number of items: ")
-                .append(amountOfItems)
-                .append(",\nTotal items cost: ")
-                .append(itemsPrice)
-                .append(",\nDelivery price: ")
-                .append(deliveryPrice)
-                .append(",\nTotal price of the order: ")
-                .append(totalPrice)
-                .toString();
+                                  .append("\nOrder id: ")
+                                  .append(id)
+                                  .append(",\nDate: ")
+                                  .append(orderDate)
+                                  .append(",\nNumber of item types: ")
+                                  .append(numOfItemTypes)
+                                  .append(",\nTotal number of items: ")
+                                  .append(amountOfItems)
+                                  .append(",\nTotal items cost: ")
+                                  .append(itemsPrice)
+                                  .append(",\nDelivery price: ")
+                                  .append(deliveryPrice)
+                                  .append(",\nTotal price of the order: ")
+                                  .append(totalPrice)
+                                  .toString();
     }
 }

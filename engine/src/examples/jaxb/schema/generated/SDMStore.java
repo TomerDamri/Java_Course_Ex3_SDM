@@ -5,21 +5,16 @@
 // Generated on: 2020.09.02 at 11:23:17 AM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -41,13 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "name",
-    "deliveryPpk",
-    "location",
-    "sdmPrices",
-    "sdmDiscounts"
-})
+@XmlType(name = "", propOrder = { "name", "deliveryPpk", "location", "sdmPrices", "sdmDiscounts" })
 @XmlRootElement(name = "SDM-store")
 public class SDMStore {
 
@@ -67,12 +56,10 @@ public class SDMStore {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
-    public String getName() {
+    public String getName () {
         return name;
     }
 
@@ -80,11 +67,10 @@ public class SDMStore {
      * Sets the value of the name property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *        allowed object is {@link String }
+     * 
      */
-    public void setName(String value) {
+    public void setName (String value) {
         this.name = value;
     }
 
@@ -92,7 +78,7 @@ public class SDMStore {
      * Gets the value of the deliveryPpk property.
      * 
      */
-    public int getDeliveryPpk() {
+    public int getDeliveryPpk () {
         return deliveryPpk;
     }
 
@@ -100,19 +86,17 @@ public class SDMStore {
      * Sets the value of the deliveryPpk property.
      * 
      */
-    public void setDeliveryPpk(int value) {
+    public void setDeliveryPpk (int value) {
         this.deliveryPpk = value;
     }
 
     /**
      * Gets the value of the location property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Location }
-     *     
+     * @return possible object is {@link Location }
+     * 
      */
-    public Location getLocation() {
+    public Location getLocation () {
         return location;
     }
 
@@ -120,23 +104,20 @@ public class SDMStore {
      * Sets the value of the location property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Location }
-     *     
+     *        allowed object is {@link Location }
+     * 
      */
-    public void setLocation(Location value) {
+    public void setLocation (Location value) {
         this.location = value;
     }
 
     /**
      * Gets the value of the sdmPrices property.
      * 
-     * @return
-     *     possible object is
-     *     {@link SDMPrices }
-     *     
+     * @return possible object is {@link SDMPrices }
+     * 
      */
-    public SDMPrices getSDMPrices() {
+    public SDMPrices getSDMPrices () {
         return sdmPrices;
     }
 
@@ -144,23 +125,20 @@ public class SDMStore {
      * Sets the value of the sdmPrices property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SDMPrices }
-     *     
+     *        allowed object is {@link SDMPrices }
+     * 
      */
-    public void setSDMPrices(SDMPrices value) {
+    public void setSDMPrices (SDMPrices value) {
         this.sdmPrices = value;
     }
 
     /**
      * Gets the value of the sdmDiscounts property.
      * 
-     * @return
-     *     possible object is
-     *     {@link SDMDiscounts }
-     *     
+     * @return possible object is {@link SDMDiscounts }
+     * 
      */
-    public SDMDiscounts getSDMDiscounts() {
+    public SDMDiscounts getSDMDiscounts () {
         return sdmDiscounts;
     }
 
@@ -168,11 +146,10 @@ public class SDMStore {
      * Sets the value of the sdmDiscounts property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SDMDiscounts }
-     *     
+     *        allowed object is {@link SDMDiscounts }
+     * 
      */
-    public void setSDMDiscounts(SDMDiscounts value) {
+    public void setSDMDiscounts (SDMDiscounts value) {
         this.sdmDiscounts = value;
     }
 
@@ -180,7 +157,7 @@ public class SDMStore {
      * Gets the value of the id property.
      * 
      */
-    public int getId() {
+    public int getId () {
         return id;
     }
 
@@ -188,7 +165,7 @@ public class SDMStore {
      * Sets the value of the id property.
      * 
      */
-    public void setId(int value) {
+    public void setId (int value) {
         this.id = value;
     }
 

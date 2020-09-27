@@ -1,5 +1,7 @@
 package components.app;
 
+import java.net.URL;
+
 import components.editItemsComponent.EditItemsController;
 import components.mapComponent.MapController;
 import components.placeOrderComponent.PlaceOrderController;
@@ -13,12 +15,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import logic.BusinessLogic;
 
-import java.net.URL;
-
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start (Stage primaryStage) throws Exception {
 
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource("/components/sdmComponent/SDM.fxml");
@@ -56,7 +56,14 @@ public class Main extends Application {
         root.setContent(sdmComponent);
         AppController appController = fxmlLoader.getController();
 
-        setAppControllerConfig(sdmController, placeOrderComponent, editItemsComponent, editItemsController, placeOrderController, mapComponent, mapController, appController);
+        setAppControllerConfig(sdmController,
+                               placeOrderComponent,
+                               editItemsComponent,
+                               editItemsController,
+                               placeOrderController,
+                               mapComponent,
+                               mapController,
+                               appController);
 
         sdmController.setMainController(appController);
         mapController.setMainController(appController);
@@ -70,14 +77,14 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private void setAppControllerConfig(SDMController sdmController,
-                                        BorderPane placeOrderComponent,
-                                        VBox editItemsComponent,
-                                        EditItemsController editItemsController,
-                                        PlaceOrderController placeOrderController,
-                                        ScrollPane mapComponent,
-                                        MapController mapController,
-                                        AppController appController) {
+    private void setAppControllerConfig (SDMController sdmController,
+                                         BorderPane placeOrderComponent,
+                                         VBox editItemsComponent,
+                                         EditItemsController editItemsController,
+                                         PlaceOrderController placeOrderController,
+                                         ScrollPane mapComponent,
+                                         MapController mapController,
+                                         AppController appController) {
         BusinessLogic businessLogic = new BusinessLogic(appController);
         appController.setBusinessLogic(businessLogic);
 
@@ -93,7 +100,7 @@ public class Main extends Application {
         appController.setDisplayInfoScrollPane(sdmController.getDisplayInfoScrollPane());
     }
 
-    public static void main(String[] args) {
+    public static void main (String[] args) {
         launch(args);
     }
 }

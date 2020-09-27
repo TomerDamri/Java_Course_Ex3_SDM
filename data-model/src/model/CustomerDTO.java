@@ -43,7 +43,7 @@ public class CustomerDTO {
     }
 
     @Override
-    public String toString(){
+    public String toString () {
         return String.format("id: %s name: %s", id, name);
     }
 }
