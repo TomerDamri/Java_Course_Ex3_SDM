@@ -1,12 +1,44 @@
 package course.java.sdm.engine.utils.systemUpdater;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import course.java.sdm.engine.exceptions.ItemNotExist;
-import course.java.sdm.engine.model.SystemItem;
-import course.java.sdm.engine.model.SystemStore;
+import course.java.sdm.engine.model.*;
 
 public class SystemUpdaterValidator {
+    public void validateAllOrderItemsExistInStore (SystemStore systemStore, Order order) {
+        Set<Integer> orderItems = order.getPricedItems().keySet().stream().map(PricedItem::getId).collect(Collectors.toSet());
+        Set<Integer> orderDiscountsItems = order.getSelectedOfferToNumOfRealization()
+                                                .keySet()
+                                                .stream()
+                                                .map(Offer::getItemId)
+                                                .collect(Collectors.toSet());
+
+        Set<Integer> allOrderItemsIds = new HashSet<>();
+        allOrderItemsIds.addAll(orderItems);
+        allOrderItemsIds.addAll(orderDiscountsItems);
+
+        Set<Integer> storeItemsIds = systemStore.getItemIdToStoreItem().keySet();
+
+        if (!storeItemsIds.containsAll(allOrderItemsIds)) {
+            List<Integer> invalidItemsIdsFromOrder = orderItems.stream()
+                                                               .filter(orderItemId -> !storeItemsIds.contains(orderItemId))
+                                                               .collect(Collectors.toList());
+            throw new RuntimeException(String.format("The following items ids: %s don't exist in '%s' store",
+                                                     invalidItemsIdsFromOrder,
+                                                     systemStore.getName()));
+        }
+    }
+
+    public void validateCustomerExistInSystem (Descriptor descriptor, Integer customerId) {
+        if (!descriptor.getSystemCustomers().containsKey(customerId)) {
+            throw new RuntimeException(String.format("There is no customer in system with id %s", customerId));
+        }
+    }
 
     public void validateItemNotExistInStore (Integer itemId, SystemStore systemStore, SystemItem systemItem) {
         if (isItemExistInStore(itemId, systemStore)) {

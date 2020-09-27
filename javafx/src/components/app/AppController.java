@@ -109,6 +109,14 @@ public class AppController {
         mainBorderPane.setCenter(null);
     }
 
+    public void loadOrdersHistoryFile (String filePath, Consumer<String> fileErrorDelegate) {
+        businessLogic.loadOrdersHistoryFile(filePath, fileErrorDelegate);
+    }
+
+    public void saveOrdersHistoryFile (String filePath, Consumer<String> errorDelegate, Runnable onFinish) {
+        businessLogic.saveOrdersHistoryFile(filePath, errorDelegate, onFinish);
+    }
+
     public void createMap () {
         Consumer<GridPane> mapConsumer = gridPane -> {
             mapGridPane.getChildren().addAll(gridPane.getChildren());

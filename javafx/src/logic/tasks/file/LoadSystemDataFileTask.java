@@ -6,14 +6,14 @@ import course.java.sdm.engine.controller.ISDMController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
-public class LoadFileTask extends Task<Boolean> {
+public class LoadSystemDataFileTask extends Task<Boolean> {
     private final long SLEEP_TIME = 0;
 
     private String fileName;
     private final ISDMController beController;
     private final Consumer<String> fileErrorDelegate;
 
-    public LoadFileTask (String fileName, ISDMController beController, Consumer<String> fileErrorDelegate) {
+    public LoadSystemDataFileTask (String fileName, ISDMController beController, Consumer<String> fileErrorDelegate) {
         this.fileName = fileName;
         this.beController = beController;
         this.fileErrorDelegate = fileErrorDelegate;

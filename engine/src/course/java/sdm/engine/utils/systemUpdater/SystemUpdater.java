@@ -224,28 +224,37 @@ public class SystemUpdater {
     private void updateSystemAfterLoadingHistoryOrder (Descriptor descriptor,
                                                        Map<Integer, SystemStore> systemStores,
                                                        SystemOrder systemOrder) {
-        Integer storeId = systemOrder.getStoreId();
+        SystemCustomer systemCustomer = getCustomerById(descriptor, systemOrder.getCustomerId());
+        SystemStore systemStore = getStoreById(descriptor, systemOrder.getStoreId());
+        Order order = getOrder(systemStore, systemOrder);
+
+        updateSystemAfterStaticOrderV2(systemStore, order, descriptor, systemCustomer);
+    }
+
+    private Order getOrder (SystemStore systemStore, SystemOrder systemOrder) {
         Order order = systemOrder.getOrder();
-        SystemStore systemStore = systemStores.get(storeId);
+        SYSTEM_UPDATER_VALIDATOR.validateAllOrderItemsExistInStore(systemStore, order);
 
-        updateSystemAfterStaticOrder(systemStore, order, descriptor);
+        return order;
     }
 
-    public void updateSystemAfterStaticOrder (SystemStore systemStore, Order newOrder, Descriptor descriptor) {
-        updateSystemStore(systemStore, newOrder);
-        // add order to store
-        systemStore.getOrders().add(newOrder);
-        // add order to order collection in descriptor
-        addNewOrderToSystemOrders(systemStore, newOrder, descriptor);
-        // update counter of all store items that was included in order
-        updateStoreAfterOrderCompletion(systemStore, newOrder);
-        // update counter of all system items that was included in order
-        updateSystemItemsAfterOrderCompletion(descriptor.getSystemItems(), newOrder);
+    private SystemCustomer getCustomerById (Descriptor descriptor, Integer customerId) {
+        SYSTEM_UPDATER_VALIDATOR.validateCustomerExistInSystem(descriptor, customerId);
+
+        return descriptor.getSystemCustomers().get(customerId);
     }
 
-    private void addNewOrderToSystemOrders (SystemStore systemStore, Order newOrder, Descriptor descriptor) {
+    private SystemStore getStoreById (Descriptor descriptor, Integer storeId) {
+        Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
+
+        SYSTEM_UPDATER_VALIDATOR.validateStoreExistInSystem(storeId, systemStores);
+
+        return systemStores.get(storeId);
+    }
+
+    private void addNewOrderToSystemOrders (SystemStore systemStore, Order newOrder, Descriptor descriptor, Integer customerId) {
         List<SystemOrder> orders;
-        SystemOrder newSystemOrder = new SystemOrder(newOrder, systemStore.getName(), systemStore.getId());
+        SystemOrder newSystemOrder = new SystemOrder(newOrder, systemStore.getName(), systemStore.getId(), customerId);
         UUID id = (newOrder.getParentId() != null) ? newOrder.getParentId() : newOrder.getId();
         Map<UUID, List<SystemOrder>> systemOrders = descriptor.getSystemOrders();
 
@@ -269,34 +278,6 @@ public class SystemUpdater {
                     + newOrder.getDeliveryPrice(), 2));
     }
 
-    private void updateStoreAfterOrderCompletion (SystemStore systemStore, Order newOrder) {
-        Map<Integer, StoreItem> storeItems = systemStore.getItemIdToStoreItem();
-        Map<PricedItem, Double> allOrderItemsMap = newOrder.getPricedItems();
-        Set<PricedItem> orderItems = allOrderItemsMap.keySet();
-
-        for (PricedItem pricedItem : orderItems) {
-            int itemId = pricedItem.getId();
-
-            if (storeItems.containsKey(itemId)) {
-                StoreItem storeItem = storeItems.get(itemId);
-                double prevNumOfPurchases = storeItem.getPurchasesCount();
-                storeItem.setPurchasesCount(prevNumOfPurchases + allOrderItemsMap.get(pricedItem));
-            }
-        }
-    }
-
-    private void updateSystemItemsAfterOrderCompletion (Map<Integer, SystemItem> allSystemItems, Order newOrder) {
-        Set<PricedItem> orderItems = newOrder.getPricedItems().keySet();
-        for (PricedItem pricedItem : orderItems) {
-            int itemId = pricedItem.getId();
-            SystemItem systemItem = allSystemItems.get(itemId);
-            int numOfItemsToCount = pricedItem.getPurchaseCategory().equals(Item.PurchaseCategory.QUANTITY)
-                        ? newOrder.getPricedItems().get(pricedItem).intValue()
-                        : 1;
-            systemItem.setOrdersCount(systemItem.getOrdersCount() + numOfItemsToCount);
-        }
-    }
-
     public void updateSystemAfterStaticOrderV2 (SystemStore systemStore,
                                                 Order newOrder,
                                                 Descriptor descriptor,
@@ -305,7 +286,7 @@ public class SystemUpdater {
         // add order to store
         systemStore.getOrders().add(newOrder);
         // add order to order collection in descriptor
-        addNewOrderToSystemOrders(systemStore, newOrder, descriptor);
+        addNewOrderToSystemOrders(systemStore, newOrder, descriptor, systemCustomer.getId());
         // update counter of all store items that was included in order
         updateStoreAfterOrderCompletionV2(systemStore, newOrder);
         // update counter of all system items that was included in order

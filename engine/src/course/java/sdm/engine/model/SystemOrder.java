@@ -10,11 +10,13 @@ public class SystemOrder implements Serializable {
     private final Order order;
     private final String storeName;
     private final Integer storeId;
+    private final Integer customerId;
 
-    public SystemOrder (Order order, String storeName, Integer storeId) {
+    public SystemOrder (Order order, String storeName, Integer storeId, Integer customerId) {
         this.order = order;
         this.storeName = storeName;
         this.storeId = storeId;
+        this.customerId = customerId;
     }
 
     public Order getOrder () {
@@ -63,6 +65,10 @@ public class SystemOrder implements Serializable {
 
     public Integer getStoreId () {
         return storeId;
+    }
+
+    public Integer getCustomerId () {
+        return customerId;
     }
 
     @Override
