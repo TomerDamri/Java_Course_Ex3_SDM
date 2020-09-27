@@ -371,6 +371,9 @@ public class SDMController {
             else {
                 try {
                     Object realObject = field.get(object);
+                    if (field.getGenericType().getTypeName().contains("Double")) {
+                        realObject = SdmComponentUtils.round((Double) realObject, 2);
+                    }
                     String textFieldValue = (realObject != null) ? realObject.toString() : null;
                     TextField value = new TextField(textFieldValue);
                     gridPane.add(value, 1, rowIndex);

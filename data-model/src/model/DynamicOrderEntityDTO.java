@@ -1,5 +1,7 @@
 package model;
 
+import static model.Utils.round;
+
 public class DynamicOrderEntityDTO {
 
     private final Integer storeId;
@@ -69,17 +71,17 @@ public class DynamicOrderEntityDTO {
                                               .append(",\nStore location: ")
                                               .append(location)
                                               .append(",\nDistance from store: ")
-                                              .append(distanceFromCustomer)
+                                              .append(round(distanceFromCustomer, 2))
                                               .append(",\nDelivery PPK: ")
                                               .append(ppk)
                                               .append(",\nNumber of item types: ")
                                               .append(totalItemTypes)
                                               .append(",\nDelivery price: ")
-                                              .append(deliveryPrice)
+                                              .append(round(deliveryPrice, 2))
                                               .append(",\nItems price: ")
-                                              .append(totalItemsPrice)
+                                              .append(round(totalItemsPrice, 2))
                                               .append(",\nOrder total price: ")
-                                              .append(totalItemsPrice + deliveryPrice)
+                                              .append(round(totalItemsPrice + deliveryPrice, 2))
                                               .toString();
 
     }
