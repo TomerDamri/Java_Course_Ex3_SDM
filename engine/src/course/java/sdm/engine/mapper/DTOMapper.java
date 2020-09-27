@@ -139,6 +139,7 @@ public class DTOMapper {
                                          order.getDistanceFromCustomerLocation(),
                                          storeDetails.getDeliveryPpk(),
                                          order.getNumOfItemTypes(),
+                                         order.getAmountOfItems(),
                                          order.getDeliveryPrice(),
                                          order.getItemsPrice());
     }

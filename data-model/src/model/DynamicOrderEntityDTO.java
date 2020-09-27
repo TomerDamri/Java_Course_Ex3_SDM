@@ -9,6 +9,7 @@ public class DynamicOrderEntityDTO {
     private final Double distanceFromCustomer;
     private final Integer ppk;
     private final Integer totalItemTypes;
+    private final Integer amountOfItems;
     private final Double deliveryPrice;
     private final Double totalItemsPrice;
     private final LocationDTO location;
@@ -19,6 +20,7 @@ public class DynamicOrderEntityDTO {
                                   Double distanceFromCustomer,
                                   Integer ppk,
                                   Integer totalItemTypes,
+                                  Integer amountOfItems,
                                   Double deliveryPrice,
                                   Double totalPrice) {
         this.storeId = storeId;
@@ -29,6 +31,7 @@ public class DynamicOrderEntityDTO {
         this.totalItemTypes = totalItemTypes;
         this.deliveryPrice = deliveryPrice;
         this.totalItemsPrice = totalPrice;
+        this.amountOfItems = amountOfItems;
     }
 
     public final Integer getStoreId () {
@@ -76,6 +79,8 @@ public class DynamicOrderEntityDTO {
                                               .append(ppk)
                                               .append(",\nNumber of item types: ")
                                               .append(totalItemTypes)
+                                              .append(",\nAmount of items: ")
+                                              .append(amountOfItems)
                                               .append(",\nDelivery price: ")
                                               .append(round(deliveryPrice, 2))
                                               .append(",\nItems price: ")
