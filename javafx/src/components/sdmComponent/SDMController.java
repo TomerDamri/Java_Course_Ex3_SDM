@@ -207,6 +207,7 @@ public class SDMController {
     @FXML
     void handleSaveOrderHistory (ActionEvent event) {
         mainBorderPane.setCenter(null);
+        mainBorderPane.setRight(null);
         isSaveOrdersButtonSelected.set(true);
     }
 
@@ -232,6 +233,7 @@ public class SDMController {
     @FXML
     void handleLoadOrderHistory (ActionEvent event) {
         mainBorderPane.setCenter(null);
+        mainBorderPane.setRight(null);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select orders history file to load");
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -242,7 +244,7 @@ public class SDMController {
         String absolutePath = selectedFile.getAbsolutePath();
         Consumer<String> fileErrorConsumer = status -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("File Status information");
+            alert.setTitle("Failed to load order history file");
             alert.setHeaderText("Error Occurred While Loading Orders History File:");
             alert.setContentText(status);
             alert.showAndWait();
