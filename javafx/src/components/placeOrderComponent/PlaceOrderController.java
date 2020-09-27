@@ -464,11 +464,11 @@ public class PlaceOrderController {
     }
 
     private void populateDiscounts (List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
-        GridPane discountDetailsGridPane = new GridPane();
-        discountDetailsGridPane.setVgap(5);
-        discountDetailsGridPane.setHgap(5);
         int rowIndex = 0;
         for (DiscountDTO discount : discounts) {
+            GridPane discountDetailsGridPane = new GridPane();
+            discountDetailsGridPane.setVgap(5);
+            discountDetailsGridPane.setHgap(5);
             Accordion discountAccordion = new Accordion();
             discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
             discountDetailsGridPane.add(new Text(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemName())),

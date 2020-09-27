@@ -119,9 +119,10 @@ public class SDMController {
 
     }
 
-    public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
+    public void bindTaskToUIComponents (Task<Boolean> aTask, Consumer<Boolean> onFinish) {
         loadFileIndicator.textProperty().bind(aTask.messageProperty());
-        aTask.valueProperty().addListener( (observable, oldValue, newValue) -> onTaskFinished(Optional.ofNullable(onFinish)));
+        aTask.valueProperty()
+             .addListener( (observable, oldValue, newValue) -> onTaskFinished(Optional.of( () -> onFinish.accept(aTask.getValue()))));
     }
 
     public ScrollPane getDisplayInfoScrollPane () {
@@ -155,13 +156,16 @@ public class SDMController {
             isFileSelected.set(false);
             isFileBeingLoaded.set(false);
         };
-        mainController.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, () -> {
-            isFileSelected.set(true);
-            isFileBeingLoaded.set(false);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("File Status information");
-            alert.setHeaderText("XML File Loaded Successfully");
-            alert.showAndWait();
+
+        mainController.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, (isSuccess) -> {
+            if (isSuccess) {
+                isFileSelected.set(true);
+                isFileBeingLoaded.set(false);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("File Status information");
+                alert.setHeaderText("XML File Loaded Successfully");
+                alert.showAndWait();
+            }
         });
     }
 
