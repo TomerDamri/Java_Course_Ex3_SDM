@@ -117,16 +117,17 @@ public class OrdersCreator {
 
             ORDERS_CREATOR_VALIDATOR.validateNumOfRealizationForChosenDiscount(itemAmountInOrder,
                                                                                itemQuantityInChosenDiscount,
-                                                                               discountName,
                                                                                numOfRealizations);
 
             List<Offer> offersToAdd = getOffersToAdd(chosenDiscount, chosenOfferId);
             offersToAdd.forEach(offer -> addOffersToOrder(offer, systemStore, order, discountName, numOfRealizations));
+            itemAmountInOrder -= itemQuantityInChosenDiscount * numOfRealizations;
         }
     }
 
     private Discount getChosenDiscount (Order order, Map<String, Discount> discountsNameToValidDiscount, String discountName) {
         ORDERS_CREATOR_VALIDATOR.validateExistenceOfChosenDiscount(discountsNameToValidDiscount, order.getId(), discountName);
+
         return discountsNameToValidDiscount.get(discountName);
     }
 
