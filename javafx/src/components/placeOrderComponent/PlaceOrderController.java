@@ -353,38 +353,39 @@ public class PlaceOrderController {
     }
 
     private void handleDisplayDiscounts (GetDiscountsResponse response) {
-        GridPane storeDiscountsGridPane = new GridPane();
-        GridPane itemsGridPane = new GridPane();
-        itemsGridPane.setVgap(5);
-        itemsGridPane.setHgap(5);
-        storeDiscountsGridPane.setVgap(5);
-        storeDiscountsGridPane.setHgap(5);
+        GridPane storesGridPane = new GridPane();
+        storesGridPane.setVgap(5);
+        storesGridPane.setHgap(5);
         enableCreateOrder.set(false);
         if (response.getStoreIdToValidDiscounts() != null && !response.getStoreIdToValidDiscounts().isEmpty()) {
             int storeRowIndex = 0;
             GetStoresResponse getStoresResponse = mainController.getStores();
             for (Integer storeId : response.getStoreIdToValidDiscounts().keySet()) {
-                GridPane discountsGridPane = new GridPane();
-                discountsGridPane.setVgap(5);
-                discountsGridPane.setHgap(5);
                 Accordion storeAccordion = new Accordion();
+                GridPane storeItemsGridPane = new GridPane();
+                storeItemsGridPane.setVgap(5);
+                storeItemsGridPane.setHgap(5);
                 String storeName = getStoresResponse.getStores().get(storeId).getName();
                 int itemRowIndex = 0;
                 for (Integer itemId : response.getStoreIdToValidDiscounts().get(storeId).getItemIdToValidStoreDiscounts().keySet()) {
                     Accordion itemAccordion = new Accordion();
+                    GridPane itemDiscountsGridPane = new GridPane();
+                    itemDiscountsGridPane.setVgap(5);
+                    itemDiscountsGridPane.setHgap(5);
                     List<DiscountDTO> discounts = response.getStoreIdToValidDiscounts()
                                                           .get(storeId)
                                                           .getItemIdToValidStoreDiscounts()
                                                           .get(itemId);
-                    populateDiscounts(discounts, discountsGridPane, itemId, storeId);
-                    TitledPane discountsTitledPane = new TitledPane(discounts.get(0).getIfYouBuyItemName(), discountsGridPane);
+
+                    populateItemsDiscounts(discounts, itemDiscountsGridPane, itemId, storeId);
+                    TitledPane discountsTitledPane = new TitledPane(discounts.get(0).getIfYouBuyItemName(), itemDiscountsGridPane);
                     itemAccordion.getPanes().add(discountsTitledPane);
-                    itemsGridPane.add(itemAccordion, 0, itemRowIndex);
+                    storeItemsGridPane.add(itemAccordion, 0, itemRowIndex);
                     itemRowIndex++;
                 }
-                TitledPane itemsTitledPane = new TitledPane(storeName, itemsGridPane);
+                TitledPane itemsTitledPane = new TitledPane(storeName, storeItemsGridPane);
                 storeAccordion.getPanes().add(itemsTitledPane);
-                storeDiscountsGridPane.add(storeAccordion, 0, storeRowIndex);
+                storesGridPane.add(storeAccordion, 0, storeRowIndex);
                 storeRowIndex++;
             }
             Button submitDiscountButton = new Button("Submit Discounts");
@@ -418,7 +419,7 @@ public class PlaceOrderController {
             });
             Text selectItemsTitle = new Text("Select Discounts");
             selectItemsTitle.setFont(new Font(36));
-            VBox discountsVBox = new VBox(selectItemsTitle, storeDiscountsGridPane, submitDiscountButton);
+            VBox discountsVBox = new VBox(selectItemsTitle, storesGridPane, submitDiscountButton);
             discountsVBox.setSpacing(5);
             itemsAndDiscountsScrollPane.setContent(discountsVBox);
         }
@@ -462,13 +463,13 @@ public class PlaceOrderController {
         }
     }
 
-    private void populateDiscounts (List<DiscountDTO> discounts, GridPane discountsGridPane, int itemId, int storeId) {
-        GridPane discountDetailsGridPane = new GridPane();
-        discountDetailsGridPane.setVgap(5);
-        discountDetailsGridPane.setHgap(5);
+    private void populateItemsDiscounts(List<DiscountDTO> discounts, GridPane itemDiscountsGridPane, int itemId, int storeId) {
         int rowIndex = 0;
         for (DiscountDTO discount : discounts) {
             Accordion discountAccordion = new Accordion();
+            GridPane discountDetailsGridPane = new GridPane();
+            discountDetailsGridPane.setVgap(5);
+            discountDetailsGridPane.setHgap(5);
             discountDetailsGridPane.add(new Label("If You Buy:"), 0, 0);
             discountDetailsGridPane.add(new Text(String.format("%s %s", discount.getIfYouBuyQuantity(), discount.getIfYouBuyItemName())),
                                         1,
@@ -569,10 +570,13 @@ public class PlaceOrderController {
             TitledPane discountTitledPane = new TitledPane(discount.getDiscountName(), discountDetailsGridPane);
 
             discountAccordion.getPanes().add(discountTitledPane);
-            discountsGridPane.add(discountAccordion, 0, rowIndex);
+            itemDiscountsGridPane.add(discountAccordion, 0, rowIndex);
             rowIndex++;
             offerOptionsBox.setPromptText("Select one option");
         }
+
+
+
     }
 
     private String getStaticOrderSummary () {
