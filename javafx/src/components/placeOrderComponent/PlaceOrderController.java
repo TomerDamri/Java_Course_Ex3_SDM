@@ -603,7 +603,7 @@ public class PlaceOrderController {
                                          item.getName(),
                                          item.getPurchaseCategory(),
                                          itemPrice,
-                                         amount,
+                                         round(amount, 2),
                                          round(itemPrice * amount, 2)));
             if (iterator.hasNext()) {
                 builder.append(",");
@@ -632,10 +632,10 @@ public class PlaceOrderController {
         int ppk = selectedStore.getDeliveryPpk();
         double deliveryPrice = round(distance * ppk, 2);
         builder.append(String.format("Distance form store: %s\nStore PPK: %s\nDelivery price: %s,\nOrder total price: %s ",
-                                     distance,
-                                     ppk,
-                                     deliveryPrice,
-                                     deliveryPrice + totalItemsPrice));
+                                     round(distance, 2),
+                                     round(ppk, 2),
+                                     round(deliveryPrice, 2),
+                                     round(deliveryPrice + totalItemsPrice, 2)));
     }
 
     private double calculateDistance (int x1, int x2, int y1, int y2) {

@@ -42,15 +42,10 @@ public class OrdersCreatorValidator {
 
     public void validateNumOfRealizationForChosenDiscount (Double itemQuantityInOrder,
                                                            Double itemQuantityInDiscount,
-                                                           String discountName,
                                                            int numOfRealization) {
         double totalNumOfChosenItemToAdd = itemQuantityInDiscount * numOfRealization;
         if (totalNumOfChosenItemToAdd > itemQuantityInOrder) {
-            Double validNumOfRealization = (itemQuantityInOrder / itemQuantityInDiscount);
-            throw new RuntimeException(String.format("You can implements the discount '%s' only %s times (and not %s times as you asked).",
-                                                     discountName,
-                                                     validNumOfRealization.intValue(),
-                                                     numOfRealization));
+            throw new RuntimeException("You purchased fewer items than necessary for implementing the discounts you asked");
         }
     }
 
