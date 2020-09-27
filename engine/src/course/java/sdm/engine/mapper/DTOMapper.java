@@ -12,15 +12,18 @@ import model.response.*;
 public class DTOMapper {
 
     public FinalSummaryForOrder createFinalSummaryForOrder (Map<StoreDetails, Order> staticOrders, Map<Integer, SystemStore> systemStores) {
-        List<StoreSummaryForOrder> storesSummaryForOrder = staticOrders.entrySet()
-                                                                       .stream()
-                                                                       .map(entry -> toStoreSummaryForOrder(entry.getKey(),
-                                                                                                            entry.getValue(),
-                                                                                                            systemStores.get(entry.getKey()
-                                                                                                                                  .getId())))
-                                                                       .collect(Collectors.toList());
+        double[] totalItemsPrice = new double[1], totalDeliveryPrice = new double[1], totalPrice = new double[1];
 
-        return new FinalSummaryForOrder(storesSummaryForOrder);
+        List<StoreSummaryForOrder> storesSummaryForOrder = staticOrders.entrySet().stream().map(entry -> {
+            Order currOrder = entry.getValue();
+            totalItemsPrice[0] += currOrder.getItemsPrice();
+            totalDeliveryPrice[0] += currOrder.getDeliveryPrice();
+            totalPrice[0] += currOrder.getTotalPrice();
+
+            return toStoreSummaryForOrder(entry.getKey(), currOrder, systemStores.get(entry.getKey().getId()));
+        }).collect(Collectors.toList());
+
+        return new FinalSummaryForOrder(totalItemsPrice[0], totalDeliveryPrice[0], totalPrice[0], storesSummaryForOrder);
     }
 
     private StoreSummaryForOrder toStoreSummaryForOrder (StoreDetails storeDetails, Order order, SystemStore systemStore) {
@@ -333,7 +336,6 @@ public class DTOMapper {
                                  order.getId(),
                                  order.getOrderDate(),
                                  toLocationDTO(order.getOrderLocation()),
-                                 items,
                                  order.getNumOfItemTypes(),
                                  order.getAmountOfItems(),
                                  order.getItemsPrice(),

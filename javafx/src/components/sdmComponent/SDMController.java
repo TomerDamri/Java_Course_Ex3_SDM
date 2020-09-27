@@ -268,7 +268,7 @@ public class SDMController {
             }
             else if (field.getGenericType().getTypeName().contains("List")) {
                 try {
-                    displayList(((ArrayList<Object>) field.get(object)));
+                    gridPane.add(displayList(((ArrayList<Object>) field.get(object))), 1, rowIndex);
                 }
                 catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -276,7 +276,9 @@ public class SDMController {
             }
             else {
                 try {
-                    TextField value = new TextField(field.get(object).toString());
+                    Object realObject = field.get(object);
+                    String textFieldValue = (realObject != null) ? realObject.toString() : null;
+                    TextField value = new TextField(textFieldValue);
                     gridPane.add(value, 1, rowIndex);
                 }
                 catch (IllegalAccessException e) {
@@ -288,12 +290,9 @@ public class SDMController {
         }
     }
 
-    private void handleDisplayOrderInStore () {
-
-    }
-
     private Accordion displayList (List<Object> objects) {
         Accordion accordion = new Accordion();
+
         if (objects != null && !objects.isEmpty() && objects.get(0).getClass().getName().contains("StoreItem")) {
             objects.forEach(object -> {
                 GridPane gridObjects = new GridPane();
@@ -314,6 +313,27 @@ public class SDMController {
                 displayObject(object, gridObjects);
             });
         }
+        else if (objects != null && !objects.isEmpty() && objects.get(0).getClass().getName().contains("Discount")) {
+            objects.forEach(object -> {
+                GridPane gridObjects = new GridPane();
+                gridObjects.setHgap(10);
+                gridObjects.setVgap(10);
+                TitledPane titledPane = new TitledPane(((DiscountDTO) object).getDiscountName(), gridObjects);
+                accordion.getPanes().add(titledPane);
+                displayObject(object, gridObjects);
+            });
+        }
+        else if (objects != null && !objects.isEmpty() && objects.get(0).getClass().getName().contains("Offer")) {
+            objects.forEach(object -> {
+                GridPane gridObjects = new GridPane();
+                gridObjects.setHgap(10);
+                gridObjects.setVgap(10);
+                TitledPane titledPane = new TitledPane(((OfferDTO) object).getOfferItemName(), gridObjects);
+                accordion.getPanes().add(titledPane);
+                displayObject(object, gridObjects);
+            });
+        }
+
         return accordion;
     }
 

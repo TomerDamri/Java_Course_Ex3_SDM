@@ -64,7 +64,7 @@ public class StoreSummaryForOrder {
                                                    .append(distanceBetweenStoreAndCustomer)
                                                    .append(",\ntotal Delivery Price= ")
                                                    .append(totalDeliveryPrice)
-                                                   .append("store Purchased Items:\n");
+                                                   .append(",\nstore Purchased Items:\n");
 
         Iterator<ItemSummaryForOrder> iterator = storePurchasedItems.iterator();
         while (iterator.hasNext()) {
