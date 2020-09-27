@@ -91,15 +91,22 @@ public class EditItemsController {
             String selection = editItemsOptionsComboBox.getValue();
             switch (selection) {
             case "Add Item To Store":
+                isDeleteItemAction.set(false);
+                isUpdatePriceAction.set(false);
                 isNewPriceNeeded.set(true);
                 isAddItemAction.set(true);
                 handleAddItem();
                 break;
             case "Delete Item From Store":
                 isDeleteItemAction.set(true);
+                isAddItemAction.set(false);
+                isUpdatePriceAction.set(false);
+                isNewPriceNeeded.set(false);
                 handleDeleteItem();
                 break;
             case "Update Item Price In Store":
+                isDeleteItemAction.set(false);
+                isAddItemAction.set(false);
                 isNewPriceNeeded.set(true);
                 isUpdatePriceAction.set(true);
                 handleUpdateItemPrice();
@@ -224,15 +231,18 @@ public class EditItemsController {
     }
 
     private void handleUpdateItemPrice () {
+        itemsComboBox.getItems().clear();
         itemsComboBox.getItems().addAll(mainController.getItemsInStoreObservableList(selectedStoreId));
 
     }
 
     private void handleDeleteItem () {
+        itemsComboBox.getItems().clear();
         itemsComboBox.getItems().addAll(mainController.getItemsInStoreObservableList(selectedStoreId));
     }
 
     private void handleAddItem () {
+        itemsComboBox.getItems().clear();
         itemsComboBox.setItems(mainController.getItemsNotInStoreObservableList(selectedStoreId));
     }
 
