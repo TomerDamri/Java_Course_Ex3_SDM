@@ -13,12 +13,12 @@ public class LoadOrdersHistoryFileTask extends Task<Boolean> {
     private final ISDMController beController;
     private final Consumer<String> fileErrorDelegate;
     private final Consumer<Boolean> onFinishLoadingFile = (isSuccess) -> {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Loading orders history");
-        String onFinishMessage = isSuccess ? "The orders history file: '%s' loaded successfully"
-                    : "The loading of the orders history file: '%s' failed";
-        alert.setContentText(String.format(onFinishMessage, fileName));
-        alert.showAndWait();
+        if (isSuccess) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Loading orders history");
+            alert.setContentText(String.format("The orders history file: '%s' loaded successfully", fileName));
+            alert.showAndWait();
+        }
     };
 
     public LoadOrdersHistoryFileTask (String fileName, ISDMController beController, Consumer<String> fileErrorDelegate) {
@@ -27,19 +27,18 @@ public class LoadOrdersHistoryFileTask extends Task<Boolean> {
         this.fileErrorDelegate = fileErrorDelegate;
 
         this.setOnSucceeded(event -> onFinishLoadingFile.accept(this.getValue()));
-        this.setOnFailed(event -> onFinishLoadingFile.accept(this.getValue()));
     }
 
     @Override
     protected Boolean call () {
         try {
             beController.loadOrdersHistoryFromFile(fileName);
+            return Boolean.TRUE;
         }
         catch (Exception ex) {
             Platform.runLater( () -> fileErrorDelegate.accept(ex.getMessage()));
             return Boolean.FALSE;
         }
-        return Boolean.TRUE;
     }
 
 }

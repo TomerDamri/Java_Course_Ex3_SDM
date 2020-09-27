@@ -100,11 +100,11 @@ public class AppController {
         mapComponentController.setMainController(this);
     }
 
-    public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
+    public void bindTaskToUIComponents (Task<Boolean> aTask, Consumer<Boolean> onFinish) {
         sdmComponentController.bindTaskToUIComponents(aTask, onFinish);
     }
 
-    public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Runnable onFinish) {
+    public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Consumer<Boolean> onFinish) {
         businessLogic.loadFile(filePath, fileErrorDelegate, onFinish);
         mainBorderPane.setCenter(null);
     }

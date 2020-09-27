@@ -119,9 +119,10 @@ public class SDMController {
 
     }
 
-    public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
+    public void bindTaskToUIComponents (Task<Boolean> aTask, Consumer<Boolean> onFinish) {
         loadFileIndicator.textProperty().bind(aTask.messageProperty());
-        aTask.valueProperty().addListener( (observable, oldValue, newValue) -> onTaskFinished(Optional.ofNullable(onFinish)));
+        aTask.valueProperty()
+             .addListener( (observable, oldValue, newValue) -> onTaskFinished(Optional.of( () -> onFinish.accept(aTask.getValue()))));
     }
 
     public ScrollPane getDisplayInfoScrollPane () {
@@ -155,13 +156,16 @@ public class SDMController {
             isFileSelected.set(false);
             isFileBeingLoaded.set(false);
         };
-        mainController.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, () -> {
-            isFileSelected.set(true);
-            isFileBeingLoaded.set(false);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("File Status information");
-            alert.setHeaderText("XML File Loaded Successfully");
-            alert.showAndWait();
+
+        mainController.loadFile(selectedFileProperty.getValue(), fileErrorConsumer, (isSuccess) -> {
+            if (isSuccess) {
+                isFileSelected.set(true);
+                isFileBeingLoaded.set(false);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("File Status information");
+                alert.setHeaderText("XML File Loaded Successfully");
+                alert.showAndWait();
+            }
         });
     }
 
@@ -207,6 +211,7 @@ public class SDMController {
     @FXML
     void handleSaveOrderHistory (ActionEvent event) {
         mainBorderPane.setCenter(null);
+        mainBorderPane.setRight(null);
         isSaveOrdersButtonSelected.set(true);
     }
 
@@ -232,6 +237,7 @@ public class SDMController {
     @FXML
     void handleLoadOrderHistory (ActionEvent event) {
         mainBorderPane.setCenter(null);
+        mainBorderPane.setRight(null);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select orders history file to load");
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -242,7 +248,7 @@ public class SDMController {
         String absolutePath = selectedFile.getAbsolutePath();
         Consumer<String> fileErrorConsumer = status -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("File Status information");
+            alert.setTitle("Failed to load order history file");
             alert.setHeaderText("Error Occurred While Loading Orders History File:");
             alert.setContentText(status);
             alert.showAndWait();

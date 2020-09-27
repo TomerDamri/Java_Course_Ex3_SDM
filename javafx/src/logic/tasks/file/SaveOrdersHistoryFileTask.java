@@ -5,8 +5,6 @@ import java.util.function.Consumer;
 import course.java.sdm.engine.controller.ISDMController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 
 public class SaveOrdersHistoryFileTask extends Task<Boolean> {
@@ -26,14 +24,12 @@ public class SaveOrdersHistoryFileTask extends Task<Boolean> {
         this.filePath = filePath;
         this.beController = beController;
         this.errorConsumer = errorConsumer;
-
-        EventHandler<WorkerStateEvent> workerStateEventEventHandler = event -> {
+        this.setOnSucceeded(event -> {
             onFinish.run();
-            savingCompletedRunnable.run();
-        };
-        this.setOnSucceeded(workerStateEventEventHandler);
-        this.setOnFailed(workerStateEventEventHandler);
-        this.setOnCancelled(workerStateEventEventHandler);
+            if (this.getValue()) {
+                savingCompletedRunnable.run();
+            }
+        });
     }
 
     @Override

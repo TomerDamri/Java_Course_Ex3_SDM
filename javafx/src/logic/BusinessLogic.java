@@ -24,7 +24,7 @@ public class BusinessLogic {
         this.feController = controller;
     }
 
-    public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Runnable onFinish) {
+    public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Consumer<Boolean> onFinish) {
         currentRunningTask = new LoadSystemDataFileTask(filePath, beController, fileErrorDelegate);
         feController.bindTaskToUIComponents(currentRunningTask, onFinish);
         new Thread(currentRunningTask).start();
