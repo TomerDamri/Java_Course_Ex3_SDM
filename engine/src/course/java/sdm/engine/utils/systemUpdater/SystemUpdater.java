@@ -198,6 +198,47 @@ public class SystemUpdater {
         if (storeDiscounts != null && storeDiscounts.containsKey(itemId)) {
             removedDiscounts = storeDiscounts.remove(itemId);
         }
+
+        Map<Integer, Set<Discount>> discountsToRemove = new HashMap<>();
+
+        for (Map.Entry<Integer, List<Discount>> entry : storeDiscounts.entrySet()) {
+            Integer key = entry.getKey();
+            List<Discount> discountList = entry.getValue();
+            Set<Discount> discountsToRemoveForItem = new HashSet<>();
+
+            for (Discount discount : discountList) {
+                for (Offer offer : discount.getThenYouGet().getOffers().values()) {
+                    if (offer.getItemId() == itemId) {
+                        discountsToRemoveForItem.add(discount);
+                    }
+                }
+            }
+
+            if (!discountsToRemoveForItem.isEmpty()) {
+                discountsToRemove.put(key, discountsToRemoveForItem);
+            }
+        }
+
+        for (Map.Entry<Integer, Set<Discount>> entry : discountsToRemove.entrySet()) {
+            Integer ifYouButItemId = entry.getKey();
+            Set<Discount> storeDiscountPerItemToRemove = entry.getValue();
+            List<Discount> storeDiscountPerItem = storeDiscounts.get(ifYouButItemId);
+
+            for (Discount discount : storeDiscountPerItemToRemove) {
+                if (storeDiscountPerItem.contains(discount)) {
+                    if (removedDiscounts == null) {
+                        removedDiscounts = new LinkedList<>();
+                    }
+
+                    removedDiscounts.add(discount);
+                    storeDiscountPerItem.remove(discount);
+                    if (storeDiscountPerItem.size() == 0) {
+                        storeDiscounts.remove(ifYouButItemId);
+                    }
+                }
+            }
+        }
+
         return removedDiscounts;
     }
 

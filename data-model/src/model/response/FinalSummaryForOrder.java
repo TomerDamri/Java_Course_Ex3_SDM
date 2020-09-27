@@ -3,6 +3,8 @@ package model.response;
 import java.util.Iterator;
 import java.util.List;
 
+import model.Utils;
+
 public class FinalSummaryForOrder {
     private final double totalItemsPrice;
     private final double totalDeliveryPrice;
@@ -36,11 +38,11 @@ public class FinalSummaryForOrder {
         }
         builder.append("\n\n")
                .append("totalItemsPrice= ")
-               .append(totalItemsPrice)
+               .append(Utils.round(totalItemsPrice, 2))
                .append(",\n totalDeliveryPrice= ")
-               .append(totalDeliveryPrice)
+               .append(Utils.round(totalDeliveryPrice, 2))
                .append(",\n totalPrice= ")
-               .append(totalPrice);
+               .append(Utils.round(totalPrice, 2));
 
         return builder.toString();
     }

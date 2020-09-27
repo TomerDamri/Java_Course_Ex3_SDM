@@ -220,21 +220,13 @@ public class DTOMapper {
                                  systemItem.getDiscountOrdersCount());
     }
 
-    public DeleteItemFromStoreResponse createDeleteItemFromStoreResponse (List<Discount> removedDiscounts,
-                                                                          SystemStore systemStore,
-                                                                          StoreItem removedStoreItem) {
-        List<DiscountDTO> removedDiscountsDTO = null;
+    public DeleteItemFromStoreResponse createDeleteItemFromStoreResponse (List<Discount> removedDiscounts) {
+        List<String> removedDiscountsDTO = null;
         if (removedDiscounts != null) {
-            removedDiscountsDTO = removedDiscounts.stream()
-                                                  .map(discount -> toDiscountDTO(discount, systemStore, removedStoreItem))
-                                                  .collect(Collectors.toList());
+            removedDiscountsDTO = removedDiscounts.stream().map(Discount::getName).collect(Collectors.toList());
         }
 
         return new DeleteItemFromStoreResponse(removedDiscountsDTO);
-    }
-
-    public DiscountDTO toDiscountDTO (Discount discount, SystemStore systemStore, StoreItem storeItem) {
-        return toDiscountDTO(discount, systemStore, storeItem.getName());
     }
 
     public DiscountDTO toDiscountDTO (Discount discount, SystemStore systemStore) {

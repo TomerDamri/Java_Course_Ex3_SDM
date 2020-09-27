@@ -162,7 +162,7 @@ public class EditItemsController {
             if (response.getRemovedDiscounts() != null && !response.getRemovedDiscounts().isEmpty()) {
                 StringBuilder stringBuilder = new StringBuilder("Deleting ").append(selectedItemName)
                                                                             .append(" caused deletion of the following discounts:\n");
-                response.getRemovedDiscounts().forEach(discountDTO -> stringBuilder.append(discountDTO.getDiscountName()).append("\n"));
+                response.getRemovedDiscounts().forEach(removedDiscountName -> stringBuilder.append(removedDiscountName).append("\n"));
                 alert.setContentText(stringBuilder.toString());
             }
             alert.setHeaderText(String.format("%s was successfully deleted from %s", selectedItemName, selectedStoreName));

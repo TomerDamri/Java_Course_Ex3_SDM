@@ -222,6 +222,9 @@ public class SDMController {
     void handleSaveOrderHistory (ActionEvent event) {
         mainBorderPane.setCenter(null);
         mainBorderPane.setRight(null);
+        storeSignOnMap.setVisible(false);
+        customerSignInMap.setVisible(false);
+
         isSaveOrdersButtonSelected.set(true);
     }
 
@@ -248,6 +251,9 @@ public class SDMController {
     void handleLoadOrderHistory (ActionEvent event) {
         mainBorderPane.setCenter(null);
         mainBorderPane.setRight(null);
+        storeSignOnMap.setVisible(false);
+        customerSignInMap.setVisible(false);
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select orders history file to load");
         File selectedFile = fileChooser.showOpenDialog(null);

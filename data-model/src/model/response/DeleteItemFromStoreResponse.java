@@ -2,17 +2,15 @@ package model.response;
 
 import java.util.List;
 
-import model.DiscountDTO;
-
 public class DeleteItemFromStoreResponse {
 
-    private final List<DiscountDTO> removedDiscounts;
+    private final List<String> removedDiscounts;
 
-    public DeleteItemFromStoreResponse (List<DiscountDTO> removedDiscounts) {
+    public DeleteItemFromStoreResponse (List<String> removedDiscounts) {
         this.removedDiscounts = removedDiscounts;
     }
 
-    public List<DiscountDTO> getRemovedDiscounts () {
+    public List<String> getRemovedDiscounts () {
         return removedDiscounts;
     }
 }

@@ -492,7 +492,8 @@ public class PlaceOrderController {
 
                 ObservableList<String> offerOptionsList = FXCollections.observableArrayList();
                 offers.forEach(offer -> {
-                    offerOptionsList.add(String.format("%s %s for additional %s ",
+                    offerOptionsList.add(String.format("%s: %s %s for additional %s ",
+                                                       offer.getId(),
                                                        offer.getQuantity(),
                                                        offer.getOfferItemName(),
                                                        offer.getForAdditional()));

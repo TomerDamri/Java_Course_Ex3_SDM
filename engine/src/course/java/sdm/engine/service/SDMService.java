@@ -305,10 +305,9 @@ public class SDMService {
         Map<Integer, SystemItem> systemItems = descriptor.getSystemItems();
 
         DeleteItemResult deleteItemResult = systemUpdater.deleteItemFromStore(itemId, storeId, systemStores, systemItems);
-        StoreItem removedStoreItem = deleteItemResult.getRemovedStoreItem();
         List<Discount> removedDiscounts = deleteItemResult.getRemovedDiscounts();
 
-        return dtoMapper.createDeleteItemFromStoreResponse(removedDiscounts, systemStores.get(storeId), removedStoreItem);
+        return dtoMapper.createDeleteItemFromStoreResponse(removedDiscounts);
     }
 
     public void updateItemPrice (UpdateStoreRequest request) {
