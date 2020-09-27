@@ -518,9 +518,8 @@ public class PlaceOrderController {
                 }
                 catch (NumberFormatException ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Invalid Amount");
-                    alert.setTitle("Invalid Amount");
-                    alert.setContentText("Amount should be an integer");
+                    alert.setHeaderText("Invalid Quantity");
+                    alert.setContentText("Quantity should be an integer");
                     alert.showAndWait();
                     quantityField.setText("");
                     offerOptionsBox.setValue("");
@@ -562,7 +561,8 @@ public class PlaceOrderController {
                 }
 
                 quantityField.setText("");
-                offerOptionsBox.setValue("");
+                offerOptionsBox.setValue(null);
+                offerOptionsBox.setPromptText("Select one option");
 
             });
 
@@ -572,6 +572,7 @@ public class PlaceOrderController {
             discountAccordion.getPanes().add(discountTitledPane);
             discountsGridPane.add(discountAccordion, 0, rowIndex);
             rowIndex++;
+            offerOptionsBox.setPromptText("Select one option");
         }
     }
 

@@ -231,6 +231,7 @@ public class SDMController {
 
     @FXML
     void handleLoadOrderHistory (ActionEvent event) {
+        mainBorderPane.setCenter(null);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select orders history file to load");
         File selectedFile = fileChooser.showOpenDialog(null);
