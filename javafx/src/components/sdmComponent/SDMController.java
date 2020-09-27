@@ -46,10 +46,6 @@ public class SDMController {
     @FXML
     private ComboBox<String> menuBox;
 
-    public ScrollPane getDisplayInfoScrollPane () {
-        return displayInfoScrollPane;
-    }
-
     @FXML
     private ScrollPane displayInfoScrollPane;
 
@@ -62,10 +58,28 @@ public class SDMController {
     @FXML
     private Text loadFileIndicator;
 
+    @FXML
+    private Button saveOrdersHistoryButton;
+
+    @FXML
+    private Text enterPath;
+
+    @FXML
+    private TextField saveHistoryTextField;
+
+    @FXML
+    private Button confirmSavingOrdersHistoryButton;
+
+    @FXML
+    private Button cancelSavingOrdersHistoryButton;
+
+    @FXML
+    private Button loadOrdersHistoryButton;
+
     private SimpleBooleanProperty isFileSelected;
     private SimpleBooleanProperty isFileBeingLoaded;
-
     private SimpleStringProperty selectedFileProperty;
+    private SimpleBooleanProperty isSaveOrdersButtonSelected;
 
     final ObservableList<String> menuOptions = FXCollections.observableArrayList("Display Stores",
                                                                                  "Display Items",
@@ -79,6 +93,7 @@ public class SDMController {
         isFileSelected = new SimpleBooleanProperty(false);
         selectedFileProperty = new SimpleStringProperty();
         isFileBeingLoaded = new SimpleBooleanProperty(false);
+        isSaveOrdersButtonSelected = new SimpleBooleanProperty(false);
     }
 
     public void setMainController (AppController mainController) {
@@ -91,12 +106,25 @@ public class SDMController {
         menuBox.disableProperty().bind(isFileSelected.not());
         loadFileIndicator.visibleProperty().bind(isFileBeingLoaded);
         AnchorPane.setLeftAnchor(displayArea, 5.0);
+        loadOrdersHistoryButton.disableProperty().bind(isFileSelected.not());
+        loadOrdersHistoryButton.visibleProperty().bind(isFileSelected);
+        saveOrdersHistoryButton.disableProperty().bind(isFileSelected.not());
+        saveOrdersHistoryButton.visibleProperty().bind(isFileSelected);
+
+        saveHistoryTextField.visibleProperty().bind(isSaveOrdersButtonSelected);
+        confirmSavingOrdersHistoryButton.visibleProperty().bind(isSaveOrdersButtonSelected);
+        cancelSavingOrdersHistoryButton.visibleProperty().bind(isSaveOrdersButtonSelected);
+        enterPath.visibleProperty().bind(isSaveOrdersButtonSelected);
 
     }
 
     public void bindTaskToUIComponents (Task<Boolean> aTask, Runnable onFinish) {
         loadFileIndicator.textProperty().bind(aTask.messageProperty());
         aTask.valueProperty().addListener( (observable, oldValue, newValue) -> onTaskFinished(Optional.ofNullable(onFinish)));
+    }
+
+    public ScrollPane getDisplayInfoScrollPane () {
+        return displayInfoScrollPane;
     }
 
     public void onTaskFinished (Optional<Runnable> onFinish) {
@@ -134,8 +162,11 @@ public class SDMController {
 
     @FXML
     void menuBoxAction (ActionEvent event) {
+        saveHistoryTextField.setText(null);
+        isSaveOrdersButtonSelected.set(false);
         displayArea.getChildren().clear();
         buttonsContainer.getChildren().clear();
+
         String selection = menuBox.getValue();
         switch (selection) {
         case "Display Stores":
@@ -163,6 +194,51 @@ public class SDMController {
             break;
         }
 
+    }
+
+    @FXML
+    void handleSaveOrderHistory (ActionEvent event) {
+        mainBorderPane.setCenter(null);
+        isSaveOrdersButtonSelected.set(true);
+    }
+
+    @FXML
+    void handleConfirmSavingOrderHistory (ActionEvent event) {
+        String textFieldValue = saveHistoryTextField.getText();
+        Consumer<String> errorConsumer = (contentText) -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid path");
+            alert.setContentText(contentText);
+            alert.showAndWait();
+        };
+
+        mainController.saveOrdersHistoryFile(textFieldValue, errorConsumer, () -> isSaveOrdersButtonSelected.set(false));
+    }
+
+    @FXML
+    void handleCancelSavingOrderHistory (ActionEvent event) {
+        saveHistoryTextField.setText(null);
+        isSaveOrdersButtonSelected.set(false);
+    }
+
+    @FXML
+    void handleLoadOrderHistory (ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select orders history file to load");
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile == null) {
+            return;
+        }
+
+        String absolutePath = selectedFile.getAbsolutePath();
+        Consumer<String> fileErrorConsumer = status -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("File Status information");
+            alert.setHeaderText("Error Occurred While Loading Orders History File:");
+            alert.setContentText(status);
+            alert.showAndWait();
+        };
+        mainController.loadOrdersHistoryFile(absolutePath, fileErrorConsumer);
     }
 
     private void handleEditItemsInStore () {

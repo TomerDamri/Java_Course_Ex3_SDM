@@ -1,7 +1,6 @@
 package model;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.UUID;
 
 public class StoreOrderDTO {
@@ -15,15 +14,15 @@ public class StoreOrderDTO {
     private Double deliveryPrice;
     private Double totalPrice;
 
-    public StoreOrderDTO(UUID parentId,
-                         UUID id,
-                         LocalDate orderDate,
-                         LocationDTO locationDTO,
-                         Integer numOfItemTypes,
-                         Integer amountOfItems,
-                         Double itemsPrice,
-                         Double deliveryPrice,
-                         Double totalPrice) {
+    public StoreOrderDTO (UUID parentId,
+                          UUID id,
+                          LocalDate orderDate,
+                          LocationDTO locationDTO,
+                          Integer numOfItemTypes,
+                          Integer amountOfItems,
+                          Double itemsPrice,
+                          Double deliveryPrice,
+                          Double totalPrice) {
         this.parentId = parentId;
         this.id = id;
         this.orderDate = orderDate;
@@ -51,7 +50,7 @@ public class StoreOrderDTO {
         return location;
     }
 
-    public Integer getNumOfItemTypes() {
+    public Integer getNumOfItemTypes () {
         return numOfItemTypes;
     }
 

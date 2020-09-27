@@ -9,7 +9,9 @@ import course.java.sdm.engine.controller.impl.SDMControllerImpl;
 import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
 import logic.tasks.file.CreateMapTask;
-import logic.tasks.file.LoadFileTask;
+import logic.tasks.file.LoadOrdersHistoryFileTask;
+import logic.tasks.file.LoadSystemDataFileTask;
+import logic.tasks.file.SaveOrdersHistoryFileTask;
 import model.request.*;
 import model.response.*;
 
@@ -23,8 +25,18 @@ public class BusinessLogic {
     }
 
     public void loadFile (String filePath, Consumer<String> fileErrorDelegate, Runnable onFinish) {
-        currentRunningTask = new LoadFileTask(filePath, beController, fileErrorDelegate);
+        currentRunningTask = new LoadSystemDataFileTask(filePath, beController, fileErrorDelegate);
         feController.bindTaskToUIComponents(currentRunningTask, onFinish);
+        new Thread(currentRunningTask).start();
+    }
+
+    public void loadOrdersHistoryFile (String filePath, Consumer<String> fileErrorDelegate) {
+        currentRunningTask = new LoadOrdersHistoryFileTask(filePath, beController, fileErrorDelegate);
+        new Thread(currentRunningTask).start();
+    }
+
+    public void saveOrdersHistoryFile (String filePath, Consumer<String> errorDelegate, Runnable onFinish) {
+        currentRunningTask = new SaveOrdersHistoryFileTask(filePath, beController, errorDelegate, onFinish);
         new Thread(currentRunningTask).start();
     }
 
