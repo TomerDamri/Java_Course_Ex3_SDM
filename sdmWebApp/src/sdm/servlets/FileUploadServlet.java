@@ -20,7 +20,7 @@ public class FileUploadServlet extends HttpServlet {
 
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.sendRedirect("fileupload/form.html");
     }
 
@@ -29,21 +29,11 @@ public class FileUploadServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         Part file = request.getPart("file");
-        String filename = getFilename(file);
-
         ISDMController sdmController = ServletUtils.getsdmController(getServletContext());
-        sdmController.loadFile(filename);
+        sdmController.loadFile(file);
 
         out.println("file loaded successfully");
     }
 
-    private static String getFilename(Part part) {
-        for (String cd : part.getHeader("content-disposition").split(";")) {
-            if (cd.trim().startsWith("filename")) {
-                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-                return filename.substring(filename.lastIndexOf('/') + 1).substring(filename.lastIndexOf('\\') + 1); // MSIE fix.
-            }
-        }
-        return null;
-    }
+
 }

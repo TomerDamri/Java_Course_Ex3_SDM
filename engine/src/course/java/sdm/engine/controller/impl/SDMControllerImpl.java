@@ -1,19 +1,22 @@
 package course.java.sdm.engine.controller.impl;
 
-import java.io.FileNotFoundException;
-import java.util.UUID;
-
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.service.SDMService;
 import model.request.*;
 import model.response.*;
 
+import javax.servlet.http.Part;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
+
 public class SDMControllerImpl implements ISDMController {
     private SDMService service = new SDMService();
 
     @Override
-    public void loadFile (String filePath) throws FileNotFoundException {
-        service.loadData(filePath);
+    public void loadFile (Part part) throws IOException {
+        service.loadData(part);
     }
 
     @Override

@@ -1,18 +1,18 @@
 package course.java.sdm.engine.utils.fileManager;
 
-import java.io.*;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.exceptions.FileNotSaveException;
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
+
+import javax.servlet.http.Part;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 public class FileManager {
 
@@ -33,14 +33,27 @@ public class FileManager {
         return singletonFileManager;
     }
 
-    public SuperDuperMarketDescriptor generateDataFromXmlFile (String xml_file_path) throws FileNotFoundException {
-        FILE_MANAGER_VALIDATOR.validateFile(xml_file_path);
-        InputStream inputStream = new FileInputStream(new File(xml_file_path));
+//    public SuperDuperMarketDescriptor generateDataFromXmlFile (String xml_file_path) throws FileNotFoundException {
+//        FILE_MANAGER_VALIDATOR.validateFile(xml_file_path);
+//        InputStream inputStream = new FileInputStream(new File(xml_file_path));
+//        SuperDuperMarketDescriptor superDuperMarketDescriptor = null;
+//        try {
+//            superDuperMarketDescriptor = deserializeFrom(inputStream);
+//        }
+//        catch (JAXBException e) {
+//            e.printStackTrace();
+//        }
+//        return superDuperMarketDescriptor;
+//    }
+
+
+    public SuperDuperMarketDescriptor generateDataFromXmlFile (Part part) throws FileNotFoundException {
+        FILE_MANAGER_VALIDATOR.validateFile(getFileName(part));
         SuperDuperMarketDescriptor superDuperMarketDescriptor = null;
         try {
-            superDuperMarketDescriptor = deserializeFrom(inputStream);
+            superDuperMarketDescriptor = deserializeFrom(part.getInputStream());
         }
-        catch (JAXBException e) {
+        catch (JAXBException | IOException e) {
             e.printStackTrace();
         }
         return superDuperMarketDescriptor;
@@ -103,5 +116,15 @@ public class FileManager {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
         return (SuperDuperMarketDescriptor) u.unmarshal(in);
+    }
+
+    private String getFileName(Part part) {
+        for (String cd : part.getHeader("content-disposition").split(";")) {
+            if (cd.trim().startsWith("filename")) {
+                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+                return filename.substring(filename.lastIndexOf('/') + 1).substring(filename.lastIndexOf('\\') + 1); // MSIE fix.
+            }
+        }
+        return null;
     }
 }

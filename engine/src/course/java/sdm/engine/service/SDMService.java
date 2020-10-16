@@ -1,10 +1,5 @@
 package course.java.sdm.engine.service;
 
-import java.io.FileNotFoundException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
@@ -16,6 +11,12 @@ import model.DynamicOrderEntityDTO;
 import model.request.*;
 import model.response.*;
 
+import javax.servlet.http.Part;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class SDMService {
 
     private final FileManager fileManager = FileManager.getFileManager();
@@ -25,11 +26,14 @@ public class SDMService {
     private final static DTOMapper dtoMapper = new DTOMapper();
     private Descriptor descriptor;
 
-    public void loadData (String xmlDataFileStr) throws FileNotFoundException {
-        SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(xmlDataFileStr);
+    public void loadData (Part part) throws IOException {
+        SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(part);
         this.descriptor = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor);
     }
-
+//    public void loadData (String xmlDataFileStr) throws FileNotFoundException {
+//        SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(xmlDataFileStr);
+//        this.descriptor = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor);
+//    }
     public boolean isFileLoaded () {
         return descriptor != null;
     }
@@ -319,4 +323,6 @@ public class SDMService {
 
         systemUpdater.updateItemPrice(itemId, storeId, itemPrice, systemStores, systemItems);
     }
+
+
 }

@@ -1,47 +1,50 @@
 package course.java.sdm.engine.controller;
 
-import java.io.FileNotFoundException;
-import java.util.UUID;
-
 import model.request.*;
 import model.response.*;
 
+import javax.servlet.http.Part;
+import java.io.IOException;
+import java.util.UUID;
+
 public interface ISDMController {
-    void loadFile (String filePath) throws FileNotFoundException;
+    //    void loadFile (String filePath) throws FileNotFoundException;
+    void loadFile(Part part) throws IOException;
 
-    GetCustomersResponse getCustomers ();
 
-    GetStoresResponse getStores ();
+    GetCustomersResponse getCustomers();
 
-    GetItemsResponse getItems ();
+    GetStoresResponse getStores();
 
-    GetOrdersResponse getOrders ();
+    GetItemsResponse getItems();
 
-    PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
+    GetOrdersResponse getOrders();
 
-    GetDiscountsResponse getDiscounts (UUID orderId);
+    PlaceOrderResponse placeStaticOrder(PlaceOrderRequest request);
 
-    FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request);
+    GetDiscountsResponse getDiscounts(UUID orderId);
 
-    void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder);
+    FinalSummaryForOrder addDiscountsToOrder(AddDiscountsToOrderRequest request);
 
-    boolean isFileLoaded ();
+    void completeTheOrder(UUID orderId, boolean toConfirmNewDynamicOrder);
 
-    boolean isValidLocation (final int xCoordinate, final int yCoordinate);
+    boolean isFileLoaded();
 
-    GetMapEntitiesResponse getSystemMappableEntities ();
+    boolean isValidLocation(final int xCoordinate, final int yCoordinate);
 
-    PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request);
+    GetMapEntitiesResponse getSystemMappableEntities();
 
-    void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder);
+    PlaceDynamicOrderResponse placeDynamicOrder(PlaceDynamicOrderRequest request);
 
-    void saveOrdersHistoryToFile (String path);
+    void completeDynamicOrder(UUID dynamicOrderId, boolean toConfirmNewDynamicOrder);
 
-    void loadOrdersHistoryFromFile (String path);
+    void saveOrdersHistoryToFile(String path);
 
-    void addItemToStore (UpdateStoreRequest request);
+    void loadOrdersHistoryFromFile(String path);
 
-    DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request);
+    void addItemToStore(UpdateStoreRequest request);
 
-    void updatePriceOfSelectedItem (UpdateStoreRequest request);
+    DeleteItemFromStoreResponse deleteItemFromStore(BaseUpdateStoreRequest request);
+
+    void updatePriceOfSelectedItem(UpdateStoreRequest request);
 }
