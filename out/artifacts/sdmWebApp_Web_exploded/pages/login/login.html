@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Super Duper Market</title>
+
+        <!-- Link the Bootstrap (from twitter) CSS framework in order to use its classes-->
+        <link rel="stylesheet" href="../../common/bootstrap.min.css">
+        <script src="../../common/jquery-2.0.3.min.js"></script>
+        <script src="login.js"></script>
+
+        <!-- Link jQuery JavaScript library in order to use the $ (jQuery) method-->
+        <!-- <script src="common/jquery-2.0.3.min.js"></script>-->
+        <!-- and\or any other scripts you might need to operate the JSP file behind the scene once it arrives to the client-->
+    </head>
+    <body>
+    <script>
+        window.test1 = 4;
+    </script>
+        <div class="container">
+            <h1>Welcome to Super Duper Market</h1>
+            <br/>
+            <form id="loginForm" method="GET" action="loginShortResponse">
+                <label>Please enter a unique user name:</label>
+                <input type="text" name="username" class=""/>
+                <label for="role">Select your role:</label>
+                <select name="role" id="role">
+                    <option value="customer">Customer</option>
+                    <option value="storeOwner">Store Owner</option>
+                </select>
+                <input type="submit" value="Login"/>
+            </form>
+            <div id="error-placeholder" class="alert-danger" role="alert"></div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" build-on-make="true" name="sdmWebApp:Web exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/sdmWebApp_Web_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="sdmWebApp/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="sdmWebApp" />
+          <element id="module-output" name="engine" />
+          <element id="module-output" name="data-model" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="gson-2.8.2" />
+        </element>
+      </element>
+      <element id="module-output" name="engine" />
+      <element id="module-output" name="data-model" />
+    </root>
+  </artifact>
+</component>

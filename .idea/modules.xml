@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Java_Course_Ex2_SDM.iml" filepath="$PROJECT_DIR$/.idea/Java_Course_Ex2_SDM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data-model/data-model.iml" filepath="$PROJECT_DIR$/data-model/data-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sdmWebApp/sdmWebApp.iml" filepath="$PROJECT_DIR$/sdmWebApp/sdmWebApp.iml" />
+    </modules>
+  </component>
+</project>
