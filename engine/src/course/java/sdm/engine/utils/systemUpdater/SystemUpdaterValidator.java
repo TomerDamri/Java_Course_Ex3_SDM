@@ -34,8 +34,8 @@ public class SystemUpdaterValidator {
         }
     }
 
-    public void validateCustomerExistInSystem (Descriptor descriptor, Integer customerId) {
-        if (!descriptor.getSystemCustomers().containsKey(customerId)) {
+    public void validateCustomerExistInSystem (Zone zone, Integer customerId) {
+        if (!zone.getSystemCustomers().containsKey(customerId)) {
             throw new RuntimeException(String.format("There is no customer in system with id %s", customerId));
         }
     }

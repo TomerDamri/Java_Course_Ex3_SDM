@@ -1,5 +1,6 @@
 package course.java.sdm.engine.controller;
 
+import course.java.sdm.engine.users.User;
 import model.request.*;
 import model.response.*;
 
@@ -47,4 +48,6 @@ public interface ISDMController {
     DeleteItemFromStoreResponse deleteItemFromStore(BaseUpdateStoreRequest request);
 
     void updatePriceOfSelectedItem(UpdateStoreRequest request);
+
+    void addUserToSystem(String username, User.UserType userType);
 }

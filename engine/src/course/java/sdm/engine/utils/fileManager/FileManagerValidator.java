@@ -22,7 +22,7 @@ public class FileManagerValidator {
         validateFileExists(filePath);
     }
 
-    public void validateItemsAndStores (Map<Integer, Item> items, Map<Integer, Store> stores, List<Customer> customers) {
+    public void validateItemsAndStores (Map<Integer, Item> items, Map<Integer, Store> stores) {
         Set<Integer> itemsIds = items.keySet();
         Set<Integer> suppliedItemsIds = new HashSet<>();
 
@@ -35,15 +35,15 @@ public class FileManagerValidator {
         // validate that all items are supplied in at least 1 store
         validateAllItemsSupplied(itemsIds, suppliedItemsIds);
 
-        // validate all customers and stores location are unique
-        validateAllLocations(stores, customers);
+        // validate stores location are unique
+        validateAllLocations(stores);
     }
 
-    private Set<Location> validateAllLocations (Map<Integer, Store> stores, List<Customer> customers) {
+    private Set<Location> validateAllLocations (Map<Integer, Store> stores) {
         Set<Location> allSystemLocations = new HashSet<>();
 
         validateLocations(stores.values(), Store::getLocation, allSystemLocations);
-        validateLocations(customers, Customer::getLocation, allSystemLocations);
+//        validateLocations(customers, Customer::getLocation, allSystemLocations);
 
         return allSystemLocations;
     }

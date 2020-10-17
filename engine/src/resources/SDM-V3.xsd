@@ -18,12 +18,16 @@
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="super-duper-market-descriptor">
+	<xs:element name="super-duper-market-zone">
 		<xs:complexType>
 			<xs:all>
+				<xs:element name="SDM-Zone">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
 				<xs:element ref="SDM-items"/>
 				<xs:element ref="SDM-stores"/>
-				<xs:element ref="SDM-customers"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -119,21 +123,5 @@
 				<xs:element ref="then-you-get"/>
 			</xs:all>
 		</xs:complexType>
-	</xs:element>
-	<xs:element name="SDM-customers">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="SDM-customer" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="SDM-customer">
-		<xs:complexType>
-			<xs:all>
-				<xs:element ref="name"/>
-				<xs:element ref="location"/>
-			</xs:all>
-			<xs:attribute name="id" type="xs:int" use="required"/>
-		</xs:complexType>
-	</xs:element>
+	</xs:element>	
 </xs:schema>

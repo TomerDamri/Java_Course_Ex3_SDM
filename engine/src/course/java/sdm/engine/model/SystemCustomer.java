@@ -1,5 +1,7 @@
 package course.java.sdm.engine.model;
 
+import java.util.UUID;
+
 public class SystemCustomer implements Mappable {
 
     private final Customer customer;
@@ -7,20 +9,20 @@ public class SystemCustomer implements Mappable {
     private double totalItemsPrice = 0;
     private double totalDeliveryPrice = 0;
 
+    public SystemCustomer (UUID id, String name) {
+        this.customer = new Customer(id, name);
+    }
+
     public SystemCustomer (Customer customer) {
         this.customer = customer;
     }
 
-    public int getId () {
+    public UUID getId () {
         return customer.getId();
     }
 
     public String getName () {
         return customer.getName();
-    }
-
-    public Location getLocation () {
-        return customer.getLocation();
     }
 
     public Customer getCustomer () {

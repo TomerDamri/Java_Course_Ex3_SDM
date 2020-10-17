@@ -2,6 +2,7 @@ package course.java.sdm.engine.controller.impl;
 
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.service.SDMService;
+import course.java.sdm.engine.users.User;
 import model.request.*;
 import model.response.*;
 
@@ -106,5 +107,10 @@ public class SDMControllerImpl implements ISDMController {
     @Override
     public DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request) {
         return service.deleteItemFromStore(request);
+    }
+
+    @Override
+    public void addUserToSystem(String username, User.UserType userType) {
+        service.addUserToSystem(username, userType);
     }
 }

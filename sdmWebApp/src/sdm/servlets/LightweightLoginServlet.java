@@ -80,10 +80,10 @@ public class LightweightLoginServlet extends HttpServlet {
                     } else {
                         //add the new user to the users list
                         if(userRoleFromParameter.equals("customer")) {
-                            userManager.addUser
+                            userManager.addUserToSDMDescriptor
                                     (usernameFromParameter, User.UserType.CUSTOMER);
                         } else {
-                            userManager.addUser
+                            userManager.addUserToSDMDescriptor
                                     (usernameFromParameter, User.UserType.STORE_OWNER);
                         }
                         //set the username in a session so it will be available on each request

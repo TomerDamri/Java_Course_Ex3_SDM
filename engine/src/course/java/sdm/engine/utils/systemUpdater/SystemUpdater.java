@@ -242,34 +242,34 @@ public class SystemUpdater {
         return removedDiscounts;
     }
 
-    public void updateSystemAfterLoadingOrdersHistoryFromFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile, Descriptor descriptor) {
-        Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate = descriptor.getSystemOrders();
-        Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
+    public void updateSystemAfterLoadingOrdersHistoryFromFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile, Zone zone) {
+        Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate = zone.getSystemOrders();
+        Map<Integer, SystemStore> systemStores = zone.getSystemStores();
 
-        updateSystemOrdersAccordingToHistoryFile(ordersFromHistoryFile, descriptor, systemOrdersBeforeUpdate, systemStores);
+        updateSystemOrdersAccordingToHistoryFile(ordersFromHistoryFile, zone, systemOrdersBeforeUpdate, systemStores);
     }
 
     private void updateSystemOrdersAccordingToHistoryFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile,
-                                                           Descriptor descriptor,
+                                                           Zone zone,
                                                            Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate,
                                                            Map<Integer, SystemStore> systemStores) {
         ordersFromHistoryFile.entrySet()
                              .stream()
                              .filter(entry -> !systemOrdersBeforeUpdate.containsKey(entry.getKey()))
                              .forEach(entry -> entry.getValue()
-                                                    .forEach(order -> updateSystemAfterLoadingHistoryOrder(descriptor,
+                                                    .forEach(order -> updateSystemAfterLoadingHistoryOrder(zone,
                                                                                                            systemStores,
                                                                                                            order)));
     }
 
-    private void updateSystemAfterLoadingHistoryOrder (Descriptor descriptor,
+    private void updateSystemAfterLoadingHistoryOrder (Zone zone,
                                                        Map<Integer, SystemStore> systemStores,
                                                        SystemOrder systemOrder) {
-        SystemCustomer systemCustomer = getCustomerById(descriptor, systemOrder.getCustomerId());
-        SystemStore systemStore = getStoreById(descriptor, systemOrder.getStoreId());
+        SystemCustomer systemCustomer = getCustomerById(zone, systemOrder.getCustomerId());
+        SystemStore systemStore = getStoreById(zone, systemOrder.getStoreId());
         Order order = getOrder(systemStore, systemOrder);
 
-        updateSystemAfterStaticOrderV2(systemStore, order, descriptor, systemCustomer);
+        updateSystemAfterStaticOrderV2(systemStore, order, zone, systemCustomer);
     }
 
     private Order getOrder (SystemStore systemStore, SystemOrder systemOrder) {
@@ -279,25 +279,25 @@ public class SystemUpdater {
         return order;
     }
 
-    private SystemCustomer getCustomerById (Descriptor descriptor, Integer customerId) {
-        SYSTEM_UPDATER_VALIDATOR.validateCustomerExistInSystem(descriptor, customerId);
+    private SystemCustomer getCustomerById (Zone zone, Integer customerId) {
+        SYSTEM_UPDATER_VALIDATOR.validateCustomerExistInSystem(zone, customerId);
 
-        return descriptor.getSystemCustomers().get(customerId);
+        return zone.getSystemCustomers().get(customerId);
     }
 
-    private SystemStore getStoreById (Descriptor descriptor, Integer storeId) {
-        Map<Integer, SystemStore> systemStores = descriptor.getSystemStores();
+    private SystemStore getStoreById (Zone zone, Integer storeId) {
+        Map<Integer, SystemStore> systemStores = zone.getSystemStores();
 
         SYSTEM_UPDATER_VALIDATOR.validateStoreExistInSystem(storeId, systemStores);
 
         return systemStores.get(storeId);
     }
 
-    private void addNewOrderToSystemOrders (SystemStore systemStore, Order newOrder, Descriptor descriptor, Integer customerId) {
+    private void addNewOrderToSystemOrders (SystemStore systemStore, Order newOrder, Zone zone, Integer customerId) {
         List<SystemOrder> orders;
         SystemOrder newSystemOrder = new SystemOrder(newOrder, systemStore.getName(), systemStore.getId(), customerId);
         UUID id = (newOrder.getParentId() != null) ? newOrder.getParentId() : newOrder.getId();
-        Map<UUID, List<SystemOrder>> systemOrders = descriptor.getSystemOrders();
+        Map<UUID, List<SystemOrder>> systemOrders = zone.getSystemOrders();
 
         if (systemOrders.containsKey(id)) {
             orders = new ArrayList<>(systemOrders.get(id));
@@ -321,17 +321,17 @@ public class SystemUpdater {
 
     public void updateSystemAfterStaticOrderV2 (SystemStore systemStore,
                                                 Order newOrder,
-                                                Descriptor descriptor,
+                                                Zone zone,
                                                 SystemCustomer systemCustomer) {
         updateSystemStore(systemStore, newOrder);
         // add order to store
         systemStore.getOrders().add(newOrder);
         // add order to order collection in descriptor
-        addNewOrderToSystemOrders(systemStore, newOrder, descriptor, systemCustomer.getId());
+        addNewOrderToSystemOrders(systemStore, newOrder, zone, systemCustomer.getId());
         // update counter of all store items that was included in order
         updateStoreAfterOrderCompletionV2(systemStore, newOrder);
         // update counter of all system items that was included in order
-        updateSystemItemsAfterOrderCompletionV2(descriptor.getSystemItems(), newOrder);
+        updateSystemItemsAfterOrderCompletionV2(zone.getSystemItems(), newOrder);
         // update total delivery price and total items price for system customer (update numOfOrder in case
         // the order is not part of dynamic order)
         updateSystemCustomerAfterOrderCompletion(newOrder, systemCustomer);
