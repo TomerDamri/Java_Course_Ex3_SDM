@@ -6,13 +6,13 @@ public class PricedItem implements Serializable {
     private final Item item;
     private int price;
 
-    public Item getItem () {
-        return item;
-    }
-
     public PricedItem (Item item, int price) {
         this.item = item;
         this.price = price;
+    }
+
+    public Item getItem () {
+        return item;
     }
 
     public int getId () {

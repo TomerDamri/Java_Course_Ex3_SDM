@@ -37,16 +37,16 @@ public class StoreItem implements Serializable {
         return purchasesCount;
     }
 
+    public void setPurchasesCount (double purchasesCount) {
+        this.purchasesCount = purchasesCount;
+    }
+
     public PricedItem getPricedItem () {
         return pricedItem;
     }
 
     public void setPricedItem (PricedItem pricedItem) {
         this.pricedItem = pricedItem;
-    }
-
-    public void setPurchasesCount (double purchasesCount) {
-        this.purchasesCount = purchasesCount;
     }
 
     public double getDiscountPurchasesCount () {

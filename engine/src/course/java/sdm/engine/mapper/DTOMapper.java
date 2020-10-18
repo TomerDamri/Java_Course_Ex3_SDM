@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import course.java.sdm.engine.model.*;
+import course.java.sdm.engine.users.User;
 import model.*;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
@@ -97,40 +98,54 @@ public class DTOMapper {
         return new GetDiscountsResponse(returnDiscountDTO);
     }
 
-    public GetMapEntitiesResponse toGetSystemMappableEntitiesResponse (Collection<Mappable> systemMappabels) {
-        List<MapEntity> mappableEntities = systemMappabels.stream().map(this::toMappableEntity).collect(Collectors.toList());
+    // public GetMapEntitiesResponse toGetSystemMappableEntitiesResponse(Collection<Mappable>
+    // systemMappabels) {
+    // List<MapEntity> mappableEntities =
+    // systemMappabels.stream().map(this::toMappableEntity).collect(Collectors.toList());
+    //
+    // return new GetMapEntitiesResponse(mappableEntities);
+    // }
 
-        return new GetMapEntitiesResponse(mappableEntities);
+    // private MapEntity toMappableEntity(Mappable entity) {
+    // if (entity instanceof SystemStore) {
+    // SystemStore systemStore = (SystemStore) entity;
+    // return new StoreMapEntityDTO(systemStore.getId(),
+    // toLocationDTO(systemStore.getLocation()),
+    // systemStore.getName(),
+    // systemStore.getOrders().size(),
+    // systemStore.getDeliveryPpk());
+    // } else if (entity instanceof SystemCustomer) {
+    // SystemCustomer systemCustomer = (SystemCustomer) entity;
+    // return new CustomerMapEntityDTO(systemCustomer.getId(),
+    // toLocationDTO(systemCustomer.getLocation()),
+    // systemCustomer.getName(),
+    // systemCustomer.getNumOfOrders());
+    // }
+    //
+    // throw new RuntimeException("The type of the mappable entity must be SystemCustomer or
+    // SystemStore");
+    // }
+
+    public Set<User> toGetUsersResponse (Collection<SystemUser> systemUsers) {
+        return systemUsers.stream().map(this::toUser).collect(Collectors.toSet());
     }
 
-    private MapEntity toMappableEntity (Mappable entity) {
-        if (entity instanceof SystemStore) {
-            SystemStore systemStore = (SystemStore) entity;
-            return new StoreMapEntityDTO(systemStore.getId(),
-                                         toLocationDTO(systemStore.getLocation()),
-                                         systemStore.getName(),
-                                         systemStore.getOrders().size(),
-                                         systemStore.getDeliveryPpk());
-        }
-        else if (entity instanceof SystemCustomer) {
-            SystemCustomer systemCustomer = (SystemCustomer) entity;
-            return new CustomerMapEntityDTO(systemCustomer.getId(),
-                                            toLocationDTO(systemCustomer.getLocation()),
-                                            systemCustomer.getName(),
-                                            systemCustomer.getNumOfOrders());
-        }
-
-        throw new RuntimeException("The type of the mappable entity must be SystemCustomer or SystemStore");
+    private User toUser (SystemUser systemUser) {
+        return new User(systemUser.getId(), systemUser.getName(), toUserType(systemUser.getUserType()));
     }
 
-    public GetCustomersResponse toGetCustomersResponse (Map<Integer, SystemCustomer> systemCustomer) {
-        Map<Integer, CustomerDTO> systemCustomersDTO = toDTO(systemCustomer,
-                                                             this::toCustomerDTO,
-                                                             CustomerDTO::getId,
-                                                             customerDTO -> customerDTO);
-
-        return new GetCustomersResponse(systemCustomersDTO);
+    private User.UserType toUserType (SystemUser.UserType type) {
+        return type.equals(SystemUser.UserType.CUSTOMER) ? User.UserType.CUSTOMER : User.UserType.STORE_OWNER;
     }
+
+    // public GetCustomersResponse toGetCustomersResponse(Map<Integer, SystemCustomer> systemCustomer) {
+    // Map<Integer, CustomerDTO> systemCustomersDTO = toDTO(systemCustomer,
+    // this::toCustomerDTO,
+    // CustomerDTO::getId,
+    // customerDTO -> customerDTO);
+    //
+    // return new GetCustomersResponse(systemCustomersDTO);
+    // }
 
     public DynamicOrderEntityDTO toDynamicOrderEntityDTO (StoreDetails storeDetails, Order order) {
         return new DynamicOrderEntityDTO(storeDetails.getId(),
@@ -176,7 +191,6 @@ public class DTOMapper {
 
         return new CustomerDTO(systemCustomer.getId(),
                                systemCustomer.getName(),
-                               toLocationDTO(systemCustomer.getLocation()),
                                numOfOrders,
                                GeneratedDataMapper.round(avgItemsPrice, 2),
                                GeneratedDataMapper.round(avgDeliveryPrice, 2));

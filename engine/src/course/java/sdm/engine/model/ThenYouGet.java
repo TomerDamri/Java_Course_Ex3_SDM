@@ -21,24 +21,6 @@ public class ThenYouGet {
         return operator;
     }
 
-    public enum DiscountType {
-        IRRELEVANT, OR, AND;
-
-        private static final String ONE_OF = "ONE-OF";
-        public static final String ALL_OR_NOTHING = "ALL-OR-NOTHING";
-
-        private static DiscountType createDiscountType (String operator) {
-            switch (operator) {
-            case ONE_OF:
-                return OR;
-            case ALL_OR_NOTHING:
-                return AND;
-            default:
-                return IRRELEVANT;
-            }
-        }
-    }
-
     @Override
     public boolean equals (Object o) {
         if (this == o)
@@ -52,5 +34,23 @@ public class ThenYouGet {
     @Override
     public int hashCode () {
         return Objects.hash(getOffers(), getOperator());
+    }
+
+    public enum DiscountType {
+        IRRELEVANT, OR, AND;
+
+        public static final String ALL_OR_NOTHING = "ALL-OR-NOTHING";
+        private static final String ONE_OF = "ONE-OF";
+
+        private static DiscountType createDiscountType (String operator) {
+            switch (operator) {
+            case ONE_OF:
+                return OR;
+            case ALL_OR_NOTHING:
+                return AND;
+            default:
+                return IRRELEVANT;
+            }
+        }
     }
 }

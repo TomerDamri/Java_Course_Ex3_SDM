@@ -6,27 +6,26 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-public class Descriptor implements Serializable {
+public class Zone implements Serializable {
 
+    private final String zoneName;
+    private final UUID zoneOwnerId;
+    private final String zoneOwnerName;
     private Map<Integer, SystemStore> systemStores;
     private Map<Integer, SystemItem> systemItems;
-    Map<Integer, SystemCustomer> systemCustomers;
     private Map<UUID, List<SystemOrder>> systemOrders;
-    private Map<Location, Mappable> mappableEntities;
 
-    public Descriptor (Map<Integer, SystemStore> systemStores,
-                       Map<Integer, SystemItem> systemItems,
-                       Map<Integer, SystemCustomer> systemCustomers,
-                       Map<Location, Mappable> mappableEntities) {
+    public Zone (String zoneName,
+                 UUID zoneOwnerId,
+                 String zoneOwnerName,
+                 Map<Integer, SystemStore> systemStores,
+                 Map<Integer, SystemItem> systemItems) {
+        this.zoneName = zoneName;
+        this.zoneOwnerId = zoneOwnerId;
+        this.zoneOwnerName = zoneOwnerName;
         this.systemStores = systemStores;
         this.systemItems = systemItems;
-        this.systemCustomers = systemCustomers;
-        this.mappableEntities = mappableEntities;
         this.systemOrders = new TreeMap<>();
-    }
-
-    public Map<Integer, SystemCustomer> getSystemCustomers () {
-        return systemCustomers;
     }
 
     public Map<Integer, SystemStore> getSystemStores () {
@@ -41,7 +40,15 @@ public class Descriptor implements Serializable {
         return systemOrders;
     }
 
-    public Map<Location, Mappable> getMappableEntities () {
-        return mappableEntities;
+    public String getZoneName () {
+        return zoneName;
+    }
+
+    public UUID getZoneOwnerId () {
+        return zoneOwnerId;
+    }
+
+    public String getZoneOwnerName () {
+        return zoneOwnerName;
     }
 }

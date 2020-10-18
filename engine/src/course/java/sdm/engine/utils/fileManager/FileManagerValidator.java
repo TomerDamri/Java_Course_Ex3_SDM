@@ -2,14 +2,16 @@ package course.java.sdm.engine.utils.fileManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import course.java.sdm.engine.exceptions.DuplicateEntityException;
 import course.java.sdm.engine.exceptions.IllegalFileExtensionException;
 import course.java.sdm.engine.exceptions.ItemNotExist;
 import course.java.sdm.engine.exceptions.NotFoundException;
-import course.java.sdm.engine.model.Customer;
 import course.java.sdm.engine.model.Item;
 import course.java.sdm.engine.model.Location;
 import course.java.sdm.engine.model.Store;
@@ -19,10 +21,10 @@ public class FileManagerValidator {
 
     public void validateFile (String filePath) throws FileNotFoundException {
         validateFileExtension(filePath);
-        validateFileExists(filePath);
+        // validateFileExists(filePath);
     }
 
-    public void validateItemsAndStores (Map<Integer, Item> items, Map<Integer, Store> stores, List<Customer> customers) {
+    public void validateItemsAndStores (Map<Integer, Item> items, Map<Integer, Store> stores) {
         Set<Integer> itemsIds = items.keySet();
         Set<Integer> suppliedItemsIds = new HashSet<>();
 
@@ -35,15 +37,15 @@ public class FileManagerValidator {
         // validate that all items are supplied in at least 1 store
         validateAllItemsSupplied(itemsIds, suppliedItemsIds);
 
-        // validate all customers and stores location are unique
-        validateAllLocations(stores, customers);
+        // validate stores location are unique
+        validateAllLocations(stores);
     }
 
-    private Set<Location> validateAllLocations (Map<Integer, Store> stores, List<Customer> customers) {
+    private Set<Location> validateAllLocations (Map<Integer, Store> stores) {
         Set<Location> allSystemLocations = new HashSet<>();
 
         validateLocations(stores.values(), Store::getLocation, allSystemLocations);
-        validateLocations(customers, Customer::getLocation, allSystemLocations);
+        // validateLocations(customers, Customer::getLocation, allSystemLocations);
 
         return allSystemLocations;
     }

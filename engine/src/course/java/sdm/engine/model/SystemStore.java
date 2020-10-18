@@ -12,17 +12,17 @@ public class SystemStore implements Serializable, Mappable {
     private List<Order> orders;
     private double totalDeliveriesPayment = 0;
 
+    public SystemStore (Store store) {
+        this.store = store;
+        this.orders = new ArrayList<>();
+    }
+
     public double getTotalDeliveriesPayment () {
         return totalDeliveriesPayment;
     }
 
     public void setTotalDeliveriesPayment (double totalDeliveriesPayment) {
         this.totalDeliveriesPayment = totalDeliveriesPayment;
-    }
-
-    public SystemStore (Store store) {
-        this.store = store;
-        this.orders = new ArrayList<>();
     }
 
     public Store getStore () {

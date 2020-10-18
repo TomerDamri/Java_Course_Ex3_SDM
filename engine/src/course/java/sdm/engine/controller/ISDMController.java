@@ -1,50 +1,60 @@
 package course.java.sdm.engine.controller;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.servlet.http.Part;
+
+import course.java.sdm.engine.users.User;
 import model.request.*;
 import model.response.*;
 
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.util.UUID;
-
 public interface ISDMController {
-    //    void loadFile (String filePath) throws FileNotFoundException;
-    void loadFile(Part part) throws IOException;
+    // void loadFile (String filePath) throws FileNotFoundException;
+    void loadFile (Part part, UUID storesOwnerID) throws IOException;
 
+    GetCustomersResponse getCustomers ();
 
-    GetCustomersResponse getCustomers();
+    GetStoresResponse getStores ();
 
-    GetStoresResponse getStores();
+    GetItemsResponse getItems ();
 
-    GetItemsResponse getItems();
+    GetOrdersResponse getOrders ();
 
-    GetOrdersResponse getOrders();
+    PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
 
-    PlaceOrderResponse placeStaticOrder(PlaceOrderRequest request);
+    GetDiscountsResponse getDiscounts (UUID orderId);
 
-    GetDiscountsResponse getDiscounts(UUID orderId);
+    FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request);
 
-    FinalSummaryForOrder addDiscountsToOrder(AddDiscountsToOrderRequest request);
+    void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder);
 
-    void completeTheOrder(UUID orderId, boolean toConfirmNewDynamicOrder);
+    boolean isFileLoaded ();
 
-    boolean isFileLoaded();
+    boolean isValidLocation (final int xCoordinate, final int yCoordinate);
 
-    boolean isValidLocation(final int xCoordinate, final int yCoordinate);
+    GetMapEntitiesResponse getSystemMappableEntities ();
 
-    GetMapEntitiesResponse getSystemMappableEntities();
+    PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request);
 
-    PlaceDynamicOrderResponse placeDynamicOrder(PlaceDynamicOrderRequest request);
+    void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder);
 
-    void completeDynamicOrder(UUID dynamicOrderId, boolean toConfirmNewDynamicOrder);
+    void saveOrdersHistoryToFile (String path);
 
-    void saveOrdersHistoryToFile(String path);
+    void loadSystemHistoryToFile (String path);
 
-    void loadOrdersHistoryFromFile(String path);
+    void addItemToStore (UpdateStoreRequest request);
 
-    void addItemToStore(UpdateStoreRequest request);
+    DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request);
 
-    DeleteItemFromStoreResponse deleteItemFromStore(BaseUpdateStoreRequest request);
+    void updatePriceOfSelectedItem (UpdateStoreRequest request);
 
-    void updatePriceOfSelectedItem(UpdateStoreRequest request);
+    UUID addUserToSystem (String username, User.UserType userType);
+
+    public void removeUser (String username);
+
+    public Set<User> getUsers ();
+
+    public boolean isUserExists (String username);
 }

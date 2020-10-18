@@ -16,10 +16,9 @@ import model.request.PlaceDynamicOrderRequest;
 
 public class OrdersCreator {
 
-    private Map<UUID, TempOrder> tempOrders = new TreeMap<>();
-
-    private static OrdersCreator singletonOrderExecutor = null;
     private final static OrdersCreatorValidator ORDERS_CREATOR_VALIDATOR = new OrdersCreatorValidator();
+    private static OrdersCreator singletonOrderExecutor = null;
+    private Map<UUID, TempOrder> tempOrders = new TreeMap<>();
 
     private OrdersCreator () {
     }
@@ -37,7 +36,7 @@ public class OrdersCreator {
                                  Location orderLocation,
                                  Map<PricedItem, Double> pricedItemToAmountMap,
                                  UUID parentId,
-                                 Integer customerId) {
+                                 UUID customerId) {
 
         Order newSubOrder = createOrderV2(systemStore, orderDate, orderLocation, pricedItemToAmountMap, parentId, customerId);
         completeSubOrder(systemStore, newSubOrder);
@@ -50,7 +49,7 @@ public class OrdersCreator {
                                 Location orderLocation,
                                 Map<PricedItem, Double> pricedItemToAmountMap,
                                 UUID parentId,
-                                Integer customerId) {
+                                UUID customerId) {
         ORDERS_CREATOR_VALIDATOR.validateLocation(orderLocation, systemStore);
         Order newOrder = new Order(orderDate, orderLocation, parentId);
         addItemsToOrder(systemStore, newOrder, pricedItemToAmountMap);
@@ -197,7 +196,7 @@ public class OrdersCreator {
                                            Location orderLocation,
                                            List<SystemItem> systemItemsIncludedInOrder,
                                            Set<SystemStore> storesIncludedInOrder,
-                                           Integer customerID) {
+                                           UUID customerID) {
         UUID dynamicOrderId = UUID.randomUUID();
         Map<StoreDetails, Order> staticOrders = storesIncludedInOrder.stream()
                                                                      .collect(Collectors.toMap(systemStore -> systemStore.getStore()
@@ -220,7 +219,7 @@ public class OrdersCreator {
                                                            Location orderLocation,
                                                            List<SystemItem> systemItemsIncludedInOrder,
                                                            UUID parentId,
-                                                           Integer customerId) {
+                                                           UUID customerId) {
         return systemStore -> {
             Map<PricedItem, Double> pricedItems = getPricedItemFromDynamicOrderRequest(orderItemToAmount,
                                                                                        systemItemsIncludedInOrder,

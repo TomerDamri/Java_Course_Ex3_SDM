@@ -1,24 +1,24 @@
 package model;
 
+import java.util.UUID;
+
 public class CustomerDTO {
 
-    private Integer id;
+    private UUID id;
     private String name;
-    private final LocationDTO location;
     private Integer numOfOrders;
     private Double avgItemsPrice;
     private Double avgDeliveryPrice;
 
-    public CustomerDTO (int id, String name, LocationDTO location, int numOfOrders, double avgItemsPrice, double avgDeliveryPrice) {
+    public CustomerDTO (UUID id, String name, int numOfOrders, double avgItemsPrice, double avgDeliveryPrice) {
         this.id = id;
         this.name = name;
-        this.location = location;
         this.numOfOrders = numOfOrders;
         this.avgItemsPrice = avgItemsPrice;
         this.avgDeliveryPrice = avgDeliveryPrice;
     }
 
-    public Integer getId () {
+    public UUID getId () {
         return id;
     }
 
@@ -36,10 +36,6 @@ public class CustomerDTO {
 
     public Double getAvgDeliveryPrice () {
         return avgDeliveryPrice;
-    }
-
-    public LocationDTO getLocation () {
-        return location;
     }
 
     @Override

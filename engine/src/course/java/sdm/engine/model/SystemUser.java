@@ -1,13 +1,13 @@
-package course.java.sdm.engine.users;
+package course.java.sdm.engine.model;
 
 import java.util.UUID;
 
-public class User {
+public class SystemUser {
     private UUID id;
     private String name;
     private UserType userType;
 
-    public User (UUID id, String name, UserType userType) {
+    public SystemUser (UUID id, String name, UserType userType) {
         this.id = id;
         this.name = name;
         this.userType = userType;

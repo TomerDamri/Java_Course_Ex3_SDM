@@ -13,12 +13,22 @@ import examples.jaxb.schema.generated.*;
 
 public class GeneratedDataMapper {
 
-    public List<Customer> generatedCustomersToCustomers (SDMCustomers sdmCustomers) {
-        if (sdmCustomers == null) {
+    public static double round (double value, int places) {
+        if (places < 0)
+            throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+
+    public String generatedZoneToZone (SuperDuperMarketDescriptor.SDMZone sdmZone) {
+        if (sdmZone == null || sdmZone.getName() == null) {
             return null;
         }
 
-        return sdmCustomers.getSDMCustomer().stream().map(this::toCustomer).collect(Collectors.toList());
+        return sdmZone.getName();
     }
 
     public Map<Integer, Item> generatedItemsToItems (SDMItems generatedItems) {
@@ -36,42 +46,15 @@ public class GeneratedDataMapper {
         return toStores(generatedStores, items);
     }
 
-    public Descriptor toDescriptor (Map<Integer, Item> items, Map<Integer, Store> stores, List<Customer> customers) {
+    public Zone toZone (Map<Integer, Item> items, Map<Integer, Store> stores, String zoneName, StoresOwner storesOwner) {
         ArrayList<Store> storesList = new ArrayList<>(stores.values());
         Map<Integer, SystemStore> systemStores = generatedListToMap(storesList,
                                                                     Store::getId,
                                                                     SystemStore::new,
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
-        Map<Integer, SystemCustomer> systemCustomers = toSystemCustomers(customers);
-        Map<Location, Mappable> mappableEntities = toMappableEntities(new ArrayList<>(systemStores.values()), systemCustomers.values());
 
-        return new Descriptor(systemStores, systemItems, systemCustomers, mappableEntities);
-    }
-
-    private Map<Location, Mappable> toMappableEntities (Collection<SystemStore> systemStores, Collection<SystemCustomer> systemCustomers) {
-        Map<Location, Mappable> storeEntities = generatedListToMap(new ArrayList<>(systemStores),
-                                                                   SystemStore::getLocation,
-                                                                   systemStore -> systemStore,
-                                                                   SystemStore.class.getSimpleName());
-
-        Map<Location, Mappable> customerEntities = generatedListToMap(new ArrayList<>(systemCustomers),
-                                                                      SystemCustomer::getLocation,
-                                                                      systemCustomer -> systemCustomer,
-                                                                      SystemCustomer.class.getSimpleName());
-
-        validateNoCommonLocations(storeEntities.keySet(), customerEntities.keySet());
-        Map<Location, Mappable> allSystemEntities = new HashMap<>(storeEntities);
-        allSystemEntities.putAll(customerEntities);
-
-        return allSystemEntities;
-    }
-
-    private void validateNoCommonLocations (Collection<Location> storeLocations, Collection<Location> customerLocations) {
-        Set<Location> commonLocations = storeLocations.stream().distinct().filter(customerLocations::contains).collect(Collectors.toSet());
-        if (commonLocations.size() > 0) {
-            throw new RuntimeException(String.format("The locations: %s used for system store and for system customer", commonLocations));
-        }
+        return new Zone(zoneName, storesOwner.getId(), storesOwner.getName(), systemStores, systemItems);
     }
 
     private Map<Integer, SystemItem> toSystemItems (Map<Integer, Item> items, Collection<SystemStore> stores) {
@@ -100,18 +83,6 @@ public class GeneratedDataMapper {
         }
 
         return systemItems;
-    }
-
-    private Map<Integer, SystemCustomer> toSystemCustomers (List<Customer> customers) {
-        return generatedListToMap(customers, Customer::getId, this::toSystemCustomer, Customer.class.getSimpleName());
-    }
-
-    private SystemCustomer toSystemCustomer (Customer customer) {
-        return new SystemCustomer(customer);
-    }
-
-    private Customer toCustomer (SDMCustomer sdmCustomer) {
-        return new Customer(sdmCustomer.getId(), sdmCustomer.getName(), toLocation(sdmCustomer.getLocation()));
     }
 
     private double calculateAvgPrice (int storesCount, double avgPrice, double sumPrices) {
@@ -310,13 +281,47 @@ public class GeneratedDataMapper {
         }
     }
 
-    public static double round (double value, int places) {
-        if (places < 0)
-            throw new IllegalArgumentException();
+    // mappable
+    /*
+     * private Map<Location, Mappable> toMappableEntities (Collection<SystemStore> systemStores,
+     * Collection<SystemCustomer> systemCustomers) { Map<Location, Mappable> storeEntities =
+     * generatedListToMap(new ArrayList<>(systemStores), SystemStore::getLocation, systemStore ->
+     * systemStore, SystemStore.class.getSimpleName());
+     * 
+     * Map<Location, Mappable> customerEntities = generatedListToMap(new ArrayList<>(systemCustomers),
+     * SystemCustomer::getLocation, systemCustomer -> systemCustomer,
+     * SystemCustomer.class.getSimpleName());
+     * 
+     * validateNoCommonLocations(storeEntities.keySet(), customerEntities.keySet()); Map<Location,
+     * Mappable> allSystemEntities = new HashMap<>(storeEntities);
+     * allSystemEntities.putAll(customerEntities);
+     * 
+     * return allSystemEntities; }
+     * 
+     * private void validateNoCommonLocations (Collection<Location> storeLocations, Collection<Location>
+     * customerLocations) { Set<Location> commonLocations =
+     * storeLocations.stream().distinct().filter(customerLocations::contains).collect(Collectors.toSet()
+     * ); if (commonLocations.size() > 0) { throw new
+     * RuntimeException(String.format("The locations: %s used for system store and for system customer",
+     * commonLocations)); } }
+     */
 
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-        return (double) tmp / factor;
-    }
+    // customer + systemCustomer
+    /*
+     * private Customer toCustomer(SDMCustomer sdmCustomer) { return new Customer(sdmCustomer.getId(),
+     * sdmCustomer.getName(), toLocation(sdmCustomer.getLocation())); }
+     * 
+     * private Map<Integer, SystemCustomer> toSystemCustomers(List<Customer> customers) { return
+     * generatedListToMap(customers, Customer::getId, this::toSystemCustomer,
+     * Customer.class.getSimpleName()); }
+     * 
+     * private SystemCustomer toSystemCustomer(Customer customer) { return new SystemCustomer(customer);
+     * }
+     * 
+     * public List<Customer> generatedCustomersToCustomers(SDMCustomers sdmCustomers) { if (sdmCustomers
+     * == null) { return null; }
+     * 
+     * return sdmCustomers.getSDMCustomer().stream().map(this::toCustomer).collect(Collectors.toList());
+     * }
+     */
 }
