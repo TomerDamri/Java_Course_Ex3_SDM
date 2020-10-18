@@ -130,8 +130,68 @@ $(function () {
 
     //The users list is refreshed automatically every second
     setInterval(ajaxUsersList, refreshRate);
-
+    setInterval(tableCreate, refreshRate);
     //The chat content is refreshed only once (using a timeout) but
     //on each call it triggers another execution of itself later (1 second later)
     triggerAjaxChatContent();
 });
+
+function tableCreate() {
+    var tableBody = document.getElementsByTagName('tbody')[0];
+    while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+    }
+//     var tbl = document.createElement('table');
+//     var tableBody = document.createElement('tbody');
+//     var tableHead = document.createElement('thead');
+//     var th = document.createElement('th').appendChild(document.createTextNode("Area Owner"));
+//     th.setAttribute('class', 'th-class');
+//     // th.setAttribute('padding', '8');
+// // th.style.padding = '8';
+//     // text-align: left;
+//
+//     tableHead.appendChild(th);
+//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Area")));
+//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Items Count")));
+//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Stores Count")));
+//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Orders Count")));
+//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Orders Average Price")));
+//     tbl.appendChild(tableHead);
+//     //
+
+    // var tableBody =  $('#tbody');
+    var areas =
+        [
+            {user: 'avi', area: 'zafon', itemsCount: 10, storesCount: 5, ordersCount: 4, avg: 245},
+            {user: 'moshe', area: 'merkaz', itemsCount: 12, storesCount: 6, ordersCount: 3, avg: 327},
+        ];
+    for (var i = 0; i < areas.length; i++) {
+        var tr = document.createElement('tr');
+
+        var td = document.createElement('td');
+        td.appendChild(document.createTextNode(areas[i].user));
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.appendChild(document.createTextNode(areas[i].area));
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.appendChild(document.createTextNode(areas[i].itemsCount));
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.appendChild(document.createTextNode(areas[i].storesCount));
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.appendChild(document.createTextNode(areas[i].ordersCount));
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.appendChild(document.createTextNode(areas[i].ordersCount));
+        tr.appendChild(td)
+
+        tableBody.appendChild(tr);
+    }
+}

@@ -90,6 +90,7 @@ public class LightweightLoginServlet extends HttpServlet {
                         //the true parameter means that if a session object does not exists yet
                         //create a new one
                         request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
+                        request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
 
                         //redirect the request to the chat room - in order to actually change the URL
                         System.out.println("On login, request URI is: " + request.getRequestURI());

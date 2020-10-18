@@ -5,6 +5,7 @@
       <map>
         <entry key="file://$PROJECT_DIR$/sdmWebApp/web/pages/chatroom/chatroom.html" value="file://$PROJECT_DIR$/sdmWebApp/web/pages/chatroom" />
         <entry key="file://$PROJECT_DIR$/sdmWebApp/web/pages/login/login.html" value="file://$PROJECT_DIR$/sdmWebApp/web/pages/login" />
+        <entry key="file://$PROJECT_DIR$/sdmWebApp/web/pages/salesAreas/salesAreas.html" value="file://$PROJECT_DIR$/sdmWebApp/web/pages/salesAreas" />
       </map>
     </option>
   </component>
