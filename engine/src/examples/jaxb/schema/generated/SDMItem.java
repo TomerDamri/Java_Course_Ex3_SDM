@@ -5,21 +5,16 @@
 // Generated on: 2020.10.17 at 01:12:50 PM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -38,10 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "name",
-    "purchaseCategory"
-})
+@XmlType(name = "", propOrder = { "name", "purchaseCategory" })
 @XmlRootElement(name = "SDM-item")
 public class SDMItem {
 
@@ -55,12 +47,10 @@ public class SDMItem {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
-    public String getName() {
+    public String getName () {
         return name;
     }
 
@@ -68,23 +58,20 @@ public class SDMItem {
      * Sets the value of the name property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *        allowed object is {@link String }
+     * 
      */
-    public void setName(String value) {
+    public void setName (String value) {
         this.name = value;
     }
 
     /**
      * Gets the value of the purchaseCategory property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
-    public String getPurchaseCategory() {
+    public String getPurchaseCategory () {
         return purchaseCategory;
     }
 
@@ -92,11 +79,10 @@ public class SDMItem {
      * Sets the value of the purchaseCategory property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *        allowed object is {@link String }
+     * 
      */
-    public void setPurchaseCategory(String value) {
+    public void setPurchaseCategory (String value) {
         this.purchaseCategory = value;
     }
 
@@ -104,7 +90,7 @@ public class SDMItem {
      * Gets the value of the id property.
      * 
      */
-    public int getId() {
+    public int getId () {
         return id;
     }
 
@@ -112,7 +98,7 @@ public class SDMItem {
      * Sets the value of the id property.
      * 
      */
-    public void setId(int value) {
+    public void setId (int value) {
         this.id = value;
     }
 

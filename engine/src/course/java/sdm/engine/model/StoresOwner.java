@@ -10,21 +10,21 @@ public class StoresOwner {
     private String name;
     private Map<String, List<SystemStore>> zoneToOwnedStores;
 
-    public StoresOwner(UUID id, String name) {
+    public StoresOwner (UUID id, String name) {
         this.id = id;
         this.name = name;
         this.zoneToOwnedStores = new HashMap<>();
     }
 
-    public UUID getId() {
+    public UUID getId () {
         return id;
     }
 
-    public String getName() {
+    public String getName () {
         return name;
     }
 
-    public Map<String, List<SystemStore>> getZoneToOwnedStores() {
+    public Map<String, List<SystemStore>> getZoneToOwnedStores () {
         return zoneToOwnedStores;
     }
 }

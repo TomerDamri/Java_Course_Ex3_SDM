@@ -1,28 +1,31 @@
 package course.java.sdm.engine.model;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
 public class SDMDescriptor {
 
     private Map<UUID, SystemCustomer> idToSystemCustomerMap;
     private Map<UUID, StoresOwner> idToStoreOwnerMap;
-    private List<Zone> zones;
+    private Map<String, Zone> zoneNameToZone;
 
-    public SDMDescriptor() {
+    public SDMDescriptor () {
         this.idToStoreOwnerMap = new HashMap<>();
         this.idToSystemCustomerMap = new HashMap<>();
-        this.zones = new LinkedList<>();
+        this.zoneNameToZone = new TreeMap<>();
     }
 
-    public Map<UUID, SystemCustomer> getSystemCustomers() {
+    public Map<UUID, SystemCustomer> getSystemCustomers () {
         return idToSystemCustomerMap;
     }
 
-    public Map<UUID, StoresOwner> getStoresOwners() {
+    public Map<UUID, StoresOwner> getStoresOwners () {
         return idToStoreOwnerMap;
     }
 
-    public List<Zone> getZones() {
-        return zones;
+    public Map<String, Zone> getZones () {
+        return zoneNameToZone;
     }
 }

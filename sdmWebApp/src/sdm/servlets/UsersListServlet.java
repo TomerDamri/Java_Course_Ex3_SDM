@@ -1,60 +1,68 @@
 package sdm.servlets;
 
-import com.google.gson.Gson;
-import course.java.sdm.engine.users.User;
-import course.java.sdm.engine.users.UserManager;
-import sdm.utils.ServletUtils;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
+
+import com.google.gson.Gson;
+
+import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import course.java.sdm.engine.users.User;
+import sdm.utils.ServletUtils;
 
 public class UsersListServlet extends HttpServlet {
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        //returning JSON objects, not HTML
+    protected void processRequest (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // returning JSON objects, not HTML
         response.setContentType("application/json");
         try (PrintWriter out = response.getWriter()) {
             Gson gson = new Gson();
-            UserManager userManager = ServletUtils.getUserManager(getServletContext());
-            Set<User> usersList = userManager.getUsers();
+            SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
+            Set<User> usersList = sdmController.getUsers();
             String json = gson.toJson(usersList);
             out.println(json);
             out.flush();
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left
+    // to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param request
+     *        servlet request
+     * @param response
+     *        servlet response
+     * @throws ServletException
+     *         if a servlet-specific error occurs
+     * @throws IOException
+     *         if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param request
+     *        servlet request
+     * @param response
+     *        servlet response
+     * @throws ServletException
+     *         if a servlet-specific error occurs
+     * @throws IOException
+     *         if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -64,7 +72,7 @@ public class UsersListServlet extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-    public String getServletInfo() {
+    public String getServletInfo () {
         return "Short description";
     }// </editor-fold>
 }

@@ -1,30 +1,31 @@
 package course.java.sdm.engine.users;
 
+import java.util.UUID;
+
 public class User {
-    private int id;
+    private UUID id;
     private String name;
-
-    public enum UserType {
-        CUSTOMER, STORE_OWNER;
-    }
-
     private UserType userType;
 
-    public User(int id, String name, UserType userType) {
+    public User (UUID id, String name, UserType userType) {
         this.id = id;
         this.name = name;
         this.userType = userType;
     }
 
-    public int getId() {
+    public UUID getId () {
         return id;
     }
 
-    public String getName() {
+    public String getName () {
         return name;
     }
 
-    public UserType getUserType() {
+    public UserType getUserType () {
         return userType;
+    }
+
+    public enum UserType {
+        CUSTOMER, STORE_OWNER;
     }
 }

@@ -7,10 +7,10 @@ import java.util.UUID;
 public class TempOrder implements Serializable {
 
     private final UUID orderId;
-    private final Integer customerId;
+    private final UUID customerId;
     private Map<StoreDetails, Order> staticOrders;
 
-    public TempOrder (UUID orderId, Map<StoreDetails, Order> staticOrders, Integer customerId) {
+    public TempOrder (UUID orderId, Map<StoreDetails, Order> staticOrders, UUID customerId) {
         this.orderId = orderId;
         this.staticOrders = staticOrders;
         this.customerId = customerId;
@@ -30,7 +30,7 @@ public class TempOrder implements Serializable {
         return staticOrders;
     }
 
-    public Integer getCustomerId () {
+    public UUID getCustomerId () {
         return customerId;
     }
 }

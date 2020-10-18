@@ -5,20 +5,16 @@
 // Generated on: 2020.10.17 at 01:12:50 PM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -53,12 +49,10 @@ public class SDMDiscount {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
-    public String getName() {
+    public String getName () {
         return name;
     }
 
@@ -66,23 +60,20 @@ public class SDMDiscount {
      * Sets the value of the name property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *        allowed object is {@link String }
+     * 
      */
-    public void setName(String value) {
+    public void setName (String value) {
         this.name = value;
     }
 
     /**
      * Gets the value of the ifYouBuy property.
      * 
-     * @return
-     *     possible object is
-     *     {@link IfYouBuy }
-     *     
+     * @return possible object is {@link IfYouBuy }
+     * 
      */
-    public IfYouBuy getIfYouBuy() {
+    public IfYouBuy getIfYouBuy () {
         return ifYouBuy;
     }
 
@@ -90,23 +81,20 @@ public class SDMDiscount {
      * Sets the value of the ifYouBuy property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link IfYouBuy }
-     *     
+     *        allowed object is {@link IfYouBuy }
+     * 
      */
-    public void setIfYouBuy(IfYouBuy value) {
+    public void setIfYouBuy (IfYouBuy value) {
         this.ifYouBuy = value;
     }
 
     /**
      * Gets the value of the thenYouGet property.
      * 
-     * @return
-     *     possible object is
-     *     {@link ThenYouGet }
-     *     
+     * @return possible object is {@link ThenYouGet }
+     * 
      */
-    public ThenYouGet getThenYouGet() {
+    public ThenYouGet getThenYouGet () {
         return thenYouGet;
     }
 
@@ -114,11 +102,10 @@ public class SDMDiscount {
      * Sets the value of the thenYouGet property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ThenYouGet }
-     *     
+     *        allowed object is {@link ThenYouGet }
+     * 
      */
-    public void setThenYouGet(ThenYouGet value) {
+    public void setThenYouGet (ThenYouGet value) {
         this.thenYouGet = value;
     }
 

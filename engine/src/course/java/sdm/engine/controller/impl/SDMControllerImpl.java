@@ -1,23 +1,23 @@
 package course.java.sdm.engine.controller.impl;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.servlet.http.Part;
+
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.service.SDMService;
 import course.java.sdm.engine.users.User;
 import model.request.*;
 import model.response.*;
 
-import javax.servlet.http.Part;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.UUID;
-
 public class SDMControllerImpl implements ISDMController {
     private SDMService service = new SDMService();
 
     @Override
-    public void loadFile (Part part) throws IOException {
-        service.loadData(part);
+    public void loadFile (Part part, UUID storesOwnerID) throws IOException {
+        service.loadData(part, storesOwnerID);
     }
 
     @Override
@@ -76,10 +76,11 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
-    public void loadOrdersHistoryFromFile (String path) {
-        service.loadOrdersHistoryFromFile(path);
+    public void loadSystemHistoryToFile (String path) {
+        service.loadSystemHistoryToFile(path);
     }
 
+    @Override
     public GetDiscountsResponse getDiscounts (UUID orderId) {
         return service.getOrderDiscounts(orderId);
     }
@@ -110,7 +111,23 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
-    public void addUserToSystem(String username, User.UserType userType) {
-        service.addUserToSystem(username, userType);
+    public UUID addUserToSystem (String username, User.UserType userType) {
+        return service.addUserToSystem(username, userType);
     }
+
+    @Override
+    public void removeUser (String username) {
+        service.removeUser(username);
+    }
+
+    @Override
+    public Set<User> getUsers () {
+        return service.getUsers();
+    }
+
+    @Override
+    public boolean isUserExists (String username) {
+        return service.isUserExists(username);
+    }
+
 }

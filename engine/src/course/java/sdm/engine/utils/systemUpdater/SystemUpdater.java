@@ -7,8 +7,8 @@ import course.java.sdm.engine.model.*;
 
 public class SystemUpdater {
 
-    private static SystemUpdater singletonSystemUpdater = null;
     private final static SystemUpdaterValidator SYSTEM_UPDATER_VALIDATOR = new SystemUpdaterValidator();
+    private static SystemUpdater singletonSystemUpdater = null;
 
     private SystemUpdater () {
     }
@@ -242,30 +242,35 @@ public class SystemUpdater {
         return removedDiscounts;
     }
 
-    public void updateSystemAfterLoadingOrdersHistoryFromFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile, Zone zone) {
+    public void updateSystemAfterLoadingOrdersHistoryFromFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile,
+                                                               Map<UUID, SystemCustomer> systemCustomers,
+                                                               Zone zone) {
         Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate = zone.getSystemOrders();
         Map<Integer, SystemStore> systemStores = zone.getSystemStores();
 
-        updateSystemOrdersAccordingToHistoryFile(ordersFromHistoryFile, zone, systemOrdersBeforeUpdate, systemStores);
+        updateSystemOrdersAccordingToHistoryFile(ordersFromHistoryFile, zone, systemOrdersBeforeUpdate, systemStores, systemCustomers);
     }
 
     private void updateSystemOrdersAccordingToHistoryFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile,
                                                            Zone zone,
                                                            Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate,
-                                                           Map<Integer, SystemStore> systemStores) {
+                                                           Map<Integer, SystemStore> systemStores,
+                                                           Map<UUID, SystemCustomer> systemCustomers) {
         ordersFromHistoryFile.entrySet()
                              .stream()
                              .filter(entry -> !systemOrdersBeforeUpdate.containsKey(entry.getKey()))
                              .forEach(entry -> entry.getValue()
                                                     .forEach(order -> updateSystemAfterLoadingHistoryOrder(zone,
                                                                                                            systemStores,
-                                                                                                           order)));
+                                                                                                           order,
+                                                                                                           systemCustomers)));
     }
 
     private void updateSystemAfterLoadingHistoryOrder (Zone zone,
                                                        Map<Integer, SystemStore> systemStores,
-                                                       SystemOrder systemOrder) {
-        SystemCustomer systemCustomer = getCustomerById(zone, systemOrder.getCustomerId());
+                                                       SystemOrder systemOrder,
+                                                       Map<UUID, SystemCustomer> systemCustomers) {
+        SystemCustomer systemCustomer = getCustomerById(systemOrder.getCustomerId(), systemCustomers);
         SystemStore systemStore = getStoreById(zone, systemOrder.getStoreId());
         Order order = getOrder(systemStore, systemOrder);
 
@@ -279,10 +284,10 @@ public class SystemUpdater {
         return order;
     }
 
-    private SystemCustomer getCustomerById (Zone zone, Integer customerId) {
-        SYSTEM_UPDATER_VALIDATOR.validateCustomerExistInSystem(zone, customerId);
+    private SystemCustomer getCustomerById (UUID customerId, Map<UUID, SystemCustomer> systemCustomers) {
+        SYSTEM_UPDATER_VALIDATOR.validateCustomerExistInSystem(systemCustomers, customerId);
 
-        return zone.getSystemCustomers().get(customerId);
+        return systemCustomers.get(customerId);
     }
 
     private SystemStore getStoreById (Zone zone, Integer storeId) {
@@ -293,7 +298,7 @@ public class SystemUpdater {
         return systemStores.get(storeId);
     }
 
-    private void addNewOrderToSystemOrders (SystemStore systemStore, Order newOrder, Zone zone, Integer customerId) {
+    private void addNewOrderToSystemOrders (SystemStore systemStore, Order newOrder, Zone zone, UUID customerId) {
         List<SystemOrder> orders;
         SystemOrder newSystemOrder = new SystemOrder(newOrder, systemStore.getName(), systemStore.getId(), customerId);
         UUID id = (newOrder.getParentId() != null) ? newOrder.getParentId() : newOrder.getId();
@@ -319,10 +324,7 @@ public class SystemUpdater {
                     + newOrder.getDeliveryPrice(), 2));
     }
 
-    public void updateSystemAfterStaticOrderV2 (SystemStore systemStore,
-                                                Order newOrder,
-                                                Zone zone,
-                                                SystemCustomer systemCustomer) {
+    public void updateSystemAfterStaticOrderV2 (SystemStore systemStore, Order newOrder, Zone zone, SystemCustomer systemCustomer) {
         updateSystemStore(systemStore, newOrder);
         // add order to store
         systemStore.getOrders().add(newOrder);

@@ -1,5 +1,12 @@
 package course.java.sdm.engine.service;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.Part;
+
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
@@ -12,12 +19,6 @@ import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
 import model.DynamicOrderEntityDTO;
 import model.request.*;
 import model.response.*;
-
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class SDMService {
 
@@ -32,76 +33,81 @@ public class SDMService {
 
     private Zone zone;
 
-    public void addUserToSystem(String username, User.UserType userType) {
-        userManager.addUser(sdmDescriptor, username, userType);
+    public UUID addUserToSystem (String username, User.UserType userType) {
+        return userManager.addUser(sdmDescriptor, username, userType);
     }
 
-    public void removeUser(String username) {
+    public void removeUser (String username) {
         userManager.removeUser(sdmDescriptor, username);
     }
 
-    public synchronized Collection<SystemUser> getUsers() {
-        return userManager.getUsers();
+    public synchronized Set<User> getUsers () {
+        Collection<SystemUser> users = userManager.getUsers();
+        return dtoMapper.toGetUsersResponse(users);
     }
 
-    public boolean isUserExists(String username) {
+    public boolean isUserExists (String username) {
         return userManager.isUserExists(username);
     }
 
-
-    public void loadData(Part part) throws IOException {
+    public void loadData (Part part, UUID storesOwnerID) throws IOException {
+        StoresOwner storesOwner = getStoresOwner(storesOwnerID);
         SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(part);
-        this.zone = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor);
+        Zone newZone = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor, storesOwner);
+        sdmDescriptor.getZones().put(newZone.getZoneName(), newZone);
     }
 
-    //    public void loadData (String xmlDataFileStr) throws FileNotFoundException {
-//        SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(xmlDataFileStr);
-//        this.descriptor = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor);
-//    }
-    public boolean isFileLoaded() {
+    // public void loadData (String xmlDataFileStr) throws FileNotFoundException {
+    // SuperDuperMarketDescriptor superDuperMarketDescriptor =
+    // fileManager.generateDataFromXmlFile(xmlDataFileStr);
+    // this.descriptor = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor);
+    // }
+    public boolean isFileLoaded () {
         return zone != null;
     }
 
-    public GetStoresResponse getStores() {
+    public GetStoresResponse getStores () {
         if (zone == null) {
             throw new FileNotLoadedException();
         }
         return dtoMapper.toGetStoresResponse(zone.getSystemStores());
     }
 
-    public GetCustomersResponse getCustomers() {
-        if (zone == null) {
-            throw new FileNotLoadedException();
-        }
-
-        Map<Integer, SystemCustomer> systemCustomers = zone.getSystemCustomers();
-
-        return dtoMapper.toGetCustomersResponse(systemCustomers);
+    public GetCustomersResponse getCustomers () {
+        // if (zone == null) {
+        // throw new FileNotLoadedException();
+        // }
+        //
+        // Map<Integer, SystemCustomer> systemCustomers = zone.getSystemCustomers();
+        //
+        // return dtoMapper.toGetCustomersResponse(systemCustomers);
+        return null;
     }
 
-    public GetMapEntitiesResponse getSystemMappableEntities() {
-        if (zone == null) {
-            throw new FileNotLoadedException();
-        }
-
-        return dtoMapper.toGetSystemMappableEntitiesResponse(zone.getMappableEntities().values());
+    public GetMapEntitiesResponse getSystemMappableEntities () {
+        // if (zone == null) {
+        // throw new FileNotLoadedException();
+        // }
+        //
+        // return dtoMapper.toGetSystemMappableEntitiesResponse(zone.getMappableEntities().values());
+        return null;
     }
 
-    public GetItemsResponse getItems() {
+    public GetItemsResponse getItems () {
         if (zone == null) {
             throw new FileNotLoadedException();
         }
         return dtoMapper.toGetItemsResponse(zone.getSystemItems());
     }
 
-    public GetOrdersResponse getOrders() {
+    public GetOrdersResponse getOrders () {
         if (zone == null) {
             throw new FileNotLoadedException();
         }
         return dtoMapper.toGetOrdersResponse(zone.getSystemOrders());
     }
 
-    public GetDiscountsResponse getOrderDiscounts(UUID orderId) {
+    public GetDiscountsResponse getOrderDiscounts (UUID orderId) {
 
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
@@ -124,7 +130,7 @@ public class SDMService {
         return dtoMapper.createGetDiscountsResponse(returnDiscounts, zone.getSystemStores());
     }
 
-    private ValidStoreDiscounts getStoreDiscounts(Map<PricedItem, Double> pricedItems, int storeId) {
+    private ValidStoreDiscounts getStoreDiscounts (Map<PricedItem, Double> pricedItems, int storeId) {
         Map<Integer, List<Discount>> storeValidDiscounts = new TreeMap<>();
         SystemStore systemStore = zone.getSystemStores().get(storeId);
         Map<Integer, List<Discount>> storeDiscounts = systemStore.getStore().getStoreDiscounts();
@@ -140,28 +146,28 @@ public class SDMService {
         return !storeValidDiscounts.isEmpty() ? new ValidStoreDiscounts(storeValidDiscounts) : null;
     }
 
-    private void addItemDiscounts(Map<Integer, List<Discount>> storeValidDiscounts,
-                                  Double itemQuantity,
-                                  Map<Integer, List<Discount>> storeDiscounts,
-                                  int itemId) {
+    private void addItemDiscounts (Map<Integer, List<Discount>> storeValidDiscounts,
+                                   Double itemQuantity,
+                                   Map<Integer, List<Discount>> storeDiscounts,
+                                   int itemId) {
         List<Discount> itemDiscounts = storeDiscounts.get(itemId);
         List<Discount> validDiscounts = itemDiscounts.stream()
-                .filter(discount -> discount.getIfYouBuy().getQuantity() <= itemQuantity)
-                .collect(Collectors.toList());
+                                                     .filter(discount -> discount.getIfYouBuy().getQuantity() <= itemQuantity)
+                                                     .collect(Collectors.toList());
 
         if (!validDiscounts.isEmpty()) {
             storeValidDiscounts.put(itemId, validDiscounts);
         }
     }
 
-    public FinalSummaryForOrder addDiscountsToOrder(AddDiscountsToOrderRequest request) {
+    public FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request) {
         UUID orderId = request.getOrderID();
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
         Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = request.getStoreIdToChosenDiscounts();
         Map<Integer, SystemStore> systemStores = zone.getSystemStores();
 
-        staticOrders.forEach(((storeDetails, order) -> {
+        staticOrders.forEach(( (storeDetails, order) -> {
             int storeId = storeDetails.getId();
             SystemStore systemStore = systemStores.get(storeId);
             UUID currStaticOrderId = order.getId();
@@ -180,18 +186,18 @@ public class SDMService {
 
     }
 
-    private ValidStoreDiscounts getValidStoreDiscounts(UUID orderId, int storeId, UUID currStaticOrderId, SystemStore systemStore) {
+    private ValidStoreDiscounts getValidStoreDiscounts (UUID orderId, int storeId, UUID currStaticOrderId, SystemStore systemStore) {
         UUID id = (orderId != null) ? orderId : currStaticOrderId;
         ValidStoreDiscounts validDiscounts = orderIdToValidDiscounts.get(id).get(storeId);
         if (validDiscounts.getItemIdToValidStoreDiscounts().size() <= 0) {
             throw new RuntimeException(String.format("There is no valid discount from store %s for order with id: %",
-                    systemStore.getName(),
-                    orderId));
+                                                     systemStore.getName(),
+                                                     orderId));
         }
         return validDiscounts;
     }
 
-    public PlaceOrderResponse placeStaticOrderV2(PlaceOrderRequest request) {
+    public PlaceOrderResponse placeStaticOrderV2 (PlaceOrderRequest request) {
         if (zone == null) {
             throw new FileNotLoadedException();
         }
@@ -200,15 +206,15 @@ public class SDMService {
         Map<PricedItem, Double> pricedItems = getPricedItemFromStaticRequest(request);
         SystemStore systemStore = zone.getSystemStores().get(request.getStoreId());
         LocalDate orderDate = request.getOrderDate();
-        Location orderLocation = customer.getLocation();
+        Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
 
         Order newOrder = ordersCreator.createOrderV2(systemStore, orderDate, orderLocation, pricedItems, null, customer.getId());
 
         return new PlaceOrderResponse(newOrder.getId());
     }
 
-    private SystemCustomer getSystemCustomer(Integer customerId) {
-        Map<Integer, SystemCustomer> systemCustomers = zone.getSystemCustomers();
+    private SystemCustomer getSystemCustomer (UUID customerId) {
+        Map<UUID, SystemCustomer> systemCustomers = sdmDescriptor.getSystemCustomers();
         if (!systemCustomers.containsKey(customerId)) {
             throw new RuntimeException(String.format("There is no customer with id: %s in the system", customerId));
         }
@@ -216,14 +222,23 @@ public class SDMService {
         return systemCustomers.get(customerId);
     }
 
-    public void completeTheOrder(UUID orderId, boolean toConfirmNewDynamicOrder) {
+    private StoresOwner getStoresOwner (UUID storesOwnerId) {
+        Map<UUID, StoresOwner> storesOwners = sdmDescriptor.getStoresOwners();
+        if (!storesOwners.containsKey(storesOwnerId)) {
+            throw new RuntimeException(String.format("There is no stores owner with id: %s in the system", storesOwnerId));
+        }
+
+        return storesOwners.get(storesOwnerId);
+    }
+
+    public void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder) {
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
 
         if (toConfirmNewDynamicOrder) {
-            SystemCustomer systemCustomer = zone.getSystemCustomers().get(tempOrder.getCustomerId());
+            SystemCustomer systemCustomer = sdmDescriptor.getSystemCustomers().get(tempOrder.getCustomerId());
             Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
 
-            staticOrders.forEach((storeDetails, order) -> {
+            staticOrders.forEach( (storeDetails, order) -> {
                 SystemStore systemStore = zone.getSystemStores().get(storeDetails.getId());
 
                 systemUpdater.updateSystemAfterStaticOrderV2(systemStore, order, zone, systemCustomer);
@@ -237,7 +252,7 @@ public class SDMService {
 
     // will update numOfOrders property for chosen system customer in case the temp order is dynamic
     // order
-    private void updateSystemCustomer(UUID orderId, SystemCustomer systemCustomer, Map<StoreDetails, Order> staticOrders) {
+    private void updateSystemCustomer (UUID orderId, SystemCustomer systemCustomer, Map<StoreDetails, Order> staticOrders) {
         Order firstSubOrder = staticOrders.values().iterator().next();
         if (staticOrders.size() > 1 || !firstSubOrder.getId().equals(orderId)) {
             int prevNumOfOrders = systemCustomer.getNumOfOrders();
@@ -245,78 +260,84 @@ public class SDMService {
         }
     }
 
-    public boolean isValidLocation(final int xCoordinate, final int yCoordinate) {
-        Location userLocation = new Location(xCoordinate, yCoordinate);
-        Set<Location> allSystemLocations = zone.getMappableEntities().keySet();
-
-        return !allSystemLocations.contains(userLocation);
+    public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {
+        // Location userLocation = new Location(xCoordinate, yCoordinate);
+        // Set<Location> allSystemLocations = zone.getMappableEntities().keySet();
+        //
+        // return !allSystemLocations.contains(userLocation);
+        return true;
     }
 
-    public PlaceDynamicOrderResponse placeDynamicOrderV2(PlaceDynamicOrderRequest request) {
+    public PlaceDynamicOrderResponse placeDynamicOrderV2 (PlaceDynamicOrderRequest request) {
         if (zone == null) {
             throw new FileNotLoadedException();
         }
 
-        int customerId = request.getCustomerId();
+        UUID customerId = request.getCustomerId();
         SystemCustomer customer = getSystemCustomer(customerId);
-        Location orderLocation = customer.getLocation();
+        Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
         List<SystemItem> systemItemsIncludedInOrder = getItemsFromDynamicOrderRequest(request.getOrderItemToAmount());
         Set<SystemStore> storesIncludedInOrder = getIncludedStoresInOrder(systemItemsIncludedInOrder);
         TempOrder tempDynamicOrder = ordersCreator.createDynamicOrderV2(request,
-                orderLocation,
-                systemItemsIncludedInOrder,
-                storesIncludedInOrder,
-                customerId);
+                                                                        orderLocation,
+                                                                        systemItemsIncludedInOrder,
+                                                                        storesIncludedInOrder,
+                                                                        customerId);
 
         return createPlaceDynamicOrderResponseV2(tempDynamicOrder);
     }
 
-    public void saveOrdersHistoryToFile(String path) {
-        fileManager.saveOrdersHistoryToFile(zone, path);
+    public void saveOrdersHistoryToFile (String path) {
+        fileManager.saveOrdersHistoryToFile(sdmDescriptor, path);
     }
 
-    public void loadOrdersHistoryFromFile(String path) {
+    public void loadSystemHistoryToFile (String path) {
         SystemOrdersHistory systemOrdersHistory = fileManager.loadDataFromFile(path);
+        Map<String, Zone> zones = sdmDescriptor.getZones();
 
-        Map<UUID, List<SystemOrder>> historySystemOrders = systemOrdersHistory.getSystemOrders();
-        systemUpdater.updateSystemAfterLoadingOrdersHistoryFromFile(historySystemOrders, zone);
+        systemOrdersHistory.getZoneOrdersHistories().forEach(zoneOrdersHistory -> {
+            String zoneName = zoneOrdersHistory.getZoneName();
+            if (zones.containsKey(zoneName)) {
+                throw new RuntimeException(String.format("There is no zone with name: '%s' in the system", zoneName));
+            }
+
+            Zone zone = zones.get(zoneName);
+            Map<UUID, List<SystemOrder>> zoneHistoryOrders = zoneOrdersHistory.getSystemOrders();
+            systemUpdater.updateSystemAfterLoadingOrdersHistoryFromFile(zoneHistoryOrders, sdmDescriptor.getSystemCustomers(), zone);
+        });
     }
 
-    private PlaceDynamicOrderResponse createPlaceDynamicOrderResponseV2(TempOrder tempDynamicOrder) {
+    private PlaceDynamicOrderResponse createPlaceDynamicOrderResponseV2 (TempOrder tempDynamicOrder) {
         List<DynamicOrderEntityDTO> dynamicOrderEntityDTOS = tempDynamicOrder.getStaticOrders()
-                .entrySet()
-                .stream()
-                .map(entry -> dtoMapper.toDynamicOrderEntityDTO(entry.getKey(),
-                        entry.getValue()))
-                .collect(Collectors.toList());
+                                                                             .entrySet()
+                                                                             .stream()
+                                                                             .map(entry -> dtoMapper.toDynamicOrderEntityDTO(entry.getKey(),
+                                                                                                                             entry.getValue()))
+                                                                             .collect(Collectors.toList());
 
         return new PlaceDynamicOrderResponse(tempDynamicOrder.getOrderId(), dynamicOrderEntityDTOS);
     }
 
-    private Map<PricedItem, Double> getPricedItemFromStaticRequest(PlaceOrderRequest request) {
+    private Map<PricedItem, Double> getPricedItemFromStaticRequest (PlaceOrderRequest request) {
         return request.getOrderItemToAmount()
-                .keySet()
-                .stream()
-                .map(itemId -> zone.getSystemStores()
-                        .get(request.getStoreId())
-                        .getItemIdToStoreItem()
-                        .get(itemId)
-                        .getPricedItem())
-                .collect(Collectors.toMap(pricedItem -> pricedItem,
-                        pricedItem -> request.getOrderItemToAmount().get(pricedItem.getId())));
+                      .keySet()
+                      .stream()
+                      .map(itemId -> zone.getSystemStores().get(request.getStoreId()).getItemIdToStoreItem().get(itemId).getPricedItem())
+                      .collect(Collectors.toMap(pricedItem -> pricedItem,
+                                                pricedItem -> request.getOrderItemToAmount().get(pricedItem.getId())));
     }
 
-    private List<SystemItem> getItemsFromDynamicOrderRequest(final Map<Integer, Double> orderItemToAmount) {
+    private List<SystemItem> getItemsFromDynamicOrderRequest (final Map<Integer, Double> orderItemToAmount) {
         return orderItemToAmount.keySet().stream().map(itemId -> zone.getSystemItems().get(itemId)).collect(Collectors.toList());
     }
 
-    private Set<SystemStore> getIncludedStoresInOrder(List<SystemItem> itemsToAmount) {
+    private Set<SystemStore> getIncludedStoresInOrder (List<SystemItem> itemsToAmount) {
         return itemsToAmount.stream()
-                .map(systemItem -> zone.getSystemStores().get(systemItem.getStoreSellsInCheapestPrice()))
-                .collect(Collectors.toSet());
+                            .map(systemItem -> zone.getSystemStores().get(systemItem.getStoreSellsInCheapestPrice()))
+                            .collect(Collectors.toSet());
     }
 
-    public void addItemToStore(UpdateStoreRequest request) {
+    public void addItemToStore (UpdateStoreRequest request) {
         Integer itemId = request.getItemId();
         Integer storeId = request.getStoreId();
         Integer itemPrice = request.getItemPrice();
@@ -326,7 +347,7 @@ public class SDMService {
         systemUpdater.addItemToStore(itemId, storeId, itemPrice, systemStores, systemItems);
     }
 
-    public DeleteItemFromStoreResponse deleteItemFromStore(BaseUpdateStoreRequest request) {
+    public DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request) {
         Integer itemId = request.getItemId();
         Integer storeId = request.getStoreId();
         Map<Integer, SystemStore> systemStores = zone.getSystemStores();
@@ -338,7 +359,7 @@ public class SDMService {
         return dtoMapper.createDeleteItemFromStoreResponse(removedDiscounts);
     }
 
-    public void updateItemPrice(UpdateStoreRequest request) {
+    public void updateItemPrice (UpdateStoreRequest request) {
         Integer itemId = request.getItemId();
         Integer storeId = request.getStoreId();
         Integer itemPrice = request.getItemPrice();
@@ -347,6 +368,5 @@ public class SDMService {
 
         systemUpdater.updateItemPrice(itemId, storeId, itemPrice, systemStores, systemItems);
     }
-
 
 }

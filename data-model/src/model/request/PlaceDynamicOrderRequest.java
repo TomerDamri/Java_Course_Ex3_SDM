@@ -2,41 +2,44 @@ package model.request;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 
 public class PlaceDynamicOrderRequest {
-    private int customerId;
+    private UUID customerId;
     private LocalDate orderDate;
     private int xCoordinate;
     private int yCoordinate;
 
-    public PlaceDynamicOrderRequest (int customerId, LocalDate orderDate) {
+    public PlaceDynamicOrderRequest(UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate) {
         this.customerId = customerId;
         this.orderDate = orderDate;
+        this.xCoordinate = xCoordinate;
+        this.yCoordinate = yCoordinate;
     }
 
-    public void setOrderItemToAmount (Map<Integer, Double> orderItemToAmount) {
+    public void setOrderItemToAmount(Map<Integer, Double> orderItemToAmount) {
         this.orderItemToAmount = orderItemToAmount;
     }
 
     private Map<Integer, Double> orderItemToAmount;
 
-    public Map<Integer, Double> getOrderItemToAmount () {
+    public Map<Integer, Double> getOrderItemToAmount() {
         return orderItemToAmount;
     }
 
-    public int getxCoordinate () {
+    public int getxCoordinate() {
         return xCoordinate;
     }
 
-    public int getyCoordinate () {
+    public int getyCoordinate() {
         return yCoordinate;
     }
 
-    public LocalDate getOrderDate () {
+    public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public int getCustomerId () {
+    public UUID getCustomerId() {
         return customerId;
     }
 }

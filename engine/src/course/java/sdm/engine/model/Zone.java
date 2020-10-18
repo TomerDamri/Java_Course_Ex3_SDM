@@ -15,7 +15,11 @@ public class Zone implements Serializable {
     private Map<Integer, SystemItem> systemItems;
     private Map<UUID, List<SystemOrder>> systemOrders;
 
-    public Zone(String zoneName, UUID zoneOwnerId, String zoneOwnerName, Map<Integer, SystemStore> systemStores, Map<Integer, SystemItem> systemItems) {
+    public Zone (String zoneName,
+                 UUID zoneOwnerId,
+                 String zoneOwnerName,
+                 Map<Integer, SystemStore> systemStores,
+                 Map<Integer, SystemItem> systemItems) {
         this.zoneName = zoneName;
         this.zoneOwnerId = zoneOwnerId;
         this.zoneOwnerName = zoneOwnerName;
@@ -24,15 +28,27 @@ public class Zone implements Serializable {
         this.systemOrders = new TreeMap<>();
     }
 
-    public Map<Integer, SystemStore> getSystemStores() {
+    public Map<Integer, SystemStore> getSystemStores () {
         return systemStores;
     }
 
-    public Map<Integer, SystemItem> getSystemItems() {
+    public Map<Integer, SystemItem> getSystemItems () {
         return systemItems;
     }
 
-    public Map<UUID, List<SystemOrder>> getSystemOrders() {
+    public Map<UUID, List<SystemOrder>> getSystemOrders () {
         return systemOrders;
+    }
+
+    public String getZoneName () {
+        return zoneName;
+    }
+
+    public UUID getZoneOwnerId () {
+        return zoneOwnerId;
+    }
+
+    public String getZoneOwnerName () {
+        return zoneOwnerName;
     }
 }

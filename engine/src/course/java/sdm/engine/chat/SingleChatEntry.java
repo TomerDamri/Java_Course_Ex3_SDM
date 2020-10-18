@@ -5,26 +5,26 @@ public class SingleChatEntry {
     private final String username;
     private final long time;
 
-    public SingleChatEntry(String chatString, String username) {
+    public SingleChatEntry (String chatString, String username) {
         this.chatString = chatString;
         this.username = username;
         this.time = System.currentTimeMillis();
     }
 
-    public String getChatString() {
+    public String getChatString () {
         return chatString;
     }
 
-    public long getTime() {
+    public long getTime () {
         return time;
     }
 
-    public String getUsername() {
+    public String getUsername () {
         return username;
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         return (username != null ? username + ": " : "") + chatString;
     }
 }

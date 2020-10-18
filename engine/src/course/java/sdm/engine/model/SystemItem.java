@@ -31,6 +31,10 @@ public class SystemItem implements Serializable {
         return storesCount;
     }
 
+    public void setStoresCount (int storesCount) {
+        this.storesCount = storesCount;
+    }
+
     public Item getItem () {
         return item;
     }
@@ -45,10 +49,6 @@ public class SystemItem implements Serializable {
 
     public Item.PurchaseCategory getPurchaseCategory () {
         return item.getPurchaseCategory();
-    }
-
-    public void setStoresCount (int storesCount) {
-        this.storesCount = storesCount;
     }
 
     public double getAvgPrice () {

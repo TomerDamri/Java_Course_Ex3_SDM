@@ -4,28 +4,9 @@ import java.io.Serializable;
 
 public class Item implements Serializable {
 
-    public enum PurchaseCategory {
-        QUANTITY, WEIGHT;
-
-        private static PurchaseCategory createPurchaseCategory (String purchaseCategoryStr) {
-            switch (purchaseCategoryStr) {
-            case "Quantity":
-                return QUANTITY;
-            case "Weight":
-                return WEIGHT;
-            }
-
-            throw new IllegalArgumentException(String.format("purchase category should be %s or %s and not %s",
-                                                             QUANTITY,
-                                                             WEIGHT,
-                                                             purchaseCategoryStr));
-        }
-    }
-
     private int id;
     private String name;
     private PurchaseCategory purchaseCategory;
-
     public Item (String name, String purchaseCategory, int id) {
         this.id = id;
         this.name = name;
@@ -56,6 +37,24 @@ public class Item implements Serializable {
     public String toString () {
         return "Id: " + id + ",\nName: " + name + ",\nPurchase Category: " + purchaseCategory;
 
+    }
+
+    public enum PurchaseCategory {
+        QUANTITY, WEIGHT;
+
+        private static PurchaseCategory createPurchaseCategory (String purchaseCategoryStr) {
+            switch (purchaseCategoryStr) {
+            case "Quantity":
+                return QUANTITY;
+            case "Weight":
+                return WEIGHT;
+            }
+
+            throw new IllegalArgumentException(String.format("purchase category should be %s or %s and not %s",
+                                                             QUANTITY,
+                                                             WEIGHT,
+                                                             purchaseCategoryStr));
+        }
     }
 
 }

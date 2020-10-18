@@ -2,21 +2,19 @@ package course.java.sdm.engine.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class SystemOrdersHistory implements Serializable {
 
-    private Map<UUID, List<SystemOrder>> systemOrders;
+    private List<ZoneOrdersHistory> zoneOrdersHistories;
 
     public SystemOrdersHistory () {
     }
 
-    public SystemOrdersHistory (Map<UUID, List<SystemOrder>> systemOrders) {
-        this.systemOrders = systemOrders;
+    public SystemOrdersHistory (List<ZoneOrdersHistory> zoneOrdersHistories) {
+        this.zoneOrdersHistories = zoneOrdersHistories;
     }
 
-    public Map<UUID, List<SystemOrder>> getSystemOrders () {
-        return systemOrders;
+    public List<ZoneOrdersHistory> getZoneOrdersHistories () {
+        return zoneOrdersHistories;
     }
 }

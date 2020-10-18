@@ -7,25 +7,25 @@ public class SystemUser {
     private String name;
     private UserType userType;
 
-    public enum UserType {
-        CUSTOMER, STORE_OWNER;
-    }
-
-    public SystemUser(UUID id, String name, UserType userType) {
+    public SystemUser (UUID id, String name, UserType userType) {
         this.id = id;
         this.name = name;
         this.userType = userType;
     }
 
-    public UUID getId() {
+    public UUID getId () {
         return id;
     }
 
-    public String getName() {
+    public String getName () {
         return name;
     }
 
-    public UserType getUserType() {
+    public UserType getUserType () {
         return userType;
+    }
+
+    public enum UserType {
+        CUSTOMER, STORE_OWNER;
     }
 }

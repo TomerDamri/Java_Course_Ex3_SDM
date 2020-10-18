@@ -5,20 +5,16 @@
 // Generated on: 2020.10.17 at 01:12:50 PM IDT 
 //
 
-
 package examples.jaxb.schema.generated;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -50,7 +46,7 @@ public class SDMOffer {
      * Gets the value of the quantity property.
      * 
      */
-    public double getQuantity() {
+    public double getQuantity () {
         return quantity;
     }
 
@@ -58,7 +54,7 @@ public class SDMOffer {
      * Sets the value of the quantity property.
      * 
      */
-    public void setQuantity(double value) {
+    public void setQuantity (double value) {
         this.quantity = value;
     }
 
@@ -66,7 +62,7 @@ public class SDMOffer {
      * Gets the value of the itemId property.
      * 
      */
-    public int getItemId() {
+    public int getItemId () {
         return itemId;
     }
 
@@ -74,7 +70,7 @@ public class SDMOffer {
      * Sets the value of the itemId property.
      * 
      */
-    public void setItemId(int value) {
+    public void setItemId (int value) {
         this.itemId = value;
     }
 
@@ -82,7 +78,7 @@ public class SDMOffer {
      * Gets the value of the forAdditional property.
      * 
      */
-    public int getForAdditional() {
+    public int getForAdditional () {
         return forAdditional;
     }
 
@@ -90,7 +86,7 @@ public class SDMOffer {
      * Sets the value of the forAdditional property.
      * 
      */
-    public void setForAdditional(int value) {
+    public void setForAdditional (int value) {
         this.forAdditional = value;
     }
 
