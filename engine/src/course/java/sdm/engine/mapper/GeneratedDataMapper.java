@@ -23,7 +23,7 @@ public class GeneratedDataMapper {
         return (double) tmp / factor;
     }
 
-    public String generatedZoneToZone (SuperDuperMarketDescriptor.SDMZone sdmZone) {
+    public String getZoneName(SuperDuperMarketDescriptor.SDMZone sdmZone) {
         if (sdmZone == null || sdmZone.getName() == null) {
             return null;
         }

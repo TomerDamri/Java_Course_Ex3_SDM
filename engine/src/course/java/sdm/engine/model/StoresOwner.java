@@ -8,7 +8,7 @@ import java.util.UUID;
 public class StoresOwner {
     private UUID id;
     private String name;
-    private Map<String, List<SystemStore>> zoneToOwnedStores;
+    private Map<String, Map<Integer, SystemStore>> zoneToOwnedStores;
 
     public StoresOwner (UUID id, String name) {
         this.id = id;
@@ -24,7 +24,7 @@ public class StoresOwner {
         return name;
     }
 
-    public Map<String, List<SystemStore>> getZoneToOwnedStores () {
+    public Map<String, Map<Integer, SystemStore>> getZoneToOwnedStores() {
         return zoneToOwnedStores;
     }
 }

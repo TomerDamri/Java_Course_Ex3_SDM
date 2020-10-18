@@ -16,6 +16,11 @@ public class SDMControllerImpl implements ISDMController {
     private SDMService service = new SDMService();
 
     @Override
+    public UUID addUserToSystem (String username, User.UserType userType) {
+        return service.addUserToSystem(username, userType);
+    }
+
+    @Override
     public void loadFile (Part part, UUID storesOwnerID) throws IOException {
         service.loadData(part, storesOwnerID);
     }
@@ -55,10 +60,10 @@ public class SDMControllerImpl implements ISDMController {
         return service.isValidLocation(xCoordinate, yCoordinate);
     }
 
-    @Override
-    public GetMapEntitiesResponse getSystemMappableEntities () {
-        return service.getSystemMappableEntities();
-    }
+//    @Override
+//    public GetMapEntitiesResponse getSystemMappableEntities () {
+//        return service.getSystemMappableEntities();
+//    }
 
     @Override
     public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {
@@ -108,11 +113,6 @@ public class SDMControllerImpl implements ISDMController {
     @Override
     public DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request) {
         return service.deleteItemFromStore(request);
-    }
-
-    @Override
-    public UUID addUserToSystem (String username, User.UserType userType) {
-        return service.addUserToSystem(username, userType);
     }
 
     @Override
