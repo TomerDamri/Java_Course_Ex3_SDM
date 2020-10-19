@@ -134,4 +134,9 @@ public class SDMControllerImpl implements ISDMController {
     public GetZonesResponse getZones () {
         return service.getZones();
     }
+
+    @Override
+    public GetZoneResponse getZone (String zoneName) {
+        return service.getZone(zoneName);
+    }
 }

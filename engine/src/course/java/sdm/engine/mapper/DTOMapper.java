@@ -184,6 +184,16 @@ public class DTOMapper {
                                          order.getItemsPrice());
     }
 
+    public GetZoneResponse toGetZoneResponse (Zone zone) {
+        Map<Integer, SystemItemDTO> items = toDTO(zone.getSystemItems(),
+                                                  this::toSystemItemDTO,
+                                                  SystemItemDTO::getId,
+                                                  systemItemDTO -> systemItemDTO);
+        Map<Integer, StoreDTO> stores = toDTO(zone.getSystemStores(), this::toStoreDTO, StoreDTO::getId, storeDTO -> storeDTO);
+
+        return new GetZoneResponse(stores, items);
+    }
+
     public GetStoresResponse toGetStoresResponse (Map<Integer, SystemStore> systemStores) {
         Map<Integer, StoreDTO> stores = toDTO(systemStores, this::toStoreDTO, StoreDTO::getId, storeDTO -> storeDTO);
 

@@ -59,4 +59,6 @@ public interface ISDMController {
     public boolean isUserExists (String username);
 
     public GetZonesResponse getZones ();
+
+    public GetZoneResponse getZone (String zoneName);
 }

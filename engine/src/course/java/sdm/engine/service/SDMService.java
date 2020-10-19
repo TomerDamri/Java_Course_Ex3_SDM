@@ -77,6 +77,15 @@ public class SDMService {
         return dtoMapper.toGetStoresResponse(zone.getSystemStores());
     }
 
+    public GetZoneResponse getZone (String zoneName) {
+        Map<String, Zone> zones = sdmDescriptor.getZones();
+        if (zones.containsKey(zoneName)) {
+            throw new RuntimeException(String.format("No zone with name %s exist in the system", zoneName));
+        }
+
+        return dtoMapper.toGetZoneResponse(zones.get(zoneName));
+    }
+
     public GetCustomersResponse getCustomers () {
         // if (zone == null) {
         // throw new FileNotLoadedException();
