@@ -6,6 +6,7 @@ import java.util.Map;
 public class StoreDTO {
     private final int id;
     private final String name;
+    private final String storeOwnerName;
     private final int deliveryPpk;
     private final LocationDTO location;
     private final Map<Integer, StoreItemDTO> items;
@@ -13,7 +14,8 @@ public class StoreDTO {
     private final double totalDeliveriesPayment;
     private final List<DiscountDTO> storeDiscounts;
 
-    public StoreDTO (int id,
+    public StoreDTO (String storeOwnerName,
+                     int id,
                      String name,
                      int deliveryPpk,
                      LocationDTO locationDTO,
@@ -21,6 +23,7 @@ public class StoreDTO {
                      List<StoreOrderDTO> orders,
                      double totalDeliveriesPayment,
                      List<DiscountDTO> storeDiscounts) {
+        this.storeOwnerName = storeOwnerName;
         this.id = id;
         this.name = name;
         this.deliveryPpk = deliveryPpk;
@@ -61,6 +64,10 @@ public class StoreDTO {
 
     public double getTotalDeliveriesPayment () {
         return totalDeliveriesPayment;
+    }
+
+    public String getStoreOwnerName () {
+        return storeOwnerName;
     }
 
     @Override

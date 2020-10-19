@@ -248,7 +248,8 @@ public class DTOMapper {
                                                             .map(discount -> toDiscountDTO(discount, systemStore))
                                                             .collect(Collectors.toList());
 
-        return new StoreDTO(systemStore.getId(),
+        return new StoreDTO(systemStore.getStoreOwnerName(),
+                            systemStore.getId(),
                             systemStore.getName(),
                             systemStore.getDeliveryPpk(),
                             toLocationDTO(systemStore.getLocation()),

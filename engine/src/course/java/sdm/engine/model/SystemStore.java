@@ -8,12 +8,14 @@ import java.util.Map;
 
 public class SystemStore implements Serializable, Mappable {
 
+    private String storeOwnerName;
     private Store store;
     private List<Order> orders;
     private double totalDeliveriesPayment = 0;
 
-    public SystemStore (Store store) {
+    public SystemStore (Store store, String storeOwnerName) {
         this.store = store;
+        this.storeOwnerName = storeOwnerName;
         this.orders = new ArrayList<>();
     }
 
@@ -43,6 +45,10 @@ public class SystemStore implements Serializable, Mappable {
 
     public Location getLocation () {
         return store.getLocation();
+    }
+
+    public String getStoreOwnerName () {
+        return storeOwnerName;
     }
 
     public Map<Integer, StoreItem> getItemIdToStoreItem () {
