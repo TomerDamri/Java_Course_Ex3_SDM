@@ -60,10 +60,10 @@ public class SDMControllerImpl implements ISDMController {
         return service.isValidLocation(xCoordinate, yCoordinate);
     }
 
-//    @Override
-//    public GetMapEntitiesResponse getSystemMappableEntities () {
-//        return service.getSystemMappableEntities();
-//    }
+    // @Override
+    // public GetMapEntitiesResponse getSystemMappableEntities () {
+    // return service.getSystemMappableEntities();
+    // }
 
     @Override
     public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {
@@ -130,4 +130,8 @@ public class SDMControllerImpl implements ISDMController {
         return service.isUserExists(username);
     }
 
+    @Override
+    public GetZonesResponse getZones () {
+        return service.getZones();
+    }
 }

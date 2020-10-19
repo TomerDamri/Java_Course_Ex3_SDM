@@ -46,6 +46,15 @@ public class SDMService {
         return dtoMapper.toGetUsersResponse(users);
     }
 
+    public GetZonesResponse getZones () {
+        Collection<Zone> zones = sdmDescriptor.getZones().values();
+        if (zones.isEmpty()) {
+            throw new RuntimeException("No zone exists in the system");
+        }
+
+        return dtoMapper.toGetZonesResponse(zones);
+    }
+
     public boolean isUserExists (String username) {
         return userManager.isUserExists(username);
     }
@@ -57,11 +66,6 @@ public class SDMService {
         systemUpdater.updateSystemAfterLoadingZoneFile(sdmDescriptor, newZone, storesOwner);
     }
 
-    // public void loadData (String xmlDataFileStr) throws FileNotFoundException {
-    // SuperDuperMarketDescriptor superDuperMarketDescriptor =
-    // fileManager.generateDataFromXmlFile(xmlDataFileStr);
-    // this.descriptor = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor);
-    // }
     public boolean isFileLoaded () {
         return zone != null;
     }

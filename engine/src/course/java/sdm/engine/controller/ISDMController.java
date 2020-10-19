@@ -34,7 +34,7 @@ public interface ISDMController {
 
     boolean isValidLocation (final int xCoordinate, final int yCoordinate);
 
-//    GetMapEntitiesResponse getSystemMappableEntities ();
+    // GetMapEntitiesResponse getSystemMappableEntities ();
 
     PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request);
 
@@ -57,4 +57,6 @@ public interface ISDMController {
     public Set<User> getUsers ();
 
     public boolean isUserExists (String username);
+
+    public GetZonesResponse getZones ();
 }

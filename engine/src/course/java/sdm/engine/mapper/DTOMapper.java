@@ -130,6 +130,31 @@ public class DTOMapper {
         return systemUsers.stream().map(this::toUser).collect(Collectors.toSet());
     }
 
+    public GetZonesResponse toGetZonesResponse (Collection<Zone> systemZones) {
+        List<ZoneDTO> zones = systemZones.stream().map(zone -> {
+            Map<UUID, List<SystemOrder>> systemOrders = zone.getSystemOrders();
+            double sumOrdersPrice = systemOrders.values()
+                                                .stream()
+                                                .map(subOrders -> subOrders.stream()
+                                                                           .map(SystemOrder::getItemsPrice)
+                                                                           .mapToDouble(Double::doubleValue)
+                                                                           .sum())
+                                                .mapToDouble(Double::doubleValue)
+                                                .sum();
+            int numOfOrders = systemOrders.size();
+            Double avgOrdersPrice = GeneratedDataMapper.round(sumOrdersPrice / numOfOrders, 2);
+
+            return new ZoneDTO(zone.getZoneOwnerName(),
+                               zone.getZoneName(),
+                               zone.getSystemItems().size(),
+                               zone.getSystemStores().size(),
+                               numOfOrders,
+                               avgOrdersPrice);
+        }).collect(Collectors.toList());
+
+        return new GetZonesResponse(zones);
+    }
+
     private User toUser (SystemUser systemUser) {
         return new User(systemUser.getId(), systemUser.getName(), toUserType(systemUser.getUserType()));
     }
