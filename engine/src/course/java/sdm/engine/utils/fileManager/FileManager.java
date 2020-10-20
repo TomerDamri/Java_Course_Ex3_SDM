@@ -35,20 +35,6 @@ public class FileManager {
         return singletonFileManager;
     }
 
-    // public SuperDuperMarketDescriptor generateDataFromXmlFile (String xml_file_path) throws
-    // FileNotFoundException {
-    // FILE_MANAGER_VALIDATOR.validateFile(xml_file_path);
-    // InputStream inputStream = new FileInputStream(new File(xml_file_path));
-    // SuperDuperMarketDescriptor superDuperMarketDescriptor = null;
-    // try {
-    // superDuperMarketDescriptor = deserializeFrom(inputStream);
-    // }
-    // catch (JAXBException e) {
-    // e.printStackTrace();
-    // }
-    // return superDuperMarketDescriptor;
-    // }
-
     public SuperDuperMarketDescriptor generateDataFromXmlFile (Part part) throws FileNotFoundException {
         FILE_MANAGER_VALIDATOR.validateFile(getFileName(part));
         SuperDuperMarketDescriptor superDuperMarketDescriptor = null;
@@ -61,12 +47,14 @@ public class FileManager {
         return superDuperMarketDescriptor;
     }
 
-    public Zone loadDataFromGeneratedData (SuperDuperMarketDescriptor superDuperMarketDescriptor, StoresOwner storesOwner) {
+    public Zone loadDataFromGeneratedData (SuperDuperMarketDescriptor superDuperMarketDescriptor,
+                                           StoresOwner storesOwner,
+                                           SDMDescriptor sdmDescriptor) {
         Map<Integer, Item> items = GENERATED_DATA_MAPPER.generatedItemsToItems(superDuperMarketDescriptor.getSDMItems());
         // TODO: 02/09/2020 - add discounts to stores
         Map<Integer, Store> stores = GENERATED_DATA_MAPPER.generatedStoresToStores(superDuperMarketDescriptor.getSDMStores(), items);
-        String zoneName = GENERATED_DATA_MAPPER.generatedZoneToZone(superDuperMarketDescriptor.getSDMZone());
-        FILE_MANAGER_VALIDATOR.validateItemsAndStores(items, stores);
+        String zoneName = GENERATED_DATA_MAPPER.getZoneName(superDuperMarketDescriptor.getSDMZone());
+        FILE_MANAGER_VALIDATOR.validateItemsAndStores(items, stores, zoneName, sdmDescriptor);
 
         return GENERATED_DATA_MAPPER.toZone(items, stores, zoneName, storesOwner);
     }

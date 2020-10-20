@@ -23,7 +23,7 @@ public class GeneratedDataMapper {
         return (double) tmp / factor;
     }
 
-    public String generatedZoneToZone (SuperDuperMarketDescriptor.SDMZone sdmZone) {
+    public String getZoneName (SuperDuperMarketDescriptor.SDMZone sdmZone) {
         if (sdmZone == null || sdmZone.getName() == null) {
             return null;
         }
@@ -50,7 +50,7 @@ public class GeneratedDataMapper {
         ArrayList<Store> storesList = new ArrayList<>(stores.values());
         Map<Integer, SystemStore> systemStores = generatedListToMap(storesList,
                                                                     Store::getId,
-                                                                    SystemStore::new,
+                                                                    (store) -> new SystemStore(store, storesOwner.getName()),
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
 

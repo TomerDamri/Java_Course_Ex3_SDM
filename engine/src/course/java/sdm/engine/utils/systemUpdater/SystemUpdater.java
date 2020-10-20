@@ -80,6 +80,27 @@ public class SystemUpdater {
         return new DeleteItemResult(removedStoreItem, removedDiscounts);
     }
 
+    public void updateSystemAfterLoadingZoneFile (SDMDescriptor sdmDescriptor, Zone newZone, StoresOwner storesOwner) {
+        addZoneLocationsToSystem(newZone, sdmDescriptor.getSystemLocations());
+        addZoneToSystem(newZone, sdmDescriptor.getZones());
+        addSystemStoresToStoresOwner(storesOwner, newZone.getZoneName(), newZone.getSystemStores());
+    }
+
+    private void addZoneLocationsToSystem (Zone newZone, Map<Location, SystemStore> systemLocations) {
+        // adding all zone stores locations
+        newZone.getSystemStores().values().forEach(systemStore -> systemLocations.put(systemStore.getLocation(), systemStore));
+    }
+
+    private void addZoneToSystem (Zone newZone, Map<String, Zone> systemZones) {
+        // adding zone to system
+        systemZones.put(newZone.getZoneName(), newZone);
+    }
+
+    private void addSystemStoresToStoresOwner (StoresOwner storesOwner, String newZoneName, Map<Integer, SystemStore> zoneStores) {
+        // adding zone stores to stores owner
+        storesOwner.getZoneToOwnedStores().put(newZoneName, zoneStores);
+    }
+
     private void validateExistenceInSystem (Integer itemId,
                                             Integer storeId,
                                             Map<Integer, SystemStore> systemStores,

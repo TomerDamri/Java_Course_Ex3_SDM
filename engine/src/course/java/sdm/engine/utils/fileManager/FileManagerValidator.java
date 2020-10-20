@@ -1,7 +1,5 @@
 package course.java.sdm.engine.utils.fileManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,19 +10,19 @@ import course.java.sdm.engine.exceptions.DuplicateEntityException;
 import course.java.sdm.engine.exceptions.IllegalFileExtensionException;
 import course.java.sdm.engine.exceptions.ItemNotExist;
 import course.java.sdm.engine.exceptions.NotFoundException;
-import course.java.sdm.engine.model.Item;
-import course.java.sdm.engine.model.Location;
-import course.java.sdm.engine.model.Store;
+import course.java.sdm.engine.model.*;
 
 public class FileManagerValidator {
     private static final String XML_EXTENSION = ".xml";
 
-    public void validateFile (String filePath) throws FileNotFoundException {
+    public void validateFile (String filePath) {
         validateFileExtension(filePath);
-        // validateFileExists(filePath);
     }
 
-    public void validateItemsAndStores (Map<Integer, Item> items, Map<Integer, Store> stores) {
+    public void validateItemsAndStores (Map<Integer, Item> items,
+                                        Map<Integer, Store> stores,
+                                        String zoneName,
+                                        SDMDescriptor sdmDescriptor) {
         Set<Integer> itemsIds = items.keySet();
         Set<Integer> suppliedItemsIds = new HashSet<>();
 
@@ -38,16 +36,22 @@ public class FileManagerValidator {
         validateAllItemsSupplied(itemsIds, suppliedItemsIds);
 
         // validate stores location are unique
-        validateAllLocations(stores);
+        validateAllLocations(stores, sdmDescriptor.getSystemLocations());
+
+        // validate unique zone name
+        validateZoneName(sdmDescriptor.getZones(), zoneName);
     }
 
-    private Set<Location> validateAllLocations (Map<Integer, Store> stores) {
-        Set<Location> allSystemLocations = new HashSet<>();
+    private void validateZoneName (Map<String, Zone> zones, String newZoneName) {
+        if (zones.containsKey(newZoneName)) {
+            throw new RuntimeException(String.format("The zone name '%s' already exist in the system", newZoneName));
+        }
+    }
+
+    private void validateAllLocations (Map<Integer, Store> stores, Map<Location, SystemStore> systemLocations) {
+        Set<Location> allSystemLocations = systemLocations.keySet();
 
         validateLocations(stores.values(), Store::getLocation, allSystemLocations);
-        // validateLocations(customers, Customer::getLocation, allSystemLocations);
-
-        return allSystemLocations;
     }
 
     private <T> void validateLocations (Collection<T> entityCollection,
@@ -62,13 +66,6 @@ public class FileManagerValidator {
         }
 
         allSystemLocations.add(location);
-    }
-
-    private void validateFileExists (String filePath) throws FileNotFoundException {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new FileNotFoundException(String.format("The file : %s doesn't exist", filePath));
-        }
     }
 
     private Set<Integer> validateStoreItemsExist (Set<Integer> itemsIds, Store store) {

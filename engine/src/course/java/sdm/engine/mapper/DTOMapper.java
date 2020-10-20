@@ -130,6 +130,31 @@ public class DTOMapper {
         return systemUsers.stream().map(this::toUser).collect(Collectors.toSet());
     }
 
+    public GetZonesResponse toGetZonesResponse (Collection<Zone> systemZones) {
+        List<ZoneDTO> zones = systemZones.stream().map(zone -> {
+            Map<UUID, List<SystemOrder>> systemOrders = zone.getSystemOrders();
+            double sumOrdersPrice = systemOrders.values()
+                                                .stream()
+                                                .map(subOrders -> subOrders.stream()
+                                                                           .map(SystemOrder::getItemsPrice)
+                                                                           .mapToDouble(Double::doubleValue)
+                                                                           .sum())
+                                                .mapToDouble(Double::doubleValue)
+                                                .sum();
+            int numOfOrders = systemOrders.size();
+            Double avgOrdersPrice = GeneratedDataMapper.round(sumOrdersPrice / numOfOrders, 2);
+
+            return new ZoneDTO(zone.getZoneOwnerName(),
+                               zone.getZoneName(),
+                               zone.getSystemItems().size(),
+                               zone.getSystemStores().size(),
+                               numOfOrders,
+                               avgOrdersPrice);
+        }).collect(Collectors.toList());
+
+        return new GetZonesResponse(zones);
+    }
+
     private User toUser (SystemUser systemUser) {
         return new User(systemUser.getId(), systemUser.getName(), toUserType(systemUser.getUserType()));
     }
@@ -157,6 +182,16 @@ public class DTOMapper {
                                          order.getAmountOfItems(),
                                          order.getDeliveryPrice(),
                                          order.getItemsPrice());
+    }
+
+    public GetZoneResponse toGetZoneResponse (Zone zone) {
+        Map<Integer, SystemItemDTO> items = toDTO(zone.getSystemItems(),
+                                                  this::toSystemItemDTO,
+                                                  SystemItemDTO::getId,
+                                                  systemItemDTO -> systemItemDTO);
+        Map<Integer, StoreDTO> stores = toDTO(zone.getSystemStores(), this::toStoreDTO, StoreDTO::getId, storeDTO -> storeDTO);
+
+        return new GetZoneResponse(stores, items);
     }
 
     public GetStoresResponse toGetStoresResponse (Map<Integer, SystemStore> systemStores) {
@@ -213,7 +248,8 @@ public class DTOMapper {
                                                             .map(discount -> toDiscountDTO(discount, systemStore))
                                                             .collect(Collectors.toList());
 
-        return new StoreDTO(systemStore.getId(),
+        return new StoreDTO(systemStore.getStoreOwnerName(),
+                            systemStore.getId(),
                             systemStore.getName(),
                             systemStore.getDeliveryPpk(),
                             toLocationDTO(systemStore.getLocation()),

@@ -10,11 +10,13 @@ public class SDMDescriptor {
     private Map<UUID, SystemCustomer> idToSystemCustomerMap;
     private Map<UUID, StoresOwner> idToStoreOwnerMap;
     private Map<String, Zone> zoneNameToZone;
+    private Map<Location, SystemStore> allSystemLocations;
 
     public SDMDescriptor () {
         this.idToStoreOwnerMap = new HashMap<>();
         this.idToSystemCustomerMap = new HashMap<>();
         this.zoneNameToZone = new TreeMap<>();
+        this.allSystemLocations = new HashMap<>();
     }
 
     public Map<UUID, SystemCustomer> getSystemCustomers () {
@@ -27,5 +29,9 @@ public class SDMDescriptor {
 
     public Map<String, Zone> getZones () {
         return zoneNameToZone;
+    }
+
+    public Map<Location, SystemStore> getSystemLocations() {
+        return allSystemLocations;
     }
 }

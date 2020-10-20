@@ -46,6 +46,15 @@ public class SDMService {
         return dtoMapper.toGetUsersResponse(users);
     }
 
+    public GetZonesResponse getZones () {
+        Collection<Zone> zones = sdmDescriptor.getZones().values();
+        if (zones.isEmpty()) {
+            throw new RuntimeException("No zone exists in the system");
+        }
+
+        return dtoMapper.toGetZonesResponse(zones);
+    }
+
     public boolean isUserExists (String username) {
         return userManager.isUserExists(username);
     }
@@ -53,15 +62,10 @@ public class SDMService {
     public void loadData (Part part, UUID storesOwnerID) throws IOException {
         StoresOwner storesOwner = getStoresOwner(storesOwnerID);
         SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(part);
-        Zone newZone = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor, storesOwner);
-        sdmDescriptor.getZones().put(newZone.getZoneName(), newZone);
+        Zone newZone = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor, storesOwner, sdmDescriptor);
+        systemUpdater.updateSystemAfterLoadingZoneFile(sdmDescriptor, newZone, storesOwner);
     }
 
-    // public void loadData (String xmlDataFileStr) throws FileNotFoundException {
-    // SuperDuperMarketDescriptor superDuperMarketDescriptor =
-    // fileManager.generateDataFromXmlFile(xmlDataFileStr);
-    // this.descriptor = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor);
-    // }
     public boolean isFileLoaded () {
         return zone != null;
     }
@@ -71,6 +75,15 @@ public class SDMService {
             throw new FileNotLoadedException();
         }
         return dtoMapper.toGetStoresResponse(zone.getSystemStores());
+    }
+
+    public GetZoneResponse getZone (String zoneName) {
+        Map<String, Zone> zones = sdmDescriptor.getZones();
+        if (zones.containsKey(zoneName)) {
+            throw new RuntimeException(String.format("No zone with name %s exist in the system", zoneName));
+        }
+
+        return dtoMapper.toGetZoneResponse(zones.get(zoneName));
     }
 
     public GetCustomersResponse getCustomers () {
@@ -84,14 +97,14 @@ public class SDMService {
         return null;
     }
 
-    public GetMapEntitiesResponse getSystemMappableEntities () {
-        // if (zone == null) {
-        // throw new FileNotLoadedException();
-        // }
-        //
-        // return dtoMapper.toGetSystemMappableEntitiesResponse(zone.getMappableEntities().values());
-        return null;
-    }
+    // public GetMapEntitiesResponse getSystemMappableEntities () {
+    // // if (zone == null) {
+    // // throw new FileNotLoadedException();
+    // // }
+    // //
+    // // return dtoMapper.toGetSystemMappableEntitiesResponse(zone.getMappableEntities().values());
+    // return null;
+    // }
 
     public GetItemsResponse getItems () {
         if (zone == null) {
@@ -261,11 +274,13 @@ public class SDMService {
     }
 
     public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {
-        // Location userLocation = new Location(xCoordinate, yCoordinate);
-        // Set<Location> allSystemLocations = zone.getMappableEntities().keySet();
-        //
-        // return !allSystemLocations.contains(userLocation);
-        return true;
+        Location userLocation = new Location(xCoordinate, yCoordinate);
+
+        return isValidLocation(userLocation);
+    }
+
+    public boolean isValidLocation (Location userLocation) {
+        return !sdmDescriptor.getSystemLocations().containsKey(userLocation);
     }
 
     public PlaceDynamicOrderResponse placeDynamicOrderV2 (PlaceDynamicOrderRequest request) {
@@ -274,7 +289,6 @@ public class SDMService {
         }
 
         UUID customerId = request.getCustomerId();
-        SystemCustomer customer = getSystemCustomer(customerId);
         Location orderLocation = new Location(request.getxCoordinate(), request.getyCoordinate());
         List<SystemItem> systemItemsIncludedInOrder = getItemsFromDynamicOrderRequest(request.getOrderItemToAmount());
         Set<SystemStore> storesIncludedInOrder = getIncludedStoresInOrder(systemItemsIncludedInOrder);
