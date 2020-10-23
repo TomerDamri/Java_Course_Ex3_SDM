@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Super Duper Market</title>
+
+    <!-- Link the Bootstrap (from twitter) CSS framework in order to use its classes-->
+    <link rel="stylesheet" href="../../common/bootstrap.min.css">
+    <script src="../../common/jquery-2.0.3.min.js"></script>
+    <script src="selectedZone.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Link jQuery JavaScript library in order to use the $ (jQuery) method-->
+    <!-- <script src="common/jquery-2.0.3.min.js"></script>-->
+    <!-- and\or any other scripts you might need to operate the JSP file behind the scene once it arrives to the client-->
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-9 text-center">
+            <h1 id="zone">zone</h1>
+        </div>
+        <div class="col-xs-3">
+            <div class="row">
+                <p id="logged_in_user"></p>
+            </div>
+            <div class="row">
+                <a href="../salesAreas/salesAreas.html">Back</a>
+            </div>
+            <div class="row">
+                <a href="../../chat/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="items-accordion" class="latestinfo panel-group col-xs-6" role="tablist" aria-multiselectable="true">
+            Items
+        </div>
+        <div id="stores-accordion" class="panel-group col-xs-6" role="tablist" aria-multiselectable="true">
+            Stores
+        </div>
+    </div>
+</div>
+</body>
+</html>

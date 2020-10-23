@@ -1,16 +1,16 @@
 package course.java.sdm.engine.utils.fileManager;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
 import course.java.sdm.engine.exceptions.DuplicateEntityException;
 import course.java.sdm.engine.exceptions.IllegalFileExtensionException;
 import course.java.sdm.engine.exceptions.ItemNotExist;
 import course.java.sdm.engine.exceptions.NotFoundException;
 import course.java.sdm.engine.model.*;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 public class FileManagerValidator {
     private static final String XML_EXTENSION = ".xml";
@@ -49,7 +49,7 @@ public class FileManagerValidator {
     }
 
     private void validateAllLocations (Map<Integer, Store> stores, Map<Location, SystemStore> systemLocations) {
-        Set<Location> allSystemLocations = systemLocations.keySet();
+        Set<Location> allSystemLocations = new HashSet<>(systemLocations.keySet());
 
         validateLocations(stores.values(), Store::getLocation, allSystemLocations);
     }

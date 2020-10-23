@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import javax.servlet.http.Part;
 
-import course.java.sdm.engine.users.User;
+import model.User;
 import model.request.*;
 import model.response.*;
 

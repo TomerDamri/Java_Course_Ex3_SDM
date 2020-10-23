@@ -1,16 +1,15 @@
 package course.java.sdm.engine.controller.impl;
 
+import course.java.sdm.engine.controller.ISDMController;
+import course.java.sdm.engine.service.SDMService;
+import model.User;
+import model.request.*;
+import model.response.*;
+
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.servlet.http.Part;
-
-import course.java.sdm.engine.controller.ISDMController;
-import course.java.sdm.engine.service.SDMService;
-import course.java.sdm.engine.users.User;
-import model.request.*;
-import model.response.*;
 
 public class SDMControllerImpl implements ISDMController {
     private SDMService service = new SDMService();
@@ -137,6 +136,6 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public GetZoneResponse getZone (String zoneName) {
-        return service.getZone(zoneName);
+         return service.getZone(zoneName);
     }
 }

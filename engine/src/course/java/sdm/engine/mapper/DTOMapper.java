@@ -1,14 +1,13 @@
 package course.java.sdm.engine.mapper;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import course.java.sdm.engine.model.*;
-import course.java.sdm.engine.users.User;
 import model.*;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DTOMapper {
 
@@ -191,7 +190,7 @@ public class DTOMapper {
                                                   systemItemDTO -> systemItemDTO);
         Map<Integer, StoreDTO> stores = toDTO(zone.getSystemStores(), this::toStoreDTO, StoreDTO::getId, storeDTO -> storeDTO);
 
-        return new GetZoneResponse(stores, items);
+        return new GetZoneResponse(new ArrayList<>(stores.values()), new ArrayList<>(items.values()));
     }
 
     public GetStoresResponse toGetStoresResponse (Map<Integer, SystemStore> systemStores) {
@@ -253,7 +252,7 @@ public class DTOMapper {
                             systemStore.getName(),
                             systemStore.getDeliveryPpk(),
                             toLocationDTO(systemStore.getLocation()),
-                            items,
+                            new ArrayList<>(items.values()),
                             systemStore.getOrders().stream().map(this::toStoreOrderDTO).collect(Collectors.toList()),
                             systemStore.getTotalDeliveriesPayment(),
                             storeDiscountsDTO);

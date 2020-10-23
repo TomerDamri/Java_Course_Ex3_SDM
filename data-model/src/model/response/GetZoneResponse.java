@@ -1,25 +1,26 @@
 package model.response;
 
-import java.util.Map;
 
 import model.StoreDTO;
 import model.SystemItemDTO;
 
+import java.util.List;
+
 public class GetZoneResponse {
 
-    private Map<Integer, StoreDTO> stores;
-    private Map<Integer, SystemItemDTO> items;
+    private List<StoreDTO> stores;
+    private List<SystemItemDTO> items;
 
-    public GetZoneResponse (Map<Integer, StoreDTO> stores, Map<Integer, SystemItemDTO> items) {
+    public GetZoneResponse(List<StoreDTO> stores, List<SystemItemDTO> items) {
         this.stores = stores;
         this.items = items;
     }
 
-    public Map<Integer, StoreDTO> getStores () {
+    public List<StoreDTO> getStores() {
         return stores;
     }
 
-    public Map<Integer, SystemItemDTO> getItems () {
+    public List<SystemItemDTO> getItems() {
         return items;
     }
 }

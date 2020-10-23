@@ -1,6 +1,7 @@
 
 $(function() { // onload...do
     //add a function to the submit event
+    window.localStorage.clear();
     $("#loginForm").submit(function() {
         $.ajax({
             data: $(this).serialize(),
@@ -10,8 +11,17 @@ $(function() { // onload...do
                 console.error("Failed to login !");
                 $("#error-placeholder").append(errorObject.responseText)
             },
-            success: function(nextPageUrl) {
-                window.location.replace(nextPageUrl);
+            /* response = {
+        nextPageURL = nextPageURL,
+        userId = userId,
+        username = username,
+        userType = userType}*/
+            success: function(response) {
+                window.localStorage.setItem('userType', response.userType);
+                window.localStorage.setItem('username', response.username);
+                window.localStorage.setItem('userId', response.userId);
+
+                window.location.replace(response.nextPageURL);
             }
         });
 

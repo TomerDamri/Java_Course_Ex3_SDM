@@ -1,24 +1,23 @@
 package course.java.sdm.engine.service;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.Part;
-
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
-import course.java.sdm.engine.users.User;
 import course.java.sdm.engine.users.UserManager;
 import course.java.sdm.engine.utils.fileManager.FileManager;
 import course.java.sdm.engine.utils.ordersCreator.OrdersCreator;
 import course.java.sdm.engine.utils.systemUpdater.SystemUpdater;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
 import model.DynamicOrderEntityDTO;
+import model.User;
 import model.request.*;
 import model.response.*;
+
+import javax.servlet.http.Part;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SDMService {
 
@@ -79,7 +78,7 @@ public class SDMService {
 
     public GetZoneResponse getZone (String zoneName) {
         Map<String, Zone> zones = sdmDescriptor.getZones();
-        if (zones.containsKey(zoneName)) {
+        if (!zones.containsKey(zoneName)) {
             throw new RuntimeException(String.format("No zone with name %s exist in the system", zoneName));
         }
 

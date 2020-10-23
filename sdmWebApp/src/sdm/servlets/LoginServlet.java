@@ -1,21 +1,20 @@
 package sdm.servlets;
 
-import static sdm.constants.Constants.USERNAME;
-import static sdm.constants.Constants.USER_ROLE;
-
-import java.io.IOException;
-import java.util.UUID;
+import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import model.User;
+import sdm.constants.Constants;
+import sdm.utils.ServletUtils;
+import sdm.utils.SessionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.UUID;
 
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
-import course.java.sdm.engine.users.User;
-import sdm.constants.Constants;
-import sdm.utils.ServletUtils;
-import sdm.utils.SessionUtils;
+import static sdm.constants.Constants.USERNAME;
+import static sdm.constants.Constants.USER_ROLE;
 
 public class LoginServlet extends HttpServlet {
 

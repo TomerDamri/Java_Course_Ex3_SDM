@@ -1,21 +1,23 @@
 package sdm.servlets;
 
-import static sdm.constants.Constants.USERNAME;
-import static sdm.constants.Constants.USER_ROLE;
-
-import java.io.IOException;
-import java.util.UUID;
+import com.google.gson.Gson;
+import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import model.User;
+import model.response.LoginResponse;
+import sdm.constants.Constants;
+import sdm.utils.ServletUtils;
+import sdm.utils.SessionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.UUID;
 
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
-import course.java.sdm.engine.users.User;
-import sdm.constants.Constants;
-import sdm.utils.ServletUtils;
-import sdm.utils.SessionUtils;
+import static sdm.constants.Constants.USERNAME;
+import static sdm.constants.Constants.USER_ROLE;
 
 public class LightweightLoginServlet extends HttpServlet {
 
@@ -26,25 +28,21 @@ public class LightweightLoginServlet extends HttpServlet {
     // context path
     // ( can be fetched from request.getContextPath() ) and then the 'absolute' path from it.
     // Each method with it's pros and cons...
-    private final String CHAT_ROOM_URL = "../salesAreas/salesAreas.html";
+    private final String SALES_AREAS_URL = "../salesAreas/salesAreas.html";
     private final String SIGN_UP_URL = "../signup/signup.html";
     private final String LOGIN_ERROR_URL = "/pages/loginerror/login_attempt_after_error.jsp"; // must start with '/' since will be used in
-                                                                                              // request dispatcher...
+    // request dispatcher...
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
-     * @param request
-     *        servlet request
-     * @param response
-     *        servlet response
-     * @throws ServletException
-     *         if a servlet-specific error occurs
-     * @throws IOException
-     *         if an I/O error occurs
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
      */
-    protected void processRequest (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/plain;charset=UTF-8");
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
         String usernameFromSession = SessionUtils.getUsername(request);
         SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
 
@@ -59,9 +57,16 @@ public class LightweightLoginServlet extends HttpServlet {
                 response.setStatus(409);
 
                 // returns answer to the browser to go back to the sign up URL page
-                response.getOutputStream().println(SIGN_UP_URL);
-            }
-            else {
+                response.setStatus(200);
+                try (PrintWriter out = response.getWriter()) {
+                    Gson gson = new Gson();
+                    LoginResponse loginResponse = new LoginResponse(SIGN_UP_URL, null, null, null);
+                    String json = gson.toJson(loginResponse);
+                    out.println(json);
+                    out.flush();
+                }
+            } else {
+
                 // normalize the username value
                 usernameFromParameter = usernameFromParameter.trim();
 
@@ -86,12 +91,11 @@ public class LightweightLoginServlet extends HttpServlet {
                         // stands for unauthorized as there is already such user with this name
                         response.setStatus(401);
                         response.getOutputStream().println(errorMessage);
-                    }
-                    else {
+                    } else {
                         // add the new user to the users list
 
                         User.UserType userType = userRoleFromParameter.equals("customer") ? User.UserType.CUSTOMER
-                                    : User.UserType.STORE_OWNER;
+                                : User.UserType.STORE_OWNER;
                         UUID userId = sdmController.addUserToSystem(usernameFromParameter, userType);
                         // set the username in a session so it will be available on each request
                         // the true parameter means that if a session object does not exists yet
@@ -103,15 +107,28 @@ public class LightweightLoginServlet extends HttpServlet {
                         // redirect the request to the chat room - in order to actually change the URL
                         System.out.println("On login, request URI is: " + request.getRequestURI());
                         response.setStatus(200);
-                        response.getOutputStream().println(CHAT_ROOM_URL);
+//                        response.setContentType("application/json");
+                        try (PrintWriter out = response.getWriter()) {
+                            Gson gson = new Gson();
+                            LoginResponse loginResponse = new LoginResponse(SALES_AREAS_URL, userId, usernameFromParameter, userType);
+                            String json = gson.toJson(loginResponse);
+                            out.println(json);
+                            out.flush();
+                        }
                     }
                 }
             }
-        }
-        else {
+        } else {
+            // user is already logged in
             // user is already logged in
             response.setStatus(200);
-            response.getOutputStream().println(CHAT_ROOM_URL);
+            try (PrintWriter out = response.getWriter()) {
+                Gson gson = new Gson();
+                LoginResponse loginResponse = new LoginResponse(SALES_AREAS_URL, null, usernameFromSession, User.UserType.CUSTOMER);
+                String json = gson.toJson(loginResponse);
+                out.println(json);
+                out.flush();
+            }
         }
     }
 
@@ -121,34 +138,26 @@ public class LightweightLoginServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request
-     *        servlet request
-     * @param response
-     *        servlet response
-     * @throws ServletException
-     *         if a servlet-specific error occurs
-     * @throws IOException
-     *         if an I/O error occurs
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
-    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request
-     *        servlet request
-     * @param response
-     *        servlet response
-     * @throws ServletException
-     *         if a servlet-specific error occurs
-     * @throws IOException
-     *         if an I/O error occurs
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
-    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -158,7 +167,7 @@ public class LightweightLoginServlet extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-    public String getServletInfo () {
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

@@ -16,7 +16,7 @@
         /*}*/
     </style>
 </head>
-<body>
+<body onload="initPage()">
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-2">
@@ -46,7 +46,7 @@
         </div>
         <div class="col-xs-7" id="table-area">
             <h4>Sales Areas</h4>
-            <table>
+            <table id="sales_areas_table">
                 <thead>
                 <th>Area Owner</th>
                 <th>Area</th>
@@ -74,6 +74,7 @@
                         and from there assembles the rest, so we end up with <context path>/chat/logout.
                         (when this request will arrive to tomcat it will strip down the context path and will expect to find a registered servlet with the mapping of /chat/logout)
                         -->
+                        <p id="logged_in_user"></p>
                         <a href="../../chat/logout">Logout</a>
                     </div>
                 </div>

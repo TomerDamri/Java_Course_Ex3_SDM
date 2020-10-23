@@ -1,7 +1,6 @@
 package model;
 
 import java.util.List;
-import java.util.Map;
 
 public class StoreDTO {
     private final int id;
@@ -9,7 +8,7 @@ public class StoreDTO {
     private final String storeOwnerName;
     private final int deliveryPpk;
     private final LocationDTO location;
-    private final Map<Integer, StoreItemDTO> items;
+    private final List<StoreItemDTO> items;
     private final List<StoreOrderDTO> orders;
     private final double totalDeliveriesPayment;
     private final List<DiscountDTO> storeDiscounts;
@@ -19,7 +18,7 @@ public class StoreDTO {
                      String name,
                      int deliveryPpk,
                      LocationDTO locationDTO,
-                     Map<Integer, StoreItemDTO> items,
+                     List<StoreItemDTO> items,
                      List<StoreOrderDTO> orders,
                      double totalDeliveriesPayment,
                      List<DiscountDTO> storeDiscounts) {
@@ -54,7 +53,7 @@ public class StoreDTO {
         return location;
     }
 
-    public Map<Integer, StoreItemDTO> getItems () {
+    public List<StoreItemDTO> getItems() {
         return items;
     }
 

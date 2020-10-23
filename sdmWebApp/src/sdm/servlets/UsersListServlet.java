@@ -1,19 +1,17 @@
 package sdm.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
+import com.google.gson.Gson;
+import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import model.User;
+import sdm.utils.ServletUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.gson.Gson;
-
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
-import course.java.sdm.engine.users.User;
-import sdm.utils.ServletUtils;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Set;
 
 public class UsersListServlet extends HttpServlet {
 

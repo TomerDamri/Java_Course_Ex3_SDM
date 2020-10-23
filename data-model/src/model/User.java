@@ -1,4 +1,4 @@
-package course.java.sdm.engine.users;
+package model;
 
 import java.util.UUID;
 

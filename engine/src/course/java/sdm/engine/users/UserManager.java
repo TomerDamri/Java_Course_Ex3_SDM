@@ -9,6 +9,7 @@ import course.java.sdm.engine.model.SDMDescriptor;
 import course.java.sdm.engine.model.StoresOwner;
 import course.java.sdm.engine.model.SystemCustomer;
 import course.java.sdm.engine.model.SystemUser;
+import model.User;
 
 /*
 Adding and retrieving users is synchronized and in that manner - these actions are thread safe
