@@ -6,11 +6,13 @@ import java.util.UUID;
 
 public class TempOrder implements Serializable {
 
+    private String zoneName;
     private final UUID orderId;
     private final UUID customerId;
     private Map<StoreDetails, Order> staticOrders;
 
-    public TempOrder (UUID orderId, Map<StoreDetails, Order> staticOrders, UUID customerId) {
+    public TempOrder (String zoneName, UUID orderId, Map<StoreDetails, Order> staticOrders, UUID customerId) {
+        this.zoneName = zoneName;
         this.orderId = orderId;
         this.staticOrders = staticOrders;
         this.customerId = customerId;
@@ -32,5 +34,9 @@ public class TempOrder implements Serializable {
 
     public UUID getCustomerId () {
         return customerId;
+    }
+
+    public String getZoneName () {
+        return zoneName;
     }
 }

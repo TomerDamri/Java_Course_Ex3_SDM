@@ -34,20 +34,20 @@ public class SDMControllerImpl implements ISDMController {
         return service.getCustomers();
     }
 
-    @Override
-    public GetStoresResponse getStores () {
-        return service.getStores();
-    }
-
-    @Override
-    public GetItemsResponse getItems () {
-        return service.getItems();
-    }
-
-    @Override
-    public GetOrdersResponse getOrders () {
-        return service.getOrders();
-    }
+//    @Override
+//    public GetStoresResponse getStores () {
+//        return service.getStores();
+//    }
+//
+////    @Override
+//    public GetItemsResponse getItems () {
+//        return service.getItems();
+//    }
+//
+//    @Override
+//    public GetOrdersResponse getOrders () {
+//        return service.getOrders();
+//    }
 
     @Override
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {

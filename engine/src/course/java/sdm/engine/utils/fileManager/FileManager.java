@@ -53,17 +53,13 @@ public class FileManager {
         Map<Integer, Item> items = GENERATED_DATA_MAPPER.generatedItemsToItems(superDuperMarketDescriptor.getSDMItems());
         // TODO: 02/09/2020 - add discounts to stores
         Map<Integer, Store> stores = GENERATED_DATA_MAPPER.generatedStoresToStores(superDuperMarketDescriptor.getSDMStores(), items);
-        String zoneName = GENERATED_DATA_MAPPER.getZoneName(superDuperMarketDescriptor.getSDMZone());
+        String zoneName = GENERATED_DATA_MAPPER.getZoneName(superDuperMarketDescriptor.getSDMZone(), sdmDescriptor);
         FILE_MANAGER_VALIDATOR.validateItemsAndStores(items, stores, zoneName, sdmDescriptor);
 
         return GENERATED_DATA_MAPPER.toZone(items, stores, zoneName, storesOwner);
     }
 
     public void saveOrdersHistoryToFile (SDMDescriptor sdmDescriptor, String path) {
-        if (sdmDescriptor == null) {
-            throw new FileNotLoadedException();
-        }
-
         try {
             List<ZoneOrdersHistory> zoneOrdersHistories = sdmDescriptor.getZones()
                                                                        .entrySet()

@@ -5,13 +5,16 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlaceOrderRequest {
+    
+    private String zoneName;
     private UUID customerId;
     private int storeId;
     private final int xCoordinate;
     private final int yCoordinate;
     private LocalDate orderDate;
 
-    public PlaceOrderRequest(UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate) {
+    public PlaceOrderRequest(String zoneName, UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate) {
+        this.zoneName = zoneName;
         this.customerId = customerId;
         this.orderDate = orderDate;
         this.xCoordinate = xCoordinate;
@@ -50,6 +53,10 @@ public class PlaceOrderRequest {
 
     public UUID getCustomerId() {
         return customerId;
+    }
+
+    public String getZoneName() {
+        return zoneName;
     }
 
     public int getxCoordinate() {

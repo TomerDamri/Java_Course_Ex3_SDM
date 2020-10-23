@@ -1,5 +1,8 @@
 package course.java.sdm.engine.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class SystemCustomer implements Mappable {
@@ -8,13 +11,11 @@ public class SystemCustomer implements Mappable {
     private int numOfOrders = 0;
     private double totalItemsPrice = 0;
     private double totalDeliveryPrice = 0;
+    private Map<String, List<UUID>> zoneNameToExecutedOrdersId;
 
     public SystemCustomer (UUID id, String name) {
         this.customer = new Customer(id, name);
-    }
-
-    public SystemCustomer (Customer customer) {
-        this.customer = customer;
+        this.zoneNameToExecutedOrdersId = new HashMap<>();
     }
 
     public UUID getId () {
@@ -51,5 +52,9 @@ public class SystemCustomer implements Mappable {
 
     public void setTotalDeliveryPrice (double totalDeliveryPrice) {
         this.totalDeliveryPrice = totalDeliveryPrice;
+    }
+
+    public Map<String, List<UUID>> getZoneNameToExecutedOrdersId () {
+        return zoneNameToExecutedOrdersId;
     }
 }

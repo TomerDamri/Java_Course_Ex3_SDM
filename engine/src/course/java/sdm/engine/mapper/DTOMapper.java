@@ -1,13 +1,13 @@
 package course.java.sdm.engine.mapper;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import course.java.sdm.engine.model.*;
 import model.*;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class DTOMapper {
 
@@ -162,14 +162,14 @@ public class DTOMapper {
         return type.equals(SystemUser.UserType.CUSTOMER) ? User.UserType.CUSTOMER : User.UserType.STORE_OWNER;
     }
 
-    // public GetCustomersResponse toGetCustomersResponse(Map<Integer, SystemCustomer> systemCustomer) {
-    // Map<Integer, CustomerDTO> systemCustomersDTO = toDTO(systemCustomer,
-    // this::toCustomerDTO,
-    // CustomerDTO::getId,
-    // customerDTO -> customerDTO);
-    //
-    // return new GetCustomersResponse(systemCustomersDTO);
-    // }
+    public GetCustomersResponse toGetCustomersResponse (Map<UUID, SystemCustomer> systemCustomers) {
+        Map<UUID, CustomerDTO> systemCustomersDTO = toDTO(systemCustomers,
+                                                          this::toCustomerDTO,
+                                                          CustomerDTO::getId,
+                                                          customerDTO -> customerDTO);
+
+        return new GetCustomersResponse(systemCustomersDTO);
+    }
 
     public DynamicOrderEntityDTO toDynamicOrderEntityDTO (StoreDetails storeDetails, Order order) {
         return new DynamicOrderEntityDTO(storeDetails.getId(),
@@ -199,24 +199,24 @@ public class DTOMapper {
         return new GetStoresResponse(stores);
 
     }
-
-    public GetItemsResponse toGetItemsResponse (Map<Integer, SystemItem> systemItems) {
-        Map<Integer, SystemItemDTO> items = toDTO(systemItems, this::toSystemItemDTO, SystemItemDTO::getId, systemItemDTO -> systemItemDTO);
-
-        return new GetItemsResponse(items);
-    }
-
-    public GetOrdersResponse toGetOrdersResponse (Map<UUID, List<SystemOrder>> systemOrders) {
-        Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
-                                                       .stream()
-                                                       .collect(Collectors.toMap(Map.Entry::getKey,
-                                                                                 entry -> entry.getValue()
-                                                                                               .stream()
-                                                                                               .map(this::toOrderDTO)
-                                                                                               .collect(Collectors.toList())));
-
-        return new GetOrdersResponse(orders);
-    }
+//
+//    public GetItemsResponse toGetItemsResponse (Map<Integer, SystemItem> systemItems) {
+//        Map<Integer, SystemItemDTO> items = toDTO(systemItems, this::toSystemItemDTO, SystemItemDTO::getId, systemItemDTO -> systemItemDTO);
+//
+//        return new GetItemsResponse(items);
+//    }
+//
+//    public GetOrdersResponse toGetOrdersResponse (Map<UUID, List<SystemOrder>> systemOrders) {
+//        Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
+//                                                       .stream()
+//                                                       .collect(Collectors.toMap(Map.Entry::getKey,
+//                                                                                 entry -> entry.getValue()
+//                                                                                               .stream()
+//                                                                                               .map(this::toOrderDTO)
+//                                                                                               .collect(Collectors.toList())));
+//
+//        return new GetOrdersResponse(orders);
+//    }
 
     private CustomerDTO toCustomerDTO (SystemCustomer systemCustomer) {
         int numOfOrders = systemCustomer.getNumOfOrders();
@@ -247,6 +247,8 @@ public class DTOMapper {
                                                             .map(discount -> toDiscountDTO(discount, systemStore))
                                                             .collect(Collectors.toList());
 
+        double sumItemsPrice = systemStore.getOrders().stream().map(Order::getItemsPrice).mapToDouble(Double::doubleValue).sum();
+
         return new StoreDTO(systemStore.getStoreOwnerName(),
                             systemStore.getId(),
                             systemStore.getName(),
@@ -255,7 +257,8 @@ public class DTOMapper {
                             new ArrayList<>(items.values()),
                             systemStore.getOrders().stream().map(this::toStoreOrderDTO).collect(Collectors.toList()),
                             systemStore.getTotalDeliveriesPayment(),
-                            storeDiscountsDTO);
+                            storeDiscountsDTO,
+                            sumItemsPrice);
     }
 
     private SystemItemDTO toSystemItemDTO (SystemItem systemItem) {

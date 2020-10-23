@@ -49,13 +49,15 @@ public class OrdersCreator {
                                 Location orderLocation,
                                 Map<PricedItem, Double> pricedItemToAmountMap,
                                 UUID parentId,
-                                UUID customerId) {
+                                UUID customerId,
+                                String zoneName) {
         ORDERS_CREATOR_VALIDATOR.validateLocation(orderLocation, systemStore);
         Order newOrder = new Order(orderDate, orderLocation, parentId);
         addItemsToOrder(systemStore, newOrder, pricedItemToAmountMap);
 
         if (parentId == null) {
-            TempOrder tempOrder = new TempOrder(newOrder.getId(),
+            TempOrder tempOrder = new TempOrder(zoneName,
+                                                newOrder.getId(),
                                                 Collections.singletonMap(systemStore.getStore().getStoreDetails(), newOrder),
                                                 customerId);
             tempOrders.put(tempOrder.getOrderId(), tempOrder);

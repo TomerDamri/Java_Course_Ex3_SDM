@@ -16,11 +16,11 @@ public interface ISDMController {
 
     GetCustomersResponse getCustomers ();
 
-    GetStoresResponse getStores ();
+//    GetStoresResponse getStores ();
 
-    GetItemsResponse getItems ();
+//    GetItemsResponse getItems ();
 
-    GetOrdersResponse getOrders ();
+//    GetOrdersResponse getOrders ();
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
 
