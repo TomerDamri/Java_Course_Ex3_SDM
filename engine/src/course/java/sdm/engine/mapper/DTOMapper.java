@@ -129,6 +129,17 @@ public class DTOMapper {
         return systemUsers.stream().map(this::toUser).collect(Collectors.toSet());
     }
 
+    public PlaceDynamicOrderResponse createPlaceDynamicOrderResponseV2 (TempOrder tempDynamicOrder) {
+        List<DynamicOrderEntityDTO> dynamicOrderEntityDTOS = tempDynamicOrder.getStaticOrders()
+                .entrySet()
+                .stream()
+                .map(entry -> toDynamicOrderEntityDTO(entry.getKey(),
+                        entry.getValue()))
+                .collect(Collectors.toList());
+
+        return new PlaceDynamicOrderResponse(tempDynamicOrder.getOrderId(), dynamicOrderEntityDTOS);
+    }
+
     public GetZonesResponse toGetZonesResponse (Collection<Zone> systemZones) {
         List<ZoneDTO> zones = systemZones.stream().map(zone -> {
             Map<UUID, List<SystemOrder>> systemOrders = zone.getSystemOrders();
