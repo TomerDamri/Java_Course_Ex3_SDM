@@ -11,21 +11,24 @@ import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
 import course.java.sdm.engine.users.UserManager;
+import course.java.sdm.engine.utils.accountManager.AccountManager;
 import course.java.sdm.engine.utils.fileManager.FileManager;
 import course.java.sdm.engine.utils.ordersCreator.OrdersCreator;
 import course.java.sdm.engine.utils.systemUpdater.SystemUpdater;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
+import model.TransactionDTO;
 import model.User;
 import model.request.*;
 import model.response.*;
 
 public class SDMService {
 
-    private final static DTOMapper dtoMapper = new DTOMapper();
+    private final static DTOMapper dtoMapper = DTOMapper.getDTOMapper();
     private final FileManager fileManager = FileManager.getFileManager();
     private final OrdersCreator ordersCreator = OrdersCreator.getOrdersExecutor();
     private final SystemUpdater systemUpdater = SystemUpdater.getSystemUpdater();
     private final UserManager userManager = UserManager.getUserManager();
+    private final AccountManager accountManager = AccountManager.getAccountManager();
 
     private SDMDescriptor sdmDescriptor = new SDMDescriptor();
     private Map<UUID, Map<Integer, ValidStoreDiscounts>> orderIdToValidDiscounts = new HashMap<>();
@@ -33,11 +36,15 @@ public class SDMService {
     /* Users */
 
     public UUID addUserToSystem (String username, User.UserType userType) {
-        return userManager.addUser(sdmDescriptor, username, userType);
+        UUID userId = userManager.addUser(sdmDescriptor, username, userType);
+        accountManager.createAccountForUser(userId);
+
+        return userId;
     }
 
     public void removeUser (String username) {
-        userManager.removeUser(sdmDescriptor, username);
+        SystemUser removedUser = userManager.removeUser(sdmDescriptor, username);
+        accountManager.removeAccountForUser(removedUser.getId());
     }
 
     public synchronized Set<User> getUsers () {
@@ -57,8 +64,28 @@ public class SDMService {
     public boolean isUserExists (String username) {
         return userManager.isUserExists(username);
     }
-
     /* Users */
+
+    /* UserAccounts */
+
+    public void deposit (DepositRequest request) {
+        accountManager.deposit(request.getUserId(), request.getAmount());
+    }
+
+    public GetUserBalanceResponse getUserBalance (GetUserBalanceRequest request) {
+        UUID userId = request.getUserId();
+
+        Double userBalance = accountManager.getUserBalance(userId);
+        return dtoMapper.toGetUserBalanceResponse(userId, userBalance);
+    }
+
+    public GetUserTransactionsResponse getUserTransactions (GetUserTransactionsRequest request) {
+        UUID userId = request.getUserId();
+
+        List<TransactionDTO> userTransactions = accountManager.getUserTransactions(userId);
+        return dtoMapper.toGetUserTransactionsResponse(userTransactions);
+    }
+    /* UserAccounts */
 
     public void loadData (Part part, UUID storesOwnerID) throws IOException {
         StoresOwner storesOwner = getStoresOwner(storesOwnerID);
@@ -193,13 +220,15 @@ public class SDMService {
         Zone zone = getZoneByName(tempOrder.getZoneName());
 
         if (toConfirmNewDynamicOrder) {
-            SystemCustomer systemCustomer = sdmDescriptor.getSystemCustomers().get(tempOrder.getCustomerId());
+            UUID customerId = tempOrder.getCustomerId();
+            SystemCustomer systemCustomer = sdmDescriptor.getSystemCustomers().get(customerId);
             Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
 
             staticOrders.forEach( (storeDetails, order) -> {
                 SystemStore systemStore = zone.getSystemStores().get(storeDetails.getId());
 
                 systemUpdater.updateSystemAfterStaticOrderV2(systemStore, order, zone, systemCustomer);
+                accountManager.transfer(customerId, order.getTotalPrice(), systemStore.getStoreOwnerId(), order.getOrderDate());
             });
 
             systemUpdater.updateSystemCustomerAfterDynamicOrder(orderId, systemCustomer, staticOrders, zone.getZoneName());

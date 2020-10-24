@@ -1,5 +1,6 @@
 package course.java.sdm.engine.mapper;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -10,6 +11,46 @@ import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
 
 public class DTOMapper {
+
+    private static DTOMapper singletonDTOMapper = null;
+
+    private DTOMapper () {
+    }
+
+    public static DTOMapper getDTOMapper () {
+        if (singletonDTOMapper == null) {
+            singletonDTOMapper = new DTOMapper();
+        }
+
+        return singletonDTOMapper;
+    }
+
+    public TransactionDTO toTransactionDTO (TransactionType type,
+                                            LocalDate date,
+                                            double transactionAmount,
+                                            double prevBalance,
+                                            double newBalance) {
+        return new TransactionDTO(transactionTypeDTO(type), date, transactionAmount, prevBalance, newBalance);
+    }
+
+    private TransactionTypeDTO transactionTypeDTO (TransactionType transactionType) {
+        switch (transactionType) {
+        case DEPOSIT:
+            return TransactionTypeDTO.DEPOSIT;
+        case POSITIVE_TRANSFER:
+            return TransactionTypeDTO.POSITIVE_TRANSFER;
+        default:
+            return TransactionTypeDTO.NEGATIVE_TRANSFER;
+        }
+    }
+
+    public GetUserTransactionsResponse toGetUserTransactionsResponse (List<TransactionDTO> userTransactions) {
+        return new GetUserTransactionsResponse(userTransactions);
+    }
+
+    public GetUserBalanceResponse toGetUserBalanceResponse (UUID userId, Double userBalance) {
+        return new GetUserBalanceResponse(userId, userBalance);
+    }
 
     public FinalSummaryForOrder createFinalSummaryForOrder (Map<StoreDetails, Order> staticOrders, Map<Integer, SystemStore> systemStores) {
         double[] totalItemsPrice = new double[1], totalDeliveryPrice = new double[1], totalPrice = new double[1];
@@ -131,11 +172,11 @@ public class DTOMapper {
 
     public PlaceDynamicOrderResponse createPlaceDynamicOrderResponseV2 (TempOrder tempDynamicOrder) {
         List<DynamicOrderEntityDTO> dynamicOrderEntityDTOS = tempDynamicOrder.getStaticOrders()
-                .entrySet()
-                .stream()
-                .map(entry -> toDynamicOrderEntityDTO(entry.getKey(),
-                        entry.getValue()))
-                .collect(Collectors.toList());
+                                                                             .entrySet()
+                                                                             .stream()
+                                                                             .map(entry -> toDynamicOrderEntityDTO(entry.getKey(),
+                                                                                                                   entry.getValue()))
+                                                                             .collect(Collectors.toList());
 
         return new PlaceDynamicOrderResponse(tempDynamicOrder.getOrderId(), dynamicOrderEntityDTOS);
     }
@@ -210,24 +251,25 @@ public class DTOMapper {
         return new GetStoresResponse(stores);
 
     }
-//
-//    public GetItemsResponse toGetItemsResponse (Map<Integer, SystemItem> systemItems) {
-//        Map<Integer, SystemItemDTO> items = toDTO(systemItems, this::toSystemItemDTO, SystemItemDTO::getId, systemItemDTO -> systemItemDTO);
-//
-//        return new GetItemsResponse(items);
-//    }
-//
-//    public GetOrdersResponse toGetOrdersResponse (Map<UUID, List<SystemOrder>> systemOrders) {
-//        Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
-//                                                       .stream()
-//                                                       .collect(Collectors.toMap(Map.Entry::getKey,
-//                                                                                 entry -> entry.getValue()
-//                                                                                               .stream()
-//                                                                                               .map(this::toOrderDTO)
-//                                                                                               .collect(Collectors.toList())));
-//
-//        return new GetOrdersResponse(orders);
-//    }
+    //
+    // public GetItemsResponse toGetItemsResponse (Map<Integer, SystemItem> systemItems) {
+    // Map<Integer, SystemItemDTO> items = toDTO(systemItems, this::toSystemItemDTO,
+    // SystemItemDTO::getId, systemItemDTO -> systemItemDTO);
+    //
+    // return new GetItemsResponse(items);
+    // }
+    //
+    // public GetOrdersResponse toGetOrdersResponse (Map<UUID, List<SystemOrder>> systemOrders) {
+    // Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
+    // .stream()
+    // .collect(Collectors.toMap(Map.Entry::getKey,
+    // entry -> entry.getValue()
+    // .stream()
+    // .map(this::toOrderDTO)
+    // .collect(Collectors.toList())));
+    //
+    // return new GetOrdersResponse(orders);
+    // }
 
     private CustomerDTO toCustomerDTO (SystemCustomer systemCustomer) {
         int numOfOrders = systemCustomer.getNumOfOrders();

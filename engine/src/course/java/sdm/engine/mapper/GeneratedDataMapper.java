@@ -54,7 +54,9 @@ public class GeneratedDataMapper {
         ArrayList<Store> storesList = new ArrayList<>(stores.values());
         Map<Integer, SystemStore> systemStores = generatedListToMap(storesList,
                                                                     Store::getId,
-                                                                    (store) -> new SystemStore(store, storesOwner.getName()),
+                                                                    (store) -> new SystemStore(store,
+                                                                                               storesOwner.getName(),
+                                                                                               storesOwner.getId()),
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
 

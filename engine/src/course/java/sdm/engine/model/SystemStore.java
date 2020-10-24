@@ -1,22 +1,25 @@
 package course.java.sdm.engine.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SystemStore implements Serializable, Mappable {
 
+    private UUID storeOwnerId;
     private String storeOwnerName;
     private Store store;
     private List<Order> orders;
     private double totalDeliveriesPayment = 0;
 
-    public SystemStore (Store store, String storeOwnerName) {
+    public SystemStore (Store store, String storeOwnerName, UUID storeOwnerId) {
         this.store = store;
         this.storeOwnerName = storeOwnerName;
+        this.storeOwnerId = storeOwnerId;
         this.orders = new ArrayList<>();
+    }
+
+    public UUID getStoreOwnerId () {
+        return storeOwnerId;
     }
 
     public double getTotalDeliveriesPayment () {
