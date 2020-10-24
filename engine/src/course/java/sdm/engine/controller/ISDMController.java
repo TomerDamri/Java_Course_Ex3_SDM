@@ -20,7 +20,7 @@ public interface ISDMController {
 
     // GetItemsResponse getItems ();
 
-    // GetOrdersResponse getOrders ();
+    GetCustomerOrdersResponse getCustomerOrders (GetCustomerOrdersRequest request);
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
 
@@ -66,5 +66,9 @@ public interface ISDMController {
 
     public GetUserBalanceResponse getUserBalance (GetUserBalanceRequest request);
 
-    public GetUserTransactionsResponse getUserTransactions(GetUserTransactionsRequest request);
+    public GetUserTransactionsResponse getUserTransactions (GetUserTransactionsRequest request);
+
+    public void rankOrderStores (RankOrderStoresRequest request);
+
+    public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request);
 }

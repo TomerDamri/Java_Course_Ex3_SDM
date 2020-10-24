@@ -33,6 +33,49 @@ public class SDMService {
     private SDMDescriptor sdmDescriptor = new SDMDescriptor();
     private Map<UUID, Map<Integer, ValidStoreDiscounts>> orderIdToValidDiscounts = new HashMap<>();
 
+    /* Feedback */
+    public void rankOrderStores (RankOrderStoresRequest request) {
+        SystemCustomer customer = getCustomerById(request.getCustomerId());
+        Zone zone = getZoneByName(request.getZoneName());
+        UUID orderId = request.getOrderId();
+        List<SystemOrder> subOrders = getOrderByID(zone, orderId);
+
+        systemUpdater.rankOrderStores(request.getOrderStoreRanks(), orderId, subOrders, customer, zone);
+    }
+
+    public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request) {
+        validateFileLoadedToSystem();
+        StoresOwner storesOwner = getStoresOwner(request.getStoreOwnerID());
+        Map<String, List<CustomerFeedback>> zoneIdToCustomerFeedbacks = new HashMap<>();
+
+        storesOwner.getZoneToOwnedStores()
+                   .forEach( (key, value) -> value.values()
+                                                  .forEach(systemStore -> addFeedbacks(zoneIdToCustomerFeedbacks, key, systemStore)));
+
+        return dtoMapper.createGetFeedbackForStoreOwnerResponse(zoneIdToCustomerFeedbacks);
+    }
+
+    private void addFeedbacks (Map<String, List<CustomerFeedback>> zoneIdToCustomerFeedbacks, String zoneName, SystemStore systemStore) {
+        List<CustomerFeedback> zoneFeedbacks = zoneIdToCustomerFeedbacks.containsKey(zoneName) ? zoneIdToCustomerFeedbacks.get(zoneName)
+                    : new ArrayList<>();
+        zoneFeedbacks.addAll(systemStore.getCustomersFeedback());
+
+        zoneIdToCustomerFeedbacks.put(zoneName, zoneFeedbacks);
+    }
+
+    /* Feedback */
+
+    private SystemCustomer getCustomerById (UUID customerId) {
+        Map<UUID, SystemCustomer> systemCustomers = sdmDescriptor.getSystemCustomers();
+        if (systemCustomers.containsKey(customerId)) {
+            throw new RuntimeException(String.format("There is no customer in the system with id '%s'", customerId));
+        }
+
+        return systemCustomers.get(customerId);
+    }
+
+    /* Feedback */
+
     /* Users */
 
     public UUID addUserToSystem (String username, User.UserType userType) {
@@ -86,46 +129,6 @@ public class SDMService {
         return dtoMapper.toGetUserTransactionsResponse(userTransactions);
     }
     /* UserAccounts */
-
-    public void loadData (Part part, UUID storesOwnerID) throws IOException {
-        StoresOwner storesOwner = getStoresOwner(storesOwnerID);
-        SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(part);
-        Zone newZone = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor, storesOwner, sdmDescriptor);
-        systemUpdater.updateSystemAfterLoadingZoneFile(sdmDescriptor, newZone, storesOwner);
-    }
-
-    public boolean isFileLoaded () {
-        return sdmDescriptor.getZones() != null && !sdmDescriptor.getZones().isEmpty();
-    }
-
-    public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {
-        Location userLocation = new Location(xCoordinate, yCoordinate);
-
-        return isValidLocation(userLocation);
-    }
-
-    public GetZoneResponse getZone (String zoneName) {
-        if (isFileLoaded()) {
-            throw new FileNotLoadedException();
-        }
-
-        Map<String, Zone> zones = sdmDescriptor.getZones();
-        if (!zones.containsKey(zoneName)) {
-            throw new RuntimeException(String.format("No zone with name %s exist in the system", zoneName));
-        }
-
-        return dtoMapper.toGetZoneResponse(zones.get(zoneName));
-    }
-
-    public GetCustomersResponse getCustomers () {
-        if (isFileLoaded()) {
-            throw new FileNotLoadedException();
-        }
-
-        Map<UUID, SystemCustomer> systemCustomers = sdmDescriptor.getSystemCustomers();
-
-        return dtoMapper.toGetCustomersResponse(systemCustomers);
-    }
 
     /* Placing orders - static/dynamic */
 
@@ -240,9 +243,7 @@ public class SDMService {
     /* Placing orders - static/dynamic */
 
     public void saveOrdersHistoryToFile (String path) {
-        if (isFileLoaded()) {
-            throw new FileNotLoadedException();
-        }
+        validateFileLoadedToSystem();
 
         fileManager.saveOrdersHistoryToFile(sdmDescriptor, path);
     }
@@ -302,6 +303,50 @@ public class SDMService {
 
     /* Update store */
 
+    public void loadData (Part part, UUID storesOwnerID) throws IOException {
+        StoresOwner storesOwner = getStoresOwner(storesOwnerID);
+        SuperDuperMarketDescriptor superDuperMarketDescriptor = fileManager.generateDataFromXmlFile(part);
+        Zone newZone = fileManager.loadDataFromGeneratedData(superDuperMarketDescriptor, storesOwner, sdmDescriptor);
+        systemUpdater.updateSystemAfterLoadingZoneFile(sdmDescriptor, newZone, storesOwner);
+    }
+
+    public boolean isFileLoaded () {
+        Map<String, Zone> zones = sdmDescriptor.getZones();
+
+        return zones != null && !zones.isEmpty();
+    }
+
+    public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {
+        Location userLocation = new Location(xCoordinate, yCoordinate);
+
+        return isValidLocation(userLocation);
+    }
+
+    public GetZoneResponse getZone (String zoneName) {
+        validateFileLoadedToSystem();
+
+        Map<String, Zone> zones = sdmDescriptor.getZones();
+        if (!zones.containsKey(zoneName)) {
+            throw new RuntimeException(String.format("No zone with name %s exist in the system", zoneName));
+        }
+
+        return dtoMapper.toGetZoneResponse(zones.get(zoneName));
+    }
+
+    private void validateFileLoadedToSystem () {
+        if (!isFileLoaded()) {
+            throw new FileNotLoadedException();
+        }
+    }
+
+    public GetCustomersResponse getCustomers () {
+        validateFileLoadedToSystem();
+
+        Map<UUID, SystemCustomer> systemCustomers = sdmDescriptor.getSystemCustomers();
+
+        return dtoMapper.toGetCustomersResponse(systemCustomers);
+    }
+
     // public GetMapEntitiesResponse getSystemMappableEntities () {
     // // if (zone == null) {
     // // throw new FileNotLoadedException();
@@ -315,10 +360,26 @@ public class SDMService {
      * public GetItemsResponse getItems () { if (isFileLoaded()) { throw new FileNotLoadedException(); }
      * 
      * return dtoMapper.toGetItemsResponse(zone.getSystemItems()); }
-     * 
-     * public GetOrdersResponse getOrders () { if (zone == null) { throw new FileNotLoadedException(); }
-     * return dtoMapper.toGetOrdersResponse(zone.getSystemOrders()); }
      */
+
+    public GetCustomerOrdersResponse getCustomerOrders (GetCustomerOrdersRequest request) {
+        validateFileLoadedToSystem();
+
+        SystemCustomer customer = getCustomerById(request.getCustomerId());
+        Map<UUID, List<SystemOrder>> customerOrders = new HashMap<>();
+
+        customer.getZoneNameToExecutedOrdersId().forEach( (zoneName, executedOrdersIds) -> {
+            Zone zone = getZoneByName(zoneName);
+
+            zone.getSystemOrders()
+                .entrySet()
+                .stream()
+                .filter(entry -> executedOrdersIds.contains(entry.getKey()))
+                .forEach(entry -> customerOrders.put(entry.getKey(), entry.getValue()));
+        });
+
+        return dtoMapper.toGetCustomerOrdersResponse(customerOrders);
+    }
 
     // public GetStoresResponse getStores () {
     // if (isFileLoaded()) {
@@ -369,10 +430,17 @@ public class SDMService {
         return storesOwners.get(storesOwnerId);
     }
 
-    private Zone getZoneByName (String zoneName) {
-        if (isFileLoaded()) {
-            throw new FileNotLoadedException();
+    private List<SystemOrder> getOrderByID (Zone zone, UUID orderId) {
+        Map<UUID, List<SystemOrder>> zoneOrders = zone.getSystemOrders();
+        if (!zoneOrders.containsKey(orderId)) {
+            throw new RuntimeException(String.format("There is no order with id: '%s' in '%s' zone", orderId, zone.getZoneName()));
         }
+
+        return zoneOrders.get(orderId);
+    }
+
+    private Zone getZoneByName (String zoneName) {
+        validateFileLoadedToSystem();
 
         Map<String, Zone> zones = sdmDescriptor.getZones();
         if (!zones.containsKey(zoneName)) {

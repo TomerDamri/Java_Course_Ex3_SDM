@@ -9,6 +9,7 @@ public class SystemStore implements Serializable, Mappable {
     private String storeOwnerName;
     private Store store;
     private List<Order> orders;
+    private List<CustomerFeedback> customersFeedback;
     private double totalDeliveriesPayment = 0;
 
     public SystemStore (Store store, String storeOwnerName, UUID storeOwnerId) {
@@ -16,6 +17,11 @@ public class SystemStore implements Serializable, Mappable {
         this.storeOwnerName = storeOwnerName;
         this.storeOwnerId = storeOwnerId;
         this.orders = new ArrayList<>();
+        this.customersFeedback = new ArrayList<>();
+    }
+
+    public List<CustomerFeedback> getCustomersFeedback() {
+        return customersFeedback;
     }
 
     public UUID getStoreOwnerId () {

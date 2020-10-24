@@ -25,6 +25,19 @@ public class DTOMapper {
         return singletonDTOMapper;
     }
 
+    public GetFeedbackForStoreOwnerResponse createGetFeedbackForStoreOwnerResponse (Map<String, List<CustomerFeedback>> zoneIdToCustomerFeedbacks) {
+        List<OrderStoreRankDTO> orderStoreRanks = new ArrayList<>();
+        zoneIdToCustomerFeedbacks.forEach( (zoneName,
+                                            customerFeedbacksPerZone) -> customerFeedbacksPerZone.forEach(customerFeedback -> orderStoreRanks.add(new OrderStoreRankDTO(zoneName,
+                                                                                                                                                                        customerFeedback.getStoreId(),
+                                                                                                                                                                        customerFeedback.getCustomerName(),
+                                                                                                                                                                        customerFeedback.getOrderDate(),
+                                                                                                                                                                        customerFeedback.getRank(),
+                                                                                                                                                                        customerFeedback.getTextualFeedback()))));
+
+        return new GetFeedbackForStoreOwnerResponse(orderStoreRanks);
+    }
+
     public TransactionDTO toTransactionDTO (TransactionType type,
                                             LocalDate date,
                                             double transactionAmount,
@@ -251,6 +264,7 @@ public class DTOMapper {
         return new GetStoresResponse(stores);
 
     }
+
     //
     // public GetItemsResponse toGetItemsResponse (Map<Integer, SystemItem> systemItems) {
     // Map<Integer, SystemItemDTO> items = toDTO(systemItems, this::toSystemItemDTO,
@@ -259,17 +273,17 @@ public class DTOMapper {
     // return new GetItemsResponse(items);
     // }
     //
-    // public GetOrdersResponse toGetOrdersResponse (Map<UUID, List<SystemOrder>> systemOrders) {
-    // Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
-    // .stream()
-    // .collect(Collectors.toMap(Map.Entry::getKey,
-    // entry -> entry.getValue()
-    // .stream()
-    // .map(this::toOrderDTO)
-    // .collect(Collectors.toList())));
-    //
-    // return new GetOrdersResponse(orders);
-    // }
+    public GetCustomerOrdersResponse toGetCustomerOrdersResponse(Map<UUID, List<SystemOrder>> systemOrders) {
+        Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
+                                                       .stream()
+                                                       .collect(Collectors.toMap(Map.Entry::getKey,
+                                                                                 entry -> entry.getValue()
+                                                                                               .stream()
+                                                                                               .map(this::toOrderDTO)
+                                                                                               .collect(Collectors.toList())));
+
+        return new GetCustomerOrdersResponse(orders);
+    }
 
     private CustomerDTO toCustomerDTO (SystemCustomer systemCustomer) {
         int numOfOrders = systemCustomer.getNumOfOrders();
@@ -412,7 +426,8 @@ public class DTOMapper {
                                                 .stream()
                                                 .collect(Collectors.toMap(PricedItem::getId,
                                                                           pricedItem -> systemOrder.getOrderItems().get(pricedItem)));
-        return new OrderDTO(systemOrder.getId(),
+        return new OrderDTO(systemOrder.getStoreName(),
+                            systemOrder.getId(),
                             systemOrder.getOrderDate(),
                             toLocationDTO(systemOrder.getOrderLocation()),
                             items,

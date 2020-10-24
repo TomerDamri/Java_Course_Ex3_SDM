@@ -16,8 +16,10 @@ public class OrderDTO {
     private Double totalPrice;
     private String storeName;
     private Integer storeId;
+    private String zoneName;
 
-    public OrderDTO (UUID id,
+    public OrderDTO (String zoneName,
+                     UUID id,
                      LocalDate orderDate,
                      LocationDTO locationDTO,
                      Map<Integer, Double> pricedItems,
@@ -28,6 +30,7 @@ public class OrderDTO {
                      Double totalPrice,
                      String storeName,
                      Integer storeId) {
+        this.zoneName = zoneName;
         this.id = id;
         this.orderDate = orderDate;
         this.location = locationDTO;
@@ -78,6 +81,10 @@ public class OrderDTO {
 
     public Integer getStoreId () {
         return storeId;
+    }
+
+    public String getZoneName() {
+        return zoneName;
     }
 
     @Override

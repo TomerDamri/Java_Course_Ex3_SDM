@@ -51,4 +51,13 @@ public class Zone implements Serializable {
     public String getZoneOwnerName () {
         return zoneOwnerName;
     }
+
+    public List<SystemOrder> getOrderById(UUID orderId){
+        Map<UUID, List<SystemOrder>> systemOrders = getSystemOrders();
+        if (!systemOrders.containsKey(orderId)) {
+            throw new RuntimeException(String.format("There is no order with ID: '%s' in the system with name '%s'",orderId, zoneName));
+        }
+
+        return systemOrders.get(orderId);
+    }
 }
