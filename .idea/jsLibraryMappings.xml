@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <file url="file://$PROJECT_DIR$/sdmWebApp" libraries="{bootstrap, bootstrap-datepicker, bootstrap-iso, jquery, jquery-1.11.3, jquery.smartWizard, smart_wizard, smart_wizard_theme_dots}" />
+  </component>
+</project>

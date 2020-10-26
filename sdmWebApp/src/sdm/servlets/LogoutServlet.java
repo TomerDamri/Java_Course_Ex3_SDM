@@ -1,21 +1,20 @@
 package sdm.servlets;
 
-import java.io.IOException;
+import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import sdm.utils.ServletUtils;
+import sdm.utils.SessionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
-import sdm.utils.ServletUtils;
-import sdm.utils.SessionUtils;
-
-@WebServlet(name = "LogoutServlet", urlPatterns = { "/chat/logout" })
+@WebServlet(name = "LogoutServlet", urlPatterns = { "/logout" })
 public class LogoutServlet extends HttpServlet {
 
-    protected void processRequest (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest (HttpServletRequest request, HttpServletResponse response) throws IOException {
         String usernameFromSession = SessionUtils.getUsername(request);
         SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
 
