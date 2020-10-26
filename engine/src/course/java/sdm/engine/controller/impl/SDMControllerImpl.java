@@ -1,15 +1,16 @@
 package course.java.sdm.engine.controller.impl;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.servlet.http.Part;
+
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.service.SDMService;
 import model.User;
 import model.request.*;
 import model.response.*;
-
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
 
 public class SDMControllerImpl implements ISDMController {
     private SDMService service = new SDMService();
@@ -35,19 +36,34 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
-    public GetStoresResponse getStores () {
-        return service.getStores();
+    public void deposit (DepositRequest request) {
+        service.deposit(request);
     }
 
     @Override
-    public GetItemsResponse getItems () {
-        return service.getItems();
+    public GetUserBalanceResponse getUserBalance (GetUserBalanceRequest request) {
+        return service.getUserBalance(request);
     }
 
     @Override
-    public GetOrdersResponse getOrders () {
-        return service.getOrders();
+    public GetUserTransactionsResponse getUserTransactions (GetUserTransactionsRequest request) {
+        return service.getUserTransactions(request);
     }
+
+    // @Override
+    // public GetStoresResponse getStores () {
+    // return service.getStores();
+    // }
+    //
+    //// @Override
+    // public GetItemsResponse getItems () {
+    // return service.getItems();
+    // }
+    //
+     @Override
+     public GetCustomerOrdersResponse getCustomerOrders(GetCustomerOrdersRequest request) {
+     return service.getCustomerOrders(request);
+     }
 
     @Override
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
@@ -136,6 +152,16 @@ public class SDMControllerImpl implements ISDMController {
 
     @Override
     public GetZoneResponse getZone (String zoneName) {
-         return service.getZone(zoneName);
+        return service.getZone(zoneName);
+    }
+
+    @Override
+    public void rankOrderStores(RankOrderStoresRequest request) {
+        service.rankOrderStores(request);
+    }
+
+    @Override
+    public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner(GetFeedbackForStoreOwnerRequest request) {
+        return service.getFeedbackForStoreOwner(request);
     }
 }

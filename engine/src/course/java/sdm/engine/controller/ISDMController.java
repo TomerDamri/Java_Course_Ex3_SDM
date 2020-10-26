@@ -16,11 +16,11 @@ public interface ISDMController {
 
     GetCustomersResponse getCustomers ();
 
-    GetStoresResponse getStores ();
+    // GetStoresResponse getStores ();
 
-    GetItemsResponse getItems ();
+    // GetItemsResponse getItems ();
 
-    GetOrdersResponse getOrders ();
+    GetCustomerOrdersResponse getCustomerOrders (GetCustomerOrdersRequest request);
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
 
@@ -61,4 +61,14 @@ public interface ISDMController {
     public GetZonesResponse getZones ();
 
     public GetZoneResponse getZone (String zoneName);
+
+    public void deposit (DepositRequest request);
+
+    public GetUserBalanceResponse getUserBalance (GetUserBalanceRequest request);
+
+    public GetUserTransactionsResponse getUserTransactions (GetUserTransactionsRequest request);
+
+    public void rankOrderStores (RankOrderStoresRequest request);
+
+    public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request);
 }

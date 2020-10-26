@@ -6,11 +6,11 @@ import java.util.UUID;
 
 import model.OrderDTO;
 
-public class GetOrdersResponse {
+public class GetCustomerOrdersResponse {
 
     private final Map<UUID, List<OrderDTO>> orders;
 
-    public GetOrdersResponse (Map<UUID, List<OrderDTO>> orders) {
+    public GetCustomerOrdersResponse(Map<UUID, List<OrderDTO>> orders) {
         this.orders = orders;
     }
 

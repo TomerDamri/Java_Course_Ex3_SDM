@@ -23,9 +23,13 @@ public class GeneratedDataMapper {
         return (double) tmp / factor;
     }
 
-    public String getZoneName (SuperDuperMarketDescriptor.SDMZone sdmZone) {
+    public String getZoneName (SuperDuperMarketDescriptor.SDMZone sdmZone, SDMDescriptor sdmDescriptor) {
         if (sdmZone == null || sdmZone.getName() == null) {
-            return null;
+            throw new RuntimeException("Invalid input, you have to define the zone name in the file.");
+        }
+
+        if (sdmDescriptor.getZones().containsKey(sdmZone.getName())) {
+            throw new RuntimeException("Invalid input, you have to define unique zone name.");
         }
 
         return sdmZone.getName();
@@ -50,7 +54,9 @@ public class GeneratedDataMapper {
         ArrayList<Store> storesList = new ArrayList<>(stores.values());
         Map<Integer, SystemStore> systemStores = generatedListToMap(storesList,
                                                                     Store::getId,
-                                                                    (store) -> new SystemStore(store, storesOwner.getName()),
+                                                                    (store) -> new SystemStore(store,
+                                                                                               storesOwner.getName(),
+                                                                                               storesOwner.getId()),
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
 

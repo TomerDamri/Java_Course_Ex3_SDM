@@ -8,15 +8,21 @@ import java.util.UUID;
 public class SystemOrder implements Serializable {
 
     private final Order order;
+    private final String zoneName;
     private final String storeName;
     private final Integer storeId;
     private final UUID customerId;
 
-    public SystemOrder (Order order, String storeName, Integer storeId, UUID customerId) {
+    public SystemOrder (Order order,String zoneName,  String storeName, Integer storeId, UUID customerId) {
         this.order = order;
+        this.zoneName = zoneName;
         this.storeName = storeName;
         this.storeId = storeId;
         this.customerId = customerId;
+    }
+
+    public String getZoneName() {
+        return zoneName;
     }
 
     public Order getOrder () {

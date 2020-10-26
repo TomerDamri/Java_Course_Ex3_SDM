@@ -5,12 +5,14 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlaceDynamicOrderRequest {
+
+    private String zoneName;
     private UUID customerId;
     private LocalDate orderDate;
     private int xCoordinate;
     private int yCoordinate;
 
-    public PlaceDynamicOrderRequest(UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate) {
+    public PlaceDynamicOrderRequest(String zoneName, UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate) {
         this.customerId = customerId;
         this.orderDate = orderDate;
         this.xCoordinate = xCoordinate;
@@ -41,5 +43,9 @@ public class PlaceDynamicOrderRequest {
 
     public UUID getCustomerId() {
         return customerId;
+    }
+
+    public String getZoneName() {
+        return zoneName;
     }
 }

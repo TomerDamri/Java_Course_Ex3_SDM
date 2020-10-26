@@ -11,6 +11,7 @@ public class StoreDTO {
     private final List<StoreItemDTO> items;
     private final List<StoreOrderDTO> orders;
     private final double totalDeliveriesPayment;
+    private final double totalItemsPrice;
     private final List<DiscountDTO> storeDiscounts;
 
     public StoreDTO (String storeOwnerName,
@@ -21,7 +22,8 @@ public class StoreDTO {
                      List<StoreItemDTO> items,
                      List<StoreOrderDTO> orders,
                      double totalDeliveriesPayment,
-                     List<DiscountDTO> storeDiscounts) {
+                     List<DiscountDTO> storeDiscounts,
+                     double totalItemsPrice) {
         this.storeOwnerName = storeOwnerName;
         this.id = id;
         this.name = name;
@@ -31,6 +33,7 @@ public class StoreDTO {
         this.orders = orders;
         this.totalDeliveriesPayment = totalDeliveriesPayment;
         this.storeDiscounts = storeDiscounts;
+        this.totalItemsPrice = totalItemsPrice;
     }
 
     public List<DiscountDTO> getStoreDiscounts () {
@@ -53,7 +56,7 @@ public class StoreDTO {
         return location;
     }
 
-    public List<StoreItemDTO> getItems() {
+    public List<StoreItemDTO> getItems () {
         return items;
     }
 
@@ -67,6 +70,10 @@ public class StoreDTO {
 
     public String getStoreOwnerName () {
         return storeOwnerName;
+    }
+
+    public double getTotalItemsPrice () {
+        return totalItemsPrice;
     }
 
     @Override

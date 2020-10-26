@@ -4,6 +4,7 @@ import java.util.*;
 
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
+import model.request.OrderStoreRank;
 
 public class SystemUpdater {
 
@@ -267,35 +268,74 @@ public class SystemUpdater {
                                                                Map<UUID, SystemCustomer> systemCustomers,
                                                                Zone zone) {
         Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate = zone.getSystemOrders();
-        Map<Integer, SystemStore> systemStores = zone.getSystemStores();
 
-        updateSystemOrdersAccordingToHistoryFile(ordersFromHistoryFile, zone, systemOrdersBeforeUpdate, systemStores, systemCustomers);
+        updateSystemOrdersAccordingToHistoryFile(ordersFromHistoryFile, zone, systemOrdersBeforeUpdate, systemCustomers);
+    }
+
+    public void rankOrderStores (List<OrderStoreRank> orderStoreRanks,
+                                 UUID orderId,
+                                 List<SystemOrder> subOrders,
+                                 SystemCustomer customer,
+                                 Zone zone) {
+        orderStoreRanks.forEach(orderStoreRank -> {
+            SystemOrder relatedSubOrder = getSubOrderRelatedToSpecificStore(orderId, subOrders, orderStoreRank);
+            SystemStore relatedStore = getStoreByID(zone, orderStoreRank.getStoreId());
+
+            CustomerFeedback customerFeedback = new CustomerFeedback(relatedStore.getId(),
+                                                                     customer.getName(),
+                                                                     relatedSubOrder.getOrderDate(),
+                                                                     orderStoreRank.getRank(),
+                                                                     orderStoreRank.getTextualFeedback());
+            relatedStore.getCustomersFeedback().add(customerFeedback);
+        });
+    }
+
+    private SystemOrder getSubOrderRelatedToSpecificStore (UUID orderId, List<SystemOrder> subOrders, OrderStoreRank orderStoreRank) {
+        Integer storeId = orderStoreRank.getStoreId();
+        Optional<SystemOrder> storeOrderOpt = subOrders.stream().filter(subOrder -> subOrder.getStoreId().equals(storeId)).findFirst();
+        if (!storeOrderOpt.isPresent()) {
+            throw new RuntimeException(String.format("There is no store with id: '%s' in order with id: '%s'", storeId, orderId));
+        }
+
+        return storeOrderOpt.get();
+    }
+
+    private SystemStore getStoreByID (Zone zone, Integer storeId) {
+        Map<Integer, SystemStore> systemStores = zone.getSystemStores();
+        if (!systemStores.containsKey(storeId)) {
+            throw new RuntimeException(String.format("There is no store with id: '%s' in '%s' zone", storeId, zone.getZoneName()));
+        }
+
+        return systemStores.get(storeId);
     }
 
     private void updateSystemOrdersAccordingToHistoryFile (Map<UUID, List<SystemOrder>> ordersFromHistoryFile,
                                                            Zone zone,
                                                            Map<UUID, List<SystemOrder>> systemOrdersBeforeUpdate,
-                                                           Map<Integer, SystemStore> systemStores,
                                                            Map<UUID, SystemCustomer> systemCustomers) {
-        ordersFromHistoryFile.entrySet()
-                             .stream()
-                             .filter(entry -> !systemOrdersBeforeUpdate.containsKey(entry.getKey()))
-                             .forEach(entry -> entry.getValue()
-                                                    .forEach(order -> updateSystemAfterLoadingHistoryOrder(zone,
-                                                                                                           systemStores,
-                                                                                                           order,
-                                                                                                           systemCustomers)));
+        ordersFromHistoryFile.entrySet().stream().filter(entry -> !systemOrdersBeforeUpdate.containsKey(entry.getKey())).forEach(entry -> {
+            UUID orderId = entry.getKey();
+            List<SystemOrder> subOrdersToAdd = entry.getValue();
+
+            subOrdersToAdd.forEach(order -> updateSystemAfterLoadingHistoryOrder(zone, order, systemCustomers));
+            updateSystemCustomerAfterLoadingDynamicOrder(zone, systemCustomers, orderId, subOrdersToAdd);
+        });
     }
 
-    private void updateSystemAfterLoadingHistoryOrder (Zone zone,
-                                                       Map<Integer, SystemStore> systemStores,
-                                                       SystemOrder systemOrder,
-                                                       Map<UUID, SystemCustomer> systemCustomers) {
-        SystemCustomer systemCustomer = getCustomerById(systemOrder.getCustomerId(), systemCustomers);
+    private void updateSystemCustomerAfterLoadingDynamicOrder (Zone zone,
+                                                               Map<UUID, SystemCustomer> systemCustomers,
+                                                               UUID orderId,
+                                                               List<SystemOrder> subOrdersToAdd) {
+        SystemOrder firstSubOrder = subOrdersToAdd.iterator().next();
+        SystemCustomer systemCustomer = getCustomerById(firstSubOrder.getCustomerId(), systemCustomers);
+        if (subOrdersToAdd.size() > 1 || !firstSubOrder.getId().equals(orderId)) {
+            updateSystemCustomerAfterDynamicOrder(orderId, systemCustomer, zone.getZoneName());
+        }
+    }
+
+    private void updateSystemAfterLoadingHistoryOrder (Zone zone, SystemOrder systemOrder, Map<UUID, SystemCustomer> systemCustomers) {
         SystemStore systemStore = getStoreById(zone, systemOrder.getStoreId());
         Order order = getOrder(systemStore, systemOrder);
-
-        updateSystemAfterStaticOrderV2(systemStore, order, zone, systemCustomer);
     }
 
     private Order getOrder (SystemStore systemStore, SystemOrder systemOrder) {
@@ -321,7 +361,7 @@ public class SystemUpdater {
 
     private void addNewOrderToSystemOrders (SystemStore systemStore, Order newOrder, Zone zone, UUID customerId) {
         List<SystemOrder> orders;
-        SystemOrder newSystemOrder = new SystemOrder(newOrder, systemStore.getName(), systemStore.getId(), customerId);
+        SystemOrder newSystemOrder = new SystemOrder(newOrder, zone.getZoneName(), systemStore.getName(), systemStore.getId(), customerId);
         UUID id = (newOrder.getParentId() != null) ? newOrder.getParentId() : newOrder.getId();
         Map<UUID, List<SystemOrder>> systemOrders = zone.getSystemOrders();
 
@@ -357,20 +397,49 @@ public class SystemUpdater {
         updateSystemItemsAfterOrderCompletionV2(zone.getSystemItems(), newOrder);
         // update total delivery price and total items price for system customer (update numOfOrder in case
         // the order is not part of dynamic order)
-        updateSystemCustomerAfterOrderCompletion(newOrder, systemCustomer);
+        updateSystemCustomerAfterOrderCompletion(newOrder, systemCustomer, zone.getZoneName());
     }
 
-    private void updateSystemCustomerAfterOrderCompletion (Order newOrder, SystemCustomer systemCustomer) {
+    private void updateSystemCustomerAfterOrderCompletion (Order newOrder, SystemCustomer systemCustomer, String zoneName) {
         double prevTotalDeliveryPrice = systemCustomer.getTotalDeliveryPrice();
         double prevTotalItemsPrice = systemCustomer.getTotalItemsPrice();
 
         systemCustomer.setTotalItemsPrice(prevTotalDeliveryPrice + newOrder.getDeliveryPrice());
         systemCustomer.setTotalDeliveryPrice(prevTotalItemsPrice + newOrder.getItemsPrice());
 
+        updateSystemCustomerAfterStaticOrder(newOrder, systemCustomer, zoneName);
+    }
+
+    private void updateSystemCustomerAfterStaticOrder (Order newOrder, SystemCustomer systemCustomer, String zoneName) {
+        // if we are in "place static order" flow
         if (newOrder.getParentId() == null) {
-            int prevNumOfOrders = systemCustomer.getNumOfOrders();
-            systemCustomer.setNumOfOrders(prevNumOfOrders + 1);
+            updateSystemCustomerAfterDynamicOrder(newOrder.getId(), systemCustomer, zoneName);
         }
+    }
+
+    // will update numOfOrders property for chosen system customer in case the temp order is dynamic
+    // order
+    public void updateSystemCustomerAfterDynamicOrder (UUID orderId,
+                                                       SystemCustomer systemCustomer,
+                                                       Map<StoreDetails, Order> staticOrders,
+                                                       String zoneName) {
+        Order firstSubOrder = staticOrders.values().iterator().next();
+        if (staticOrders.size() > 1 || !firstSubOrder.getId().equals(orderId)) {
+            updateSystemCustomerAfterDynamicOrder(orderId, systemCustomer, zoneName);
+        }
+    }
+
+    private void updateSystemCustomerAfterDynamicOrder (UUID orderId, SystemCustomer systemCustomer, String zoneName) {
+        int prevNumOfOrders = systemCustomer.getNumOfOrders();
+        systemCustomer.setNumOfOrders(prevNumOfOrders + 1);
+        updateZoneNameToCustomersOrders(orderId, systemCustomer, zoneName);
+    }
+
+    private void updateZoneNameToCustomersOrders(UUID orderId, SystemCustomer systemCustomer, String zoneName) {
+        Map<String, List<UUID>> zoneNameToCustomerOrders = systemCustomer.getZoneNameToExecutedOrdersId();
+        List<UUID> ordersIds = zoneNameToCustomerOrders.containsKey(zoneName) ? zoneNameToCustomerOrders.get(zoneName) : new ArrayList<>();
+        ordersIds.add(orderId);
+        zoneNameToCustomerOrders.put(zoneName, ordersIds);
     }
 
     private void updateStoreAfterOrderCompletionV2 (SystemStore systemStore, Order newOrder) {

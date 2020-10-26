@@ -36,9 +36,10 @@ public class OrdersCreator {
                                  Location orderLocation,
                                  Map<PricedItem, Double> pricedItemToAmountMap,
                                  UUID parentId,
-                                 UUID customerId) {
+                                 UUID customerId,
+                                 String zoneName) {
 
-        Order newSubOrder = createOrderV2(systemStore, orderDate, orderLocation, pricedItemToAmountMap, parentId, customerId);
+        Order newSubOrder = createOrderV2(systemStore, orderDate, orderLocation, pricedItemToAmountMap, parentId, customerId, zoneName);
         completeSubOrder(systemStore, newSubOrder);
 
         return newSubOrder;
@@ -49,13 +50,15 @@ public class OrdersCreator {
                                 Location orderLocation,
                                 Map<PricedItem, Double> pricedItemToAmountMap,
                                 UUID parentId,
-                                UUID customerId) {
+                                UUID customerId,
+                                String zoneName) {
         ORDERS_CREATOR_VALIDATOR.validateLocation(orderLocation, systemStore);
         Order newOrder = new Order(orderDate, orderLocation, parentId);
         addItemsToOrder(systemStore, newOrder, pricedItemToAmountMap);
 
         if (parentId == null) {
-            TempOrder tempOrder = new TempOrder(newOrder.getId(),
+            TempOrder tempOrder = new TempOrder(zoneName,
+                                                newOrder.getId(),
                                                 Collections.singletonMap(systemStore.getStore().getStoreDetails(), newOrder),
                                                 customerId);
             tempOrders.put(tempOrder.getOrderId(), tempOrder);
@@ -196,7 +199,8 @@ public class OrdersCreator {
                                            Location orderLocation,
                                            List<SystemItem> systemItemsIncludedInOrder,
                                            Set<SystemStore> storesIncludedInOrder,
-                                           UUID customerID) {
+                                           UUID customerID,
+                                           String zoneName) {
         UUID dynamicOrderId = UUID.randomUUID();
         Map<StoreDetails, Order> staticOrders = storesIncludedInOrder.stream()
                                                                      .collect(Collectors.toMap(systemStore -> systemStore.getStore()
@@ -206,9 +210,10 @@ public class OrdersCreator {
                                                                                                                 orderLocation,
                                                                                                                 systemItemsIncludedInOrder,
                                                                                                                 dynamicOrderId,
-                                                                                                                customerID)));
+                                                                                                                customerID,
+                                                                                                                zoneName)));
 
-        TempOrder tempOrder = new TempOrder(dynamicOrderId, staticOrders, customerID);
+        TempOrder tempOrder = new TempOrder(zoneName, dynamicOrderId, staticOrders, customerID);
         tempOrders.put(tempOrder.getOrderId(), tempOrder);
 
         return tempOrder;
@@ -219,13 +224,14 @@ public class OrdersCreator {
                                                            Location orderLocation,
                                                            List<SystemItem> systemItemsIncludedInOrder,
                                                            UUID parentId,
-                                                           UUID customerId) {
+                                                           UUID customerId,
+                                                           String zoneName) {
         return systemStore -> {
             Map<PricedItem, Double> pricedItems = getPricedItemFromDynamicOrderRequest(orderItemToAmount,
                                                                                        systemItemsIncludedInOrder,
                                                                                        systemStore);
 
-            return createSubOrder(systemStore, orderDate, orderLocation, pricedItems, parentId, customerId);
+            return createSubOrder(systemStore, orderDate, orderLocation, pricedItems, parentId, customerId, zoneName);
         };
     }
 
