@@ -11,6 +11,7 @@ import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
 import course.java.sdm.engine.users.UserManager;
+import course.java.sdm.engine.utils.SDMUtils;
 import course.java.sdm.engine.utils.accountManager.AccountManager;
 import course.java.sdm.engine.utils.fileManager.FileManager;
 import course.java.sdm.engine.utils.ordersCreator.OrdersCreator;
@@ -32,6 +33,13 @@ public class SDMService {
 
     private SDMDescriptor sdmDescriptor = new SDMDescriptor();
     private Map<UUID, Map<Integer, ValidStoreDiscounts>> orderIdToValidDiscounts = new HashMap<>();
+
+    public GetStoreItemsResponse getStoreItems (GetStoreItemsRequest request) {
+        Zone zone = getZoneByName(request.getZoneName());
+        SystemStore systemStore = SDMUtils.getStoreByID(zone, request.getStoreId());
+
+        return dtoMapper.toGetStoreItems(systemStore);
+    }
 
     /* Feedback */
     public void rankOrderStores (RankOrderStoresRequest request) {

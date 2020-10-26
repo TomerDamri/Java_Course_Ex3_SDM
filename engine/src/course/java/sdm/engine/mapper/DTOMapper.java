@@ -273,7 +273,7 @@ public class DTOMapper {
     // return new GetItemsResponse(items);
     // }
     //
-    public GetCustomerOrdersResponse toGetCustomerOrdersResponse(Map<UUID, List<SystemOrder>> systemOrders) {
+    public GetCustomerOrdersResponse toGetCustomerOrdersResponse (Map<UUID, List<SystemOrder>> systemOrders) {
         Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
                                                        .stream()
                                                        .collect(Collectors.toMap(Map.Entry::getKey,
@@ -283,6 +283,12 @@ public class DTOMapper {
                                                                                                .collect(Collectors.toList())));
 
         return new GetCustomerOrdersResponse(orders);
+    }
+
+    public GetStoreItemsResponse toGetStoreItems (SystemStore systemStore) {
+        List<PricedItemDTO> storeItems = toStoreItemsDTO(systemStore);
+
+        return new GetStoreItemsResponse(storeItems);
     }
 
     private CustomerDTO toCustomerDTO (SystemCustomer systemCustomer) {
@@ -299,6 +305,14 @@ public class DTOMapper {
 
     private LocationDTO toLocationDTO (Location location) {
         return new LocationDTO(location.getX(), location.getY());
+    }
+
+    private List<PricedItemDTO> toStoreItemsDTO (SystemStore systemStore) {
+        return systemStore.getItemIdToStoreItem()
+                          .values()
+                          .stream()
+                          .map(storeItem -> toPricedItemDTO(storeItem.getPricedItem()))
+                          .collect(Collectors.toList());
     }
 
     private StoreDTO toStoreDTO (SystemStore systemStore) {

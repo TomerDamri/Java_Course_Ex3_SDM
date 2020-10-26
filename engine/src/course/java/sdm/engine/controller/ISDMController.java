@@ -71,4 +71,6 @@ public interface ISDMController {
     public void rankOrderStores (RankOrderStoresRequest request);
 
     public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request);
+
+    public GetStoreItemsResponse getStoreItems (GetStoreItemsRequest request);
 }

@@ -164,4 +164,9 @@ public class SDMControllerImpl implements ISDMController {
     public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner(GetFeedbackForStoreOwnerRequest request) {
         return service.getFeedbackForStoreOwner(request);
     }
+
+    @Override
+    public GetStoreItemsResponse getStoreItems(GetStoreItemsRequest request) {
+        return service.getStoreItems(request);
+    }
 }
