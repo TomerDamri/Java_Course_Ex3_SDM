@@ -1,7 +1,5 @@
-var chatVersion = 0;
 var refreshRate = 2000; //milli seconds
 var USER_LIST_URL = buildUrlWithContextPath("userslist");
-var CHAT_LIST_URL = buildUrlWithContextPath("chat");
 var IS_STORE_OWNER = buildUrlWithContextPath("chat");
 
 //users = a list of usernames, essentially an array of javascript strings:
@@ -20,74 +18,11 @@ function refreshUsersList(users) {
     });
 }
 
-//entries = the added chat strings represented as a single string
-function appendToChatArea(entries) {
-//    $("#chatarea").children(".success").removeClass("success");
-
-    // add the relevant entries
-    $.each(entries || [], appendChatEntry);
-
-    // handle the scroller to auto scroll to the end of the chat area
-    var scroller = $("#chatarea");
-    var height = scroller[0].scrollHeight - $(scroller).height();
-    $(scroller).stop().animate({scrollTop: height}, "slow");
-}
-
-function appendChatEntry(index, entry) {
-    var entryElement = createChatEntry(entry);
-    $("#chatarea").append(entryElement).append("<br>");
-}
-
-function createChatEntry(entry) {
-    entry.chatString = entry.chatString.replace(":)", "<img class='smiley-image' src='../../common/images/smiley.png' alt=''/>");
-    return $("<span class=\"success\">").append(entry.username + "> " + entry.chatString);
-}
-
 function ajaxUsersList() {
     $.ajax({
         url: USER_LIST_URL,
         success: function (users) {
             refreshUsersList(users);
-        }
-    });
-}
-
-//call the server and get the chat version
-//we also send it the current chat version so in case there was a change
-//in the chat content, we will get the new string as well
-function ajaxChatContent() {
-    $.ajax({
-        url: CHAT_LIST_URL,
-        data: "chatversion=" + chatVersion,
-        dataType: 'json',
-        success: function (data) {
-            /*
-             data will arrive in the next form:
-             {
-                "entries": [
-                    {
-                        "chatString":"Hi",
-                        "username":"bbb",
-                        "time":1485548397514
-                    },
-                    {
-                        "chatString":"Hello",
-                        "username":"bbb",
-                        "time":1485548397514
-                    }
-                ],
-                "version":1
-             }
-             */
-            console.log("Server chat version: " + data.version + ", Current chat version: " + chatVersion);
-            if (data.version !== chatVersion) {
-                chatVersion = data.version;
-                appendToChatArea(data.entries);
-            }
-            triggerAjaxChatContent();
-        },
-        error: function () {
-            triggerAjaxChatContent();
         }
     });
 }
@@ -112,9 +47,6 @@ $(function () { // onload...do
             console.error("Failed to submit");
         },
         success: function (r) {
-            //do not add the user string to the chat area
-            //since it's going to be retrieved from the server
-            //$("#result h1").text(r);
         }
     });
 
@@ -122,19 +54,10 @@ $(function () { // onload...do
     return false;
 });
 
-function triggerAjaxChatContent() {
-    setTimeout(ajaxChatContent, refreshRate);
-}
-
-//activate the timer calls after the page is loaded
 $(function () {
-
     //The users list is refreshed automatically every second
     setInterval(ajaxUsersList, refreshRate);
     setInterval(tableCreate, refreshRate);
-    //The chat content is refreshed only once (using a timeout) but
-    //on each call it triggers another execution of itself later (1 second later)
-    triggerAjaxChatContent();
 });
 
 function initPage() {
@@ -223,25 +146,4 @@ function tableCreate() {
             }
         }
     });
-
-//     var tbl = document.createElement('table');
-//     var tableBody = document.createElement('tbody');
-//     var tableHead = document.createElement('thead');
-//     var th = document.createElement('th').appendChild(document.createTextNode("Area Owner"));
-//     th.setAttribute('class', 'th-class');
-//     // th.setAttribute('padding', '8');
-// // th.style.padding = '8';
-//     // text-align: left;
-//
-//     tableHead.appendChild(th);
-//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Area")));
-//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Items Count")));
-//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Stores Count")));
-//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Orders Count")));
-//     tableHead.appendChild(document.createElement('th').appendChild(document.createTextNode("Orders Average Price")));
-//     tbl.appendChild(tableHead);
-//     //
-
-    // var tableBody =  $('#tbody');
-
 }

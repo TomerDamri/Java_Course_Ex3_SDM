@@ -12,13 +12,16 @@ public class PlaceOrderRequest {
     private final int xCoordinate;
     private final int yCoordinate;
     private LocalDate orderDate;
+    private Map<Integer, Double> orderItemToAmount;
 
-    public PlaceOrderRequest(String zoneName, UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate) {
+    public PlaceOrderRequest(String zoneName, int storeId, UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate, Map<Integer, Double> orderItemToAmount) {
         this.zoneName = zoneName;
+        this.storeId = storeId;
         this.customerId = customerId;
         this.orderDate = orderDate;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
+        this.orderItemToAmount = orderItemToAmount;
     }
 
     public void setCustomerId(UUID customerId) {
@@ -37,7 +40,6 @@ public class PlaceOrderRequest {
         this.orderItemToAmount = orderItemToAmount;
     }
 
-    private Map<Integer, Double> orderItemToAmount;
 
     public int getStoreId() {
         return storeId;
