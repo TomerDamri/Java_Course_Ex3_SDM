@@ -8,8 +8,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <%@page import="chat.utils.*" %>
-    <%@ page import="chat.constants.Constants" %>
+    <%@page import="sdm.utils.*" %>
+    <%@ page import="sdm.constants.Constants" %>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Online Chat</title>
@@ -37,7 +37,7 @@
             <% } %>
             <% } else {%>
             <h1>Welcome back, <%=usernameFromSession%></h1>
-            <a href="../chatroom/chatroom.html">Click here to enter the chat room</a>
+            <a href="../salesAreas/salesAreas.html">Click here to enter the sales zones</a>
             <br/>
             <a href="login?logout=true" id="logout">logout</a>
             <% }%>

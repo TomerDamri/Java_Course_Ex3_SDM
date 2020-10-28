@@ -48,6 +48,7 @@ public class SelectedZoneServlet extends HttpServlet {
             response.getOutputStream().println(zone);
         }
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         processRequest(request, response);

@@ -1,12 +1,5 @@
 package course.java.sdm.engine.service;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.Part;
-
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
@@ -21,6 +14,12 @@ import model.TransactionDTO;
 import model.User;
 import model.request.*;
 import model.response.*;
+
+import javax.servlet.http.Part;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SDMService {
 
@@ -400,7 +399,7 @@ public class SDMService {
     private boolean isValidLocation (Location userLocation) {
         return !sdmDescriptor.getSystemLocations().containsKey(userLocation);
     }
-
+//todo - throws null pointer exception
     private Map<PricedItem, Double> getPricedItemFromStaticRequest (Zone zone, PlaceOrderRequest request) {
         return request.getOrderItemToAmount()
                       .keySet()

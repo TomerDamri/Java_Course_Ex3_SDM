@@ -1,9 +1,12 @@
+var selected_zone_name;
 var selected_zone;
+var availableItems;
 $(function () { // onload...do
-    if (selected_zone === window.localStorage.getItem('zoneName')) {
+
+    if (selected_zone_name === window.localStorage.getItem('zoneName')) {
         return;
     }
-    selected_zone = window.localStorage.getItem('zoneName');
+    selected_zone_name = window.localStorage.getItem('zoneName');
     $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
     //todo- add if statement according to user type
     $.ajax({
@@ -18,6 +21,7 @@ $(function () { // onload...do
             //TODO - UPDATE ZONE DATA IN PAGE 3
             $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
             $("#zone").text(window.localStorage.getItem('zoneName'));
+            selected_zone = response;
             var items = response.items;
             var stores = response.stores;
             $('#items-accordion').empty();
@@ -176,12 +180,14 @@ function onOrderTypeSelect() {
             console.error("Failed to submit");
         },
         success: function (response) {
+            $("#item-price").css("visibility", "hidden");
             var selection = $('#order-type').find(":selected").text();
             if (selection === "From Selected Store") {
                 $("#select-store").css("visibility", "visible");
                 $("#item-price").css("visibility", "visible");
                 var storeSelect = $("#order-store");
                 storeSelect.empty();
+                storeSelect.append('<option disabled selected value> -- select an option --</option>');
                 response.stores.forEach(function (store) {
                     storeSelect.append(new Option(store.name, store.id));
                 });
@@ -190,11 +196,14 @@ function onOrderTypeSelect() {
                 $("#select-store").css("visibility", "hidden");
                 $("#item-price").css("visibility", "hidden");
                 var tbody = $('#t-body');
+                availableItems = response.items;
                 tbody.empty();
                 response.items.forEach(function (item) {
                     tbody.append(
                         '<tr>' +
+                        '<td>' + item.id + '</td>' +
                         '<td>' + item.name + '</td>' +
+                        '<td>' + item.purchaseCategory + '</td>' +
                         '<td><input type="text" id="item_' + item.id + '_amount"></td>' +
                         '</tr>');
                 });
@@ -203,9 +212,102 @@ function onOrderTypeSelect() {
         }
     });
 }
-function onStoreSelect(){
-    var selectedStore = selectedStore.find(":selected").text();
-    //todo get store items
+
+function onStoreSelect() {
+    var selectedStoreId = $('#order-store').find(":selected").val();
+    var request = {
+        zoneName: window.localStorage.getItem('zoneName'),
+        storeId: selectedStoreId
+    }
+    $.ajax({
+        type: "GET",
+        data: request,
+        url: "/sdm/pages/storeItems",
+        timeout: 2000,
+        error: function () {
+            console.error("Failed to submit");
+        },
+        success: function (response) {
+            var storeItems = response.storeItems;
+            availableItems = response.storeItems;
+            var tbody = $('#t-body');
+            tbody.empty();
+            storeItems.forEach(function (item) {
+                tbody.append(
+                    '<tr>' +
+                    '<td>' + item.id + '</td>' +
+                    '<td>' + item.name + '</td>' +
+                    '<td>' + item.purchaseCategory + '</td>' +
+                    '<td>' + item.price + '</td>' +
+                    '<td><input type="text" id="item_' + item.id + '_amount"></td>' +
+                    '</tr>');
+            });
+        }
+    });
 }
+
+function placeOrder() {
+    var request;
+    var xCoordinate = $('#x-coordinate').val();
+    var yCoordinate = $('#y-coordinate').val();
+    var date = $('#order-date').val();
+    var items = [];
+    var itemsTable = $('#order-items-table');
+    availableItems.forEach(function (item) {
+        var itemAmount = $('#item_' + item.id + '_amount').val();
+        //todo validation on item amount (a positive double or integer)
+        if (itemAmount) {
+            items.push({
+                itemId: item.id,
+                amount: itemAmount
+            });
+        }
+    });
+    request = {
+        customerId: window.localStorage.getItem('userId'),
+        zoneName: selected_zone_name,
+        xCoordinate: xCoordinate,
+        yCoordinate: yCoordinate,
+        orderDate: date,
+        itemsCount: items.length,
+        orderItemToAmount: items
+    }
+
+    var selection = $('#order-type').find(":selected").text();
+    if (selection === "From Selected Store") {
+        request.storeId = $('#order-store').find(":selected").val();
+    }
+
+
+    $.ajax({
+        type: "POST",
+        url: "/sdm/pages/placeOrder",
+        data: request,
+        cache: false,
+        timeout: 2000,
+        error: function () {
+            console.error("Failed to submit");
+        },
+        success: function (r) {
+            //todo- in case of dynamic display offer
+            //todo handle discounts
+
+        }
+
+    });
+}
+
+// $(document).ready(function(){
+//
+//     $("input").keyup(function(e){
+//         var a=$('#name').val().trim();
+//         if(a!=''){
+//             $('#submit').removeAttr('disabled');
+//         }
+//         else{
+//             $('#submit').attr("disabled","true");
+//         }
+//     });
+// });
 
 
