@@ -140,14 +140,10 @@ public class DTOMapper {
 
     public GetDiscountsResponse createGetDiscountsResponse (Map<Integer, ValidStoreDiscounts> returnDiscounts,
                                                             Map<Integer, SystemStore> systemStores) {
-        List<ValidStoreDiscountsDTO> returnDiscountDTO = returnDiscounts.entrySet()
-                .stream()
-                .map(entry -> {
-                    SystemStore systemStore = systemStores.get(entry.getKey());
-                    return toValidStoreDiscountsDTO(entry.getValue(),
-                            systemStore);
-                }).collect(Collectors.toList());
-
+        List<ValidStoreDiscountsDTO> returnDiscountDTO = returnDiscounts.entrySet().stream().map(entry -> {
+            SystemStore systemStore = systemStores.get(entry.getKey());
+            return toValidStoreDiscountsDTO(entry.getValue(), systemStore);
+        }).collect(Collectors.toList());
 
         return new GetDiscountsResponse(returnDiscountDTO);
     }
@@ -229,10 +225,7 @@ public class DTOMapper {
     }
 
     public GetCustomersResponse toGetCustomersResponse (Map<UUID, SystemCustomer> systemCustomers) {
-        Map<UUID, CustomerDTO> systemCustomersDTO = toDTO(systemCustomers,
-                                                          this::toCustomerDTO,
-                                                          CustomerDTO::getId,
-                                                          customerDTO -> customerDTO);
+        List<CustomerDTO> systemCustomersDTO = systemCustomers.values().stream().map(this::toCustomerDTO).collect(Collectors.toList());
 
         return new GetCustomersResponse(systemCustomersDTO);
     }
@@ -275,13 +268,11 @@ public class DTOMapper {
     // }
     //
     public GetCustomerOrdersResponse toGetCustomerOrdersResponse (Map<UUID, List<SystemOrder>> systemOrders) {
-        Map<UUID, List<OrderDTO>> orders = systemOrders.entrySet()
-                                                       .stream()
-                                                       .collect(Collectors.toMap(Map.Entry::getKey,
-                                                                                 entry -> entry.getValue()
-                                                                                               .stream()
-                                                                                               .map(this::toOrderDTO)
-                                                                                               .collect(Collectors.toList())));
+        List<OrderDTO> orders = systemOrders.entrySet().stream().map(entry -> {
+            UUID orderId = entry.getKey();
+            List<SubOrderDTO> subOrders = entry.getValue().stream().map(this::toSubOrderDTO).collect(Collectors.toList());
+            return new OrderDTO(orderId, subOrders);
+        }).collect(Collectors.toList());
 
         return new GetCustomerOrdersResponse(orders);
     }
@@ -439,24 +430,24 @@ public class DTOMapper {
 
     }
 
-    private OrderDTO toOrderDTO (SystemOrder systemOrder) {
+    private SubOrderDTO toSubOrderDTO (SystemOrder systemOrder) {
         Map<Integer, Double> items = systemOrder.getOrderItems()
                                                 .keySet()
                                                 .stream()
                                                 .collect(Collectors.toMap(PricedItem::getId,
                                                                           pricedItem -> systemOrder.getOrderItems().get(pricedItem)));
-        return new OrderDTO(systemOrder.getStoreName(),
-                            systemOrder.getId(),
-                            systemOrder.getOrderDate(),
-                            toLocationDTO(systemOrder.getOrderLocation()),
-                            items,
-                            systemOrder.getNumOfItemTypes(),
-                            systemOrder.getAmountOfItems(),
-                            systemOrder.getItemsPrice(),
-                            systemOrder.getDeliveryPrice(),
-                            systemOrder.getTotalPrice(),
-                            systemOrder.getStoreName(),
-                            systemOrder.getStoreId());
+        return new SubOrderDTO(systemOrder.getStoreName(),
+                               systemOrder.getId(),
+                               systemOrder.getOrderDate(),
+                               toLocationDTO(systemOrder.getOrderLocation()),
+                               items,
+                               systemOrder.getNumOfItemTypes(),
+                               systemOrder.getAmountOfItems(),
+                               systemOrder.getItemsPrice(),
+                               systemOrder.getDeliveryPrice(),
+                               systemOrder.getTotalPrice(),
+                               systemOrder.getStoreName(),
+                               systemOrder.getStoreId());
 
     }
 
