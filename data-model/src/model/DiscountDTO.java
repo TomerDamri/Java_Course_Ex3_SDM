@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Map;
+import java.util.List;
 
 public class DiscountDTO {
     private final String storeName;
@@ -9,7 +9,7 @@ public class DiscountDTO {
     private final String ifYouBuyItemName;
     private final Double ifYouBuyQuantity;
     protected final DiscountDTO.DiscountType operator;
-    protected final Map<Integer, OfferDTO> offers;
+    protected final List<OfferDTO> offers;
 
     public DiscountDTO (String storeName,
                         String discountName,
@@ -17,7 +17,7 @@ public class DiscountDTO {
                         String ifYouBuyItemName,
                         double ifYouBuyQuantity,
                         String operator,
-                        Map<Integer, OfferDTO> offers) {
+                        List<OfferDTO> offers) {
         this.storeName = storeName;
         this.discountName = discountName;
         this.ifYouBuyItemId = ifYouBuyItemId;
@@ -43,7 +43,7 @@ public class DiscountDTO {
         return operator;
     }
 
-    public Map<Integer, OfferDTO> getOffers () {
+    public List<OfferDTO> getOffers () {
         return offers;
     }
 
