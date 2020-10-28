@@ -16,6 +16,8 @@ public interface ISDMController {
 
     GetCustomersResponse getCustomers ();
 
+    void addStoreToZone (AddStoreToZoneRequest request);
+
     // GetStoresResponse getStores ();
 
     // GetItemsResponse getItems ();

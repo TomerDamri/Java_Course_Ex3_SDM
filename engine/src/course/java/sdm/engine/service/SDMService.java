@@ -1,5 +1,12 @@
 package course.java.sdm.engine.service;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.Part;
+
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
@@ -14,12 +21,6 @@ import model.TransactionDTO;
 import model.User;
 import model.request.*;
 import model.response.*;
-
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class SDMService {
 
@@ -72,16 +73,22 @@ public class SDMService {
 
     /* Feedback */
 
-    private SystemCustomer getCustomerById (UUID customerId) {
-        Map<UUID, SystemCustomer> systemCustomers = sdmDescriptor.getSystemCustomers();
-        if (systemCustomers.containsKey(customerId)) {
-            throw new RuntimeException(String.format("There is no customer in the system with id '%s'", customerId));
-        }
+    /* Add new store to zone */
+    public void addStoreToZone (AddStoreToZoneRequest request) {
+        Zone zone = getZoneByName(request.getZoneName());
+        StoresOwner storesOwner = getStoresOwner(request.getStoreOwnerId());
+        Location newStoreLocation = createLocation(request.getxCoordinate(), request.getyCoordinate());
 
-        return systemCustomers.get(customerId);
+        fileManager.addStoreToZone(storesOwner, zone, newStoreLocation, request);
     }
 
-    /* Feedback */
+    private Location createLocation (Integer xCoordinate, Integer yCoordinate) {
+        if (!isValidLocation(xCoordinate, yCoordinate)) {
+            throw new RuntimeException("The location '%s' that you entered already exist in system");
+        }
+        return new Location(xCoordinate, yCoordinate);
+    }
+    /* Add new store to zone */
 
     /* Users */
 
@@ -396,10 +403,20 @@ public class SDMService {
     // return dtoMapper.toGetStoresResponse(zone.getSystemStores());
     // }
 
+    private SystemCustomer getCustomerById (UUID customerId) {
+        Map<UUID, SystemCustomer> systemCustomers = sdmDescriptor.getSystemCustomers();
+        if (systemCustomers.containsKey(customerId)) {
+            throw new RuntimeException(String.format("There is no customer in the system with id '%s'", customerId));
+        }
+
+        return systemCustomers.get(customerId);
+    }
+
     private boolean isValidLocation (Location userLocation) {
         return !sdmDescriptor.getSystemLocations().containsKey(userLocation);
     }
-//todo - throws null pointer exception
+
+    // todo - throws null pointer exception
     private Map<PricedItem, Double> getPricedItemFromStaticRequest (Zone zone, PlaceOrderRequest request) {
         return request.getOrderItemToAmount()
                       .keySet()

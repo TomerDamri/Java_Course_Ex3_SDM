@@ -1,6 +1,7 @@
 package course.java.sdm.engine.utils.fileManager;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ import course.java.sdm.engine.exceptions.FileNotSaveException;
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
+import model.ItemToAddDTO;
+import model.request.AddStoreToZoneRequest;
 
 public class FileManager {
 
@@ -104,6 +107,43 @@ public class FileManager {
         catch (IOException ex) {
             throw new FileNotLoadedException(ex.getMessage());
         }
+    }
+
+    public void addStoreToZone (StoresOwner storesOwner, Zone zone, Location newStoreLocation, AddStoreToZoneRequest request) {
+
+        Map<Integer, StoreItem> storeItems = createStoreItems(zone, request.getStoreItems());
+        Map<Integer, List<Discount>> storeDiscountsMap = new HashMap<>();
+
+        Store newStore = new Store(request.getStoreName(),
+                                   request.getDeliveryPpk(),
+                                   newStoreLocation,
+                                   storeItems,
+                                   zone.getSystemStores().size() + 1,
+                                   storeDiscountsMap);
+
+        SystemStore newSystemStore = GENERATED_DATA_MAPPER.toSystemStore(storesOwner, newStore);
+        // systemUpdater
+        zone.getSystemStores().put(newSystemStore.getId(), newSystemStore);
+    }
+
+    private Map<Integer, StoreItem> createStoreItems (Zone zone, List<ItemToAddDTO> itemsToAdd) {
+        Map<Integer, SystemItem> systemItems = zone.getSystemItems();
+
+        Map<Integer, StoreItem> newStoreItems = itemsToAdd.stream()
+                                                          .filter(itemToAddDTO -> systemItems.containsKey(itemToAddDTO.getId()))
+                                                          .map(itemToAddDTO -> {
+                                                              Item item = systemItems.get(itemToAddDTO.getId()).getItem();
+
+                                                              return new StoreItem(item, itemToAddDTO.getPrice());
+                                                          })
+                                                          .collect(Collectors.toMap(StoreItem::getId, storeItem -> storeItem));
+
+        if (newStoreItems.size() != itemsToAdd.size()) {
+            throw new RuntimeException(String.format("You entered an item id that not exist in the items collection of '%s' zone",
+                                                     zone.getZoneName()));
+        }
+
+        return newStoreItems;
     }
 
     private SuperDuperMarketDescriptor deserializeFrom (InputStream in) throws JAXBException {
