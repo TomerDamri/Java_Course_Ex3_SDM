@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import course.java.sdm.engine.model.*;
 import model.*;
+import model.request.AddDiscountsToOrderRequest;
+import model.request.ChosenItemDiscount;
+import model.request.ChosenStoreDiscounts;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
 
@@ -406,6 +409,42 @@ public class DTOMapper {
         }).collect(Collectors.toList());
 
         return new ValidStoreDiscountsDTO(systemStore.getName(), systemStore.getId(), validDiscounts);
+    }
+
+    public Map<Integer, ChosenStoreDiscounts> createChosenDiscountsMapFromRequest (AddDiscountsToOrderRequest request) {
+        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = new HashMap<>();
+        request.getChosenDiscounts().forEach(chosenDiscountDTO -> {
+            addChosenDiscountToMap(storeIdToChosenDiscounts, chosenDiscountDTO);
+        });
+        return storeIdToChosenDiscounts;
+    }
+
+    private void addChosenDiscountToMap (Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts,
+                                         model.ChosenDiscountDTO chosenDiscountDTO) {
+        ChosenStoreDiscounts chosenStoreDiscounts;
+        Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts;
+        ChosenItemDiscount newDiscount = new ChosenItemDiscount(chosenDiscountDTO.getDiscountName(),
+                                                                chosenDiscountDTO.getNumOfRealizations(),
+                                                                Optional.of(chosenDiscountDTO.getOrOfferId()));
+        Integer storeId = chosenDiscountDTO.getStoreId();
+        Integer itemId = chosenDiscountDTO.getItemId();
+
+
+        if (storeIdToChosenDiscounts.containsKey(storeId)) {
+            chosenStoreDiscounts = storeIdToChosenDiscounts.get(storeId);
+            itemIdToChosenDiscounts = chosenStoreDiscounts.getItemIdToChosenDiscounts();
+            List<ChosenItemDiscount> chosenItemDiscounts = itemIdToChosenDiscounts.containsKey(itemId) ? itemIdToChosenDiscounts.get(itemId)
+                        : new ArrayList<>();
+            chosenItemDiscounts.add(newDiscount);
+            itemIdToChosenDiscounts.put(itemId, chosenItemDiscounts);
+        }
+        else {
+            itemIdToChosenDiscounts = new HashMap<>();
+            itemIdToChosenDiscounts.put(itemId, Collections.singletonList(newDiscount));
+
+            chosenStoreDiscounts = new ChosenStoreDiscounts(itemIdToChosenDiscounts);
+        }
+        storeIdToChosenDiscounts.put(storeId, chosenStoreDiscounts);
     }
 
     private StoreItemDTO toStoreItemDTO (StoreItem storeItem) {

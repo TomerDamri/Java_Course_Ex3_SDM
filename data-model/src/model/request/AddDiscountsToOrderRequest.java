@@ -1,22 +1,24 @@
 package model.request;
 
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
+
+import model.ChosenDiscountDTO;
 
 public class AddDiscountsToOrderRequest {
     private UUID orderID;
-    private Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts;
+    private List<ChosenDiscountDTO> chosenDiscounts;
 
-    public AddDiscountsToOrderRequest (UUID orderID, Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts) {
+    public AddDiscountsToOrderRequest (UUID orderID, List<ChosenDiscountDTO> chosenDiscounts) {
         this.orderID = orderID;
-        this.storeIdToChosenDiscounts = storeIdToChosenDiscounts;
+        this.chosenDiscounts = chosenDiscounts;
     }
 
     public UUID getOrderID () {
         return orderID;
     }
 
-    public Map<Integer, ChosenStoreDiscounts> getStoreIdToChosenDiscounts () {
-        return storeIdToChosenDiscounts;
+    public List<ChosenDiscountDTO> getChosenDiscounts () {
+        return chosenDiscounts;
     }
 }

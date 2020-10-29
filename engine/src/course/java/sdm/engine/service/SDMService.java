@@ -209,7 +209,8 @@ public class SDMService {
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Zone zone = getZoneByName(tempOrder.getZoneName());
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
-        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = request.getStoreIdToChosenDiscounts();
+
+        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = dtoMapper.createChosenDiscountsMapFromRequest(request);
         Map<Integer, SystemStore> systemStores = zone.getSystemStores();
 
         staticOrders.forEach(( (storeDetails, order) -> {
