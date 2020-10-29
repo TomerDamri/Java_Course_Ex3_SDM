@@ -1,4 +1,5 @@
 var order_id;
+var discounts =[];
 
 $(function () { // onload...do
 
@@ -280,7 +281,6 @@ function placeOrder() {
         request.storeId = $('#order-store').find(":selected").val();
     }
 
-
     $.ajax({
         type: "POST",
         url: "/sdm/pages/placeOrder",
@@ -303,17 +303,17 @@ function placeOrder() {
 
             } else {
                 var dynamicOrderOfferModalBody = $('#dynamicOrderOfferModalBody');
+                dynamicOrderOfferModalBody.empty();
+                dynamicOrderOfferModalBody.append('<h3>This is the offer for your order</h3>');
                 response.dynamicOrderEntityDTO.forEach(storeToOrderFrom => {
-                    dynamicOrderOfferModalBody.empty();
-                    dynamicOrderOfferModalBody.append('<h3>This is the offer for your order</h3>');
                     for (var x in storeToOrderFrom) {
                         if (x === "location") {
 
-                            dynamicOrderOfferModalBody.append('<span> Location: (' + storeToOrderFrom[x]["xCoordinate"] +',' + storeToOrderFrom[x]["yCoordinate"] +')</span>' + '<br>');
+                            dynamicOrderOfferModalBody.append('<span> Location: (' + storeToOrderFrom[x]["xCoordinate"] + ',' + storeToOrderFrom[x]["yCoordinate"] + ')</span>' + '<br>');
                         } else {
-                            var keyName =  x.replace(/([A-Z])/g, ' $1').trim();
+                            var keyName = x.replace(/([A-Z])/g, ' $1').trim();
                             keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
-                                dynamicOrderOfferModalBody.append('<span>' + keyName + ': ' + storeToOrderFrom[x] + '</span>' + '<br>');
+                            dynamicOrderOfferModalBody.append('<span>' + keyName + ': ' + storeToOrderFrom[x] + '</span>' + '<br>');
                         }
                     }
                     dynamicOrderOfferModalBody.append('<br>');
@@ -326,7 +326,7 @@ function placeOrder() {
     });
 }
 
-function confirmDynamicOrder() {
+function getDiscounts() {
     $('#dynamicOrderOfferModal').modal('hide');
     $('#selectDiscountsModal').modal('show');
     $.ajax({
@@ -339,42 +339,104 @@ function confirmDynamicOrder() {
             console.error("Failed to submit");
         },
         success: function (response) {
-        }
-//todo getDiscounts
-//
-//     items.forEach(function (item) {
-//         $('#items-accordion').append(
-//             '<div class="panel-group">' +
-//             '<div class="panel panel-default">' +
-//             '<div class="panel-heading" role="tab" id="heading_' + item.id + '">' +
-//             '<h4 class="panel-title">' +
-//             '<a class="collapsed" data-toggle="collapse" data-parent="#items-accordion" href="#collapse_item_' + item.id + '" aria-expanded="false" aria-controls="#collapse_item_' + item.id + '">' +
-//             item.name +
-//             '</a>' +
-//             '</h4>' +
-//             '</div>' +
-//             '<div id="collapse_item_' + item.id + '" class="panel-collapse collapse">' +
-//             '<ul class="list-group">' +
-//             '<li class="list-group-item">' +
-//             'Item ID :' + item.id +
-//             '</li>' +
-//             '<li class="list-group-item">' +
-//             'Purchase Catagory: ' + item.purchaseCategory +
-//             '</li>' +
-//             '<li class="list-group-item">' +
-//             'Stores Count : ' + item.storesCount +
-//             '</li>' +
-//             '<li class="list-group-item">' +
-//             'Average Price : ' + item.avgPrice +
-//             '</li>' +
-//             '<li class="list-group-item">' +
-//             'Total Number Of Purchases : ' + (item.ordersCount + item.discountOrderCount) +
-//             '</li>' +
-//             '</ul>' +
-//             '</div>' +
-//             '</div>'
+            var storesWithDiscounts = response.storeIdToValidDiscounts;
+            $('#selectDiscountsModalBody').empty();
+            storesWithDiscounts.forEach(function (store) {
+                $('#selectDiscountsModalBody').append(
+                    '<div class="panel-group">' +
+                    '<div class="panel panel-default">' +
+                    '<div class="panel-heading" role="tab" id="heading_' + store.storeId + '">' +
+                    '<h4 class="panel-title">' +
+                    '<a class="collapsed" data-toggle="collapse" data-parent="#discounts-accordion" href="#collapse_store_' + store.storeId + '_items_discounts" aria-expanded="false" aria-controls="#collapse_store_' + store.storeId + '_items_discounts">' +
+                    store.storeName +
+                    '</a>' +
+                    '</h4>' +
+                    '</div>' +
+                    '<div id="collapse_store_' + store.storeId + '_items_discounts" class="panel-collapse collapse">' +
+                    '<ul id="store_' + store.storeId + '_items_discounts" class="list-group">' +
+                    '</ul>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>');
 
+            });
+            storesWithDiscounts.forEach(function (store) {
+                store.validItemsDiscounts.forEach(function (item) {
+                    $('#store_' + store.storeId + '_items_discounts').append(
+                        '<div class="panel-group">' +
+                        '<div class="panel panel-default">' +
+                        '<div class="panel-heading" role="tab">' +
+                        '<h4 class="panel-title">' +
+                        '<a class="collapsed" data-toggle="collapse" data-parent="#store_' + store.storeId + '_items_discounts" href="#collapse_store_' + store.storeId + '_item_' + item.itemId + '_discounts" aria-expanded="false" aria-controls="#collapse_store_' + store.storeId + '_item_' + item.itemId + '_discounts">' +
+                        item.itemName +
+                        '</a>' +
+                        '</h4>' +
+                        '</div>' +
+                        '<div id="collapse_store_' + store.storeId + '_item_' + item.itemId + '_discounts" class="panel-collapse collapse">' +
+                        '<ul id="store_' + store.storeId + '_item_' + item.itemId + '_discounts" class="list-group">' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>');
+                });
+                // });
+                storesWithDiscounts.forEach(function (store) {
+                    store.validItemsDiscounts.forEach(function (item) {
+                        $('#store_' + store.storeId + '_item_' + item.itemId + '_discounts').empty();
+                        item.validDiscounts.forEach(function (discount) {
+                            var thenYouGet;
+                            if (discount.operator === "ONE_OF") {
+                                thenYouGet = '<select id="select_discount_' + discount.discountName + '_offer">' +
+                                    '<option disabled selected value> -- select an option --</option>';
+                                discount.offers.forEach(function (offer) {
+                                    thenYouGet = thenYouGet + '<option id="'+offer.id+'">' + offer.quantity + ' ' + offer.offerItemName + ' ' + 'for additional ' + offer.forAdditional + '</option>';
+
+                                })
+                                thenYouGet = thenYouGet + '</select>';
+                            } else {
+                                thenYouGet = '<div>';
+                                discount.offers.forEach(function (offer) {
+                                    thenYouGet = thenYouGet + '<div>' + offer.quantity + ' ' + offer.offerItemName + ' ' + 'for additional ' + offer.forAdditional + '</div>';
+
+                                })
+                                thenYouGet = thenYouGet + '</div>';
+                            }
+                            $('#store_' + store.storeId + '_item_' + item.itemId + '_discounts').append(
+                                '<ul class="list-group">' +
+                                '<li class="list-group-item">' +
+                                '<h4>Discount Name: ' + discount.discountName +
+                                '</h4>' +
+                                '</li>' +
+                                '<li class="list-group-item">' +
+                                'If You Buy:' + discount.ifYouBuyQuantity + ' ' + discount.ifYouBuyItemName +
+                                '</li>' +
+                                '<li class="list-group-item">' +
+                                'Then You Get:' + thenYouGet +
+                                '</li>' +
+                                '<li class="list-group-item">' +
+                                '<label for="discount_' + discount.discountName + '_amount">Number Of Redeems</label>' +
+                                // <input id="x-coordinate" type="text" class="form-control" required="true">
+                                '<input type="text" id="discount_' + discount.discountName + '_amount">' +
+                                '</li>'+
+                                '</ul>'+
+                              '<button type="button" class="btn" id="'+discount.discountName +'" onclick="addDiscount(id)">Add Discount'
+                            )
+
+                        });
+                    });
+                });
+
+            });
+        }
     });
+}
+
+function addDiscount(discountName){
+    var selectedOffer = $('#select_discount_' + discountName + '_offer');
+    if(selectedOffer != null){
+        //get selecetion
+    }
+    //todo - get
 }
 
 function onModalClose() {

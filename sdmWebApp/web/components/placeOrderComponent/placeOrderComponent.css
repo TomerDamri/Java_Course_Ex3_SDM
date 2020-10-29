@@ -41,3 +41,16 @@ td, .th-class {
     padding: 8px;
     cursor: pointer;
 }
+
+.modal{
+    display: block
+}
+
+/* Important part */
+.modal-dialog{
+    overflow-y: initial
+}
+.modal-body{
+    height: 80vh;
+    overflow-y: auto;
+}

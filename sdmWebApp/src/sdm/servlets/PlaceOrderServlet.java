@@ -21,8 +21,8 @@ import java.util.UUID;
 
 @WebServlet(name = "PlaceOrderServlet", urlPatterns = {"/pages/placeOrder"})
 public class PlaceOrderServlet extends HttpServlet {
-    @Override
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     }
 

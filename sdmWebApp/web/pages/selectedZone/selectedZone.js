@@ -130,7 +130,8 @@ $(function () { // onload...do
                     '</li>' +
                     '</ul>' +
                     '</div>' +
-                    '</div>');
+                    '</div>'
+                    );
 
                     store.orders.forEach(function (order) {
                         var ordersModalBody = $("#store-" + store.id + '-orders');
@@ -151,8 +152,8 @@ $(function () { // onload...do
                             '</li>' +
                             '</ul>' +
                             '</div>' +
+                            '</div>' +
                             '</div>'
-
                         )
                     })
                 }

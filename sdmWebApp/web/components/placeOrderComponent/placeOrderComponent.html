@@ -65,7 +65,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="dynamicOrderOfferModal" role="dialog">
+<div class="modal fade" id="dynamicOrderOfferModal" role="dialog" style="overflow: auto">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -78,7 +78,7 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="onModalClose()">
                     Close
                 </button>
-                <button type="button" class="btn btn-primary" onclick="confirmDynamicOrder()">Submit
+                <button type="button" class="btn btn-primary" onclick="getDiscounts()">Submit
                 </button>
             </div>
         </div>
@@ -89,12 +89,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Place Order </h4>
+                <h4 class="modal-title">Order Discounts </h4>
             </div>
             <div class="modal-body" id="selectDiscountsModalBody">
-                <div id="discounts-stores-accordion" class="latestinfo panel-group col-xs-4" role="tablist" aria-multiselectable="true">
-                    Items
-                </div>
+<!--                <div id="discounts-accordion" class=" panel-group col-xs-4" role="tablist" aria-multiselectable="true">-->
+<!--                </div>-->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="onModalClose()">

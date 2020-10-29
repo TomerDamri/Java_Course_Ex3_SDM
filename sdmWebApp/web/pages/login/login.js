@@ -9,6 +9,9 @@ $(function() { // onload...do
             timeout: 2000,
             error: function(errorObject) {
                 console.error("Failed to login !");
+                if(errorObject.status === 409 ){
+                    alert("Failed to login\nPlease insert a username")
+                }
                 $("#error-placeholder").empty();
                 $("#error-placeholder").append(errorObject.responseText)
             },
