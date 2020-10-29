@@ -1,19 +1,18 @@
 package model.response;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 
 import model.CustomerDTO;
 
 public class GetCustomersResponse {
 
-    Map<UUID, CustomerDTO> systemCustomers;
+    List<CustomerDTO> systemCustomers;
 
-    public GetCustomersResponse (Map<UUID, CustomerDTO> systemCustomers) {
+    public GetCustomersResponse (List<CustomerDTO> systemCustomers) {
         this.systemCustomers = systemCustomers;
     }
 
-    public Map<UUID, CustomerDTO> getSystemCustomers () {
+    public List<CustomerDTO> getSystemCustomers () {
         return systemCustomers;
     }
 }

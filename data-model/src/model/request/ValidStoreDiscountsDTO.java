@@ -1,19 +1,29 @@
 package model.request;
 
-import model.DiscountDTO;
-
 import java.util.List;
-import java.util.Map;
+
+import model.ValidItemDiscountsDTO;
 
 public class ValidStoreDiscountsDTO {
+    private String storeName;
+    private Integer storeId;
+    private List<ValidItemDiscountsDTO> validItemsDiscounts;
 
-    private Map<Integer, List<DiscountDTO>> itemIdToValidStoreDiscounts;
-
-    public ValidStoreDiscountsDTO (Map<Integer, List<DiscountDTO>> itemIdToValidStoreDiscounts) {
-        this.itemIdToValidStoreDiscounts = itemIdToValidStoreDiscounts;
+    public ValidStoreDiscountsDTO (String storeName, Integer storeId, List<ValidItemDiscountsDTO> validItemsDiscounts) {
+        this.storeName = storeName;
+        this.storeId = storeId;
+        this.validItemsDiscounts = validItemsDiscounts;
     }
 
-    public Map<Integer, List<DiscountDTO>> getItemIdToValidStoreDiscounts () {
-        return itemIdToValidStoreDiscounts;
+    public String getStoreName () {
+        return storeName;
+    }
+
+    public Integer getStoreId () {
+        return storeId;
+    }
+
+    public List<ValidItemDiscountsDTO> getValidItemsDiscounts () {
+        return validItemsDiscounts;
     }
 }

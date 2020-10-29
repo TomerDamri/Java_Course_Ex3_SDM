@@ -54,13 +54,15 @@ public class GeneratedDataMapper {
         ArrayList<Store> storesList = new ArrayList<>(stores.values());
         Map<Integer, SystemStore> systemStores = generatedListToMap(storesList,
                                                                     Store::getId,
-                                                                    (store) -> new SystemStore(store,
-                                                                                               storesOwner.getName(),
-                                                                                               storesOwner.getId()),
+                                                                    store -> toSystemStore(storesOwner, store),
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
 
         return new Zone(zoneName, storesOwner.getId(), storesOwner.getName(), systemStores, systemItems);
+    }
+
+    public SystemStore toSystemStore (StoresOwner storesOwner, Store store) {
+        return new SystemStore(store, storesOwner.getName(), storesOwner.getId());
     }
 
     private Map<Integer, SystemItem> toSystemItems (Map<Integer, Item> items, Collection<SystemStore> stores) {

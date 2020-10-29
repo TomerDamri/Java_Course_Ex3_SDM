@@ -1,18 +1,18 @@
 package model.response;
 
-import java.util.Map;
+import java.util.List;
 
 import model.request.ValidStoreDiscountsDTO;
 
 public class GetDiscountsResponse {
 
-    private Map<Integer, ValidStoreDiscountsDTO> storeIdToValidDiscounts;
+    private List<ValidStoreDiscountsDTO> storeIdToValidDiscounts;
 
-    public GetDiscountsResponse (Map<Integer, ValidStoreDiscountsDTO> storeIdToValidDiscounts) {
+    public GetDiscountsResponse (List<ValidStoreDiscountsDTO> storeIdToValidDiscounts) {
         this.storeIdToValidDiscounts = storeIdToValidDiscounts;
     }
 
-    public Map<Integer, ValidStoreDiscountsDTO> getStoreIdToValidDiscounts () {
+    public List<ValidStoreDiscountsDTO> getStoreIdToValidDiscounts () {
         return storeIdToValidDiscounts;
     }
 }

@@ -16,6 +16,11 @@ public class SDMControllerImpl implements ISDMController {
     private SDMService service = new SDMService();
 
     @Override
+    public void addStoreToZone(AddStoreToZoneRequest request) {
+        service.addStoreToZone(request);
+    }
+
+    @Override
     public UUID addUserToSystem (String username, User.UserType userType) {
         return service.addUserToSystem(username, userType);
     }
