@@ -1,23 +1,27 @@
 package sdm.servlets;
 
-import com.google.gson.Gson;
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
-import model.response.GetDiscountsResponse;
-import sdm.utils.ServletUtils;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-@WebServlet(name = "DiscountsServlet", urlPatterns = {"/pages/discounts"})
-public class DiscountsServlet extends HttpServlet {
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+
+import course.java.sdm.engine.controller.ISDMController;
+import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import model.request.AddDiscountsToOrderRequest;
+import model.response.FinalSummaryForOrder;
+import model.response.GetDiscountsResponse;
+import sdm.utils.ServletUtils;
+
+@WebServlet(name = "DiscountsServlet", urlPatterns = { "/pages/discounts" })
+public class DiscountsServlet extends BaseServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
         GetDiscountsResponse getDiscountsResponse = sdmController.getDiscounts(UUID.fromString(request.getParameter("orderId")));
@@ -28,6 +32,14 @@ public class DiscountsServlet extends HttpServlet {
             out.println(json);
             out.flush();
         }
+    }
 
+    @Override
+    protected void doPost (HttpServletRequest request, HttpServletResponse response) {
+        AddDiscountsToOrderRequest addDiscountsToOrderRequest = createRequestFromString(request.getParameter("request"),
+                AddDiscountsToOrderRequest.class);
+        ISDMController controller = getSDMController();
+        FinalSummaryForOrder finalSummaryForOrder = controller.addDiscountsToOrder(addDiscountsToOrderRequest);
+        createJsonResponse(response, finalSummaryForOrder);
     }
 }

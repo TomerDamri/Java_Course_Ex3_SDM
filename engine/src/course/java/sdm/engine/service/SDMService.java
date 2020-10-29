@@ -205,7 +205,7 @@ public class SDMService {
     }
 
     public FinalSummaryForOrder addDiscountsToOrder (AddDiscountsToOrderRequest request) {
-        UUID orderId = request.getOrderID();
+        UUID orderId = request.getOrderId();
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Zone zone = getZoneByName(tempOrder.getZoneName());
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();

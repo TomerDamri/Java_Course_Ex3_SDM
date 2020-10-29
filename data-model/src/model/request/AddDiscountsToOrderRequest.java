@@ -6,16 +6,16 @@ import java.util.UUID;
 import model.ChosenDiscountDTO;
 
 public class AddDiscountsToOrderRequest {
-    private UUID orderID;
+    private UUID orderId;
     private List<ChosenDiscountDTO> chosenDiscounts;
 
-    public AddDiscountsToOrderRequest (UUID orderID, List<ChosenDiscountDTO> chosenDiscounts) {
-        this.orderID = orderID;
+    public AddDiscountsToOrderRequest (UUID orderId, List<ChosenDiscountDTO> chosenDiscounts) {
+        this.orderId = orderId;
         this.chosenDiscounts = chosenDiscounts;
     }
 
-    public UUID getOrderID () {
-        return orderID;
+    public UUID getOrderId() {
+        return orderId;
     }
 
     public List<ChosenDiscountDTO> getChosenDiscounts () {
