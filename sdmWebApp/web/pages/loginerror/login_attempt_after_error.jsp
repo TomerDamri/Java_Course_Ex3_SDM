@@ -37,7 +37,7 @@
             <% } %>
             <% } else {%>
             <h1>Welcome back, <%=usernameFromSession%></h1>
-            <a href="../salesAreas/salesAreas.html">Click here to enter the sales zones</a>
+            <a href="../sellingZones/sellingZones.html">Click here to enter the selling zones</a>
             <br/>
             <a href="login?logout=true" id="logout">logout</a>
             <% }%>

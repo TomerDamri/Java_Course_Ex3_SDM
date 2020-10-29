@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 
 import static sdm.constants.Constants.ZONE;
 
-@WebServlet(name = "SelectedZoneServlet", urlPatterns = { "/pages/salesAreas/selectedZone" })
+@WebServlet(name = "SelectedZoneServlet", urlPatterns = { "/pages/sellingZones/selectedZone" })
 
 public class SelectedZoneServlet extends HttpServlet {
 

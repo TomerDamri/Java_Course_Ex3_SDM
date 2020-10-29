@@ -11,9 +11,9 @@ function refreshUsersList(users) {
     // rebuild the list of users: scan all users and add them to the list of users
     $.each(users || [], function (index, user) {
         console.log("Adding user #" + index + ": " + user.name);
-        //
+        var userType = user.userType === "CUSTOMER" ? "Customer" : "Store Owner";
         //create a new <li> tag with a value in it and append it to the #userslist (div with id=userslist) element
-        $('<li>' + user.name + " " + user.userType.toLowerCase() + '</li>')
+        $('<li>' + user.name + " " + userType + '</li>')
             .appendTo($("#userslist"));
     });
 }
@@ -27,40 +27,40 @@ function ajaxUsersList() {
     });
 }
 
-//add a method to the button in order to make that form use AJAX
-//and not actually submit the form
-$(function () { // onload...do
-    //add a function to the submit event
-    var form = $('#fileform')[0];
-    var data = new FormData(form);
-
+function uploadFile() {
+    var file = $('#fileform')[0];
+    var data = new FormData(file);
     $.ajax({
         type: "POST",
         enctype: 'multipart/form-data',
-        url: this.action,
+        url: '/sdm/pages/sellingZones/uploadFile',
         data: data,
         processData: false,
         contentType: false,
         cache: false,
         timeout: 2000,
-        error: function () {
-            console.error("Failed to submit");
+        // error: function (error) {
+        //     // console.error("Failed to submit");
+        //     alert('Error Uploading File' + error.getResponseHeader());
+        // },
+        error: function (error) {
+            alert("Error occurred while uploading file:\n" + error.responseText);
         },
-        success: function (r) {
+        success: function (response) {
+            alert('File Uploaded Successfully');
         }
     });
-
-    // by default - we'll always return false so it doesn't redirect the user.
-    return false;
-});
+}
 
 $(function () {
     //The users list is refreshed automatically every second
     setInterval(ajaxUsersList, refreshRate);
     setInterval(tableCreate, refreshRate);
+    document.getElementById('sales_areas_table').style.visibility ="hidden";
 });
 
 function initPage() {
+    // $("#sales_areas_table").style = "visibility : hidden";
     $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
     var table = $("#sales_areas_table");
     table.on("click", "td", onAreaClick); // <-- magic!
@@ -79,7 +79,7 @@ function onAreaClick() {
     $.ajax({
         type: "POST",
         enctype: 'multipart/form-data',
-        url: "/sdm/pages/salesAreas/selectedZone",
+        url: "/sdm/pages/sellingZones/selectedZone",
         data: {zone: zone},
         // timeout: 2000,
         error: function (error) {
@@ -99,12 +99,13 @@ function tableCreate() {
     //todo - get zones
     $.ajax({
         type: "GET",
-        url: "/sdm/pages/salesAreas/zonesList",
+        url: "/sdm/pages/sellingZones/zonesList",
         error: function (error) {
             console.error("Failed to submit");
         },
         success: function (r) {
-          var zones = r.systemZones;
+            document.getElementById('sales_areas_table').style.visibility ="visible";
+            var zones = r.systemZones;
             var tableBody = document.getElementsByTagName('tbody')[0];
             while (tableBody.firstChild) {
                 tableBody.removeChild(tableBody.lastChild);

@@ -9,6 +9,7 @@ $(function() { // onload...do
             timeout: 2000,
             error: function(errorObject) {
                 console.error("Failed to login !");
+                $("#error-placeholder").empty();
                 $("#error-placeholder").append(errorObject.responseText)
             },
             /* response = {

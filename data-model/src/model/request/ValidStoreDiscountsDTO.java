@@ -1,11 +1,12 @@
 package model.request;
 
+import model.DiscountDTO;
+
 import java.util.List;
 import java.util.Map;
 
-import model.DiscountDTO;
-
 public class ValidStoreDiscountsDTO {
+
     private Map<Integer, List<DiscountDTO>> itemIdToValidStoreDiscounts;
 
     public ValidStoreDiscountsDTO (Map<Integer, List<DiscountDTO>> itemIdToValidStoreDiscounts) {

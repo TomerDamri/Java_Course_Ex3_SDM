@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
     // context path
     // ( can be fetched from request.getContextPath() ) and then the 'absolute' path from it.
     // Each method with it's pros and cons...
-    private final String SALES_AREAS_URL = "../salesAreas/salesAreas.html";
+    private final String SELLING_ZONES = "../sellingZones/sellingZones.html";
     private final String SIGN_UP_URL = "../signup/signup.html";
     private final String LOGIN_ERROR_URL = "/pages/loginerror/login_attempt_after_error.jsp"; // must start with '/' since will be used in
     // request dispatcher...
@@ -110,7 +110,7 @@ public class LoginServlet extends HttpServlet {
 //                        response.setContentType("application/json");
                         try (PrintWriter out = response.getWriter()) {
                             Gson gson = new Gson();
-                            LoginResponse loginResponse = new LoginResponse(SALES_AREAS_URL, userId, usernameFromParameter, userType);
+                            LoginResponse loginResponse = new LoginResponse(SELLING_ZONES, userId, usernameFromParameter, userType);
                             String json = gson.toJson(loginResponse);
                             out.println(json);
                             out.flush();
@@ -124,7 +124,8 @@ public class LoginServlet extends HttpServlet {
             response.setStatus(200);
             try (PrintWriter out = response.getWriter()) {
                 Gson gson = new Gson();
-                LoginResponse loginResponse = new LoginResponse(SALES_AREAS_URL, null, usernameFromSession, User.UserType.CUSTOMER);
+                //todo- return the real user type
+                LoginResponse loginResponse = new LoginResponse(SELLING_ZONES, null, usernameFromSession, User.UserType.CUSTOMER);
                 String json = gson.toJson(loginResponse);
                 out.println(json);
                 out.flush();
