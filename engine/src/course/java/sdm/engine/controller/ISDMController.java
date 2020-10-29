@@ -11,20 +11,25 @@ import model.request.*;
 import model.response.*;
 
 public interface ISDMController {
-    // void loadFile (String filePath) throws FileNotFoundException;
-    void loadFile (Part part, UUID storesOwnerID) throws IOException;
 
-    GetCustomersResponse getCustomers ();
+    // TODO: 29/10/2020
+    // load / add new data to system
+    void loadFile (Part part, UUID storesOwnerID) throws IOException;
 
     void addStoreToZone (AddStoreToZoneRequest request);
 
-    // GetStoresResponse getStores ();
+    void saveOrdersHistoryToFile (String path);
 
-    // GetItemsResponse getItems ();
+    void loadSystemHistoryToFile (String path);
 
-    GetCustomerOrdersResponse getCustomerOrders (GetCustomerOrdersRequest request);
+    // load / add new data to system
+
+    // TODO: 29/10/2020
+    //Place order
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
+
+    PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request);
 
     GetDiscountsResponse getDiscounts (UUID orderId);
 
@@ -32,25 +37,21 @@ public interface ISDMController {
 
     void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder);
 
-    boolean isFileLoaded ();
+    //Place order
 
-    boolean isValidLocation (final int xCoordinate, final int yCoordinate);
-
-    // GetMapEntitiesResponse getSystemMappableEntities ();
-
-    PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request);
-
-    void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder);
-
-    void saveOrdersHistoryToFile (String path);
-
-    void loadSystemHistoryToFile (String path);
+    // TODO: 29/10/2020
+    // add/delete/update item in store
 
     void addItemToStore (UpdateStoreRequest request);
 
     DeleteItemFromStoreResponse deleteItemFromStore (BaseUpdateStoreRequest request);
 
     void updatePriceOfSelectedItem (UpdateStoreRequest request);
+
+    // add/delete/update item in store
+
+    // TODO: 29/10/2020
+    // users
 
     UUID addUserToSystem (String username, User.UserType userType);
 
@@ -60,19 +61,46 @@ public interface ISDMController {
 
     public boolean isUserExists (String username);
 
-    public GetZonesResponse getZones ();
+    // users
 
-    public GetZoneResponse getZone (String zoneName);
+    // TODO: 29/10/2020
+    // bank account
+    public GetUserTransactionsResponse getUserTransactions (GetUserTransactionsRequest request);
 
     public void deposit (DepositRequest request);
 
     public GetUserBalanceResponse getUserBalance (GetUserBalanceRequest request);
 
-    public GetUserTransactionsResponse getUserTransactions (GetUserTransactionsRequest request);
+    // bank account
+
+    // TODO: 29/10/2020
+    //feedbacks
 
     public void rankOrderStores (RankOrderStoresRequest request);
 
     public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request);
 
+    //feedbacks
+
+    // TODO: 29/10/2020
+    //getters
+    GetCustomersResponse getCustomers ();
+
+    GetCustomerOrdersResponse getCustomerOrders (GetCustomerOrdersRequest request);
+
+    public GetZonesResponse getZones ();
+
+    public GetZoneResponse getZone (String zoneName);
+
     public GetStoreItemsResponse getStoreItems (GetStoreItemsRequest request);
+
+    boolean isFileLoaded ();
+
+    boolean isValidLocation (final int xCoordinate, final int yCoordinate);
+
+    //getters
+
+
+
+
 }

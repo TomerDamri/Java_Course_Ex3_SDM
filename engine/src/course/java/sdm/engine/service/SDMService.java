@@ -52,23 +52,22 @@ public class SDMService {
     }
 
     public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request) {
-        validateFileLoadedToSystem();
+        Zone zone = getZoneByName(request.getZoneName());
         StoresOwner storesOwner = getStoresOwner(request.getStoreOwnerID());
-        Map<String, List<CustomerFeedback>> zoneIdToCustomerFeedbacks = new HashMap<>();
+        List<StoreFeedback> storesFeedbacks = new ArrayList<>();
 
-        storesOwner.getZoneToOwnedStores()
-                   .forEach( (key, value) -> value.values()
-                                                  .forEach(systemStore -> addFeedbacks(zoneIdToCustomerFeedbacks, key, systemStore)));
+        Map<Integer, SystemStore> storeIdToOwnedStore = storesOwner.getZoneToOwnedStores().get(zone.getZoneName());
 
-        return dtoMapper.createGetFeedbackForStoreOwnerResponse(zoneIdToCustomerFeedbacks);
-    }
+        if (!storeIdToOwnedStore.isEmpty()) {
+            storeIdToOwnedStore.values()
+                               .stream()
+                               .filter(systemStore -> !systemStore.getCustomersFeedback().isEmpty())
+                               .forEach(systemStore -> storesFeedbacks.add(new StoreFeedback(systemStore.getId(),
+                                                                                             systemStore.getName(),
+                                                                                             systemStore.getCustomersFeedback())));
+        }
 
-    private void addFeedbacks (Map<String, List<CustomerFeedback>> zoneIdToCustomerFeedbacks, String zoneName, SystemStore systemStore) {
-        List<CustomerFeedback> zoneFeedbacks = zoneIdToCustomerFeedbacks.containsKey(zoneName) ? zoneIdToCustomerFeedbacks.get(zoneName)
-                    : new ArrayList<>();
-        zoneFeedbacks.addAll(systemStore.getCustomersFeedback());
-
-        zoneIdToCustomerFeedbacks.put(zoneName, zoneFeedbacks);
+        return dtoMapper.createGetFeedbackForStoreOwnerResponse(storesFeedbacks);
     }
 
     /* Feedback */
@@ -210,7 +209,8 @@ public class SDMService {
         TempOrder tempOrder = ordersCreator.getTempOrder(orderId);
         Zone zone = getZoneByName(tempOrder.getZoneName());
         Map<StoreDetails, Order> staticOrders = tempOrder.getStaticOrders();
-        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = request.getStoreIdToChosenDiscounts();
+
+        Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts = dtoMapper.createChosenDiscountsMapFromRequest(request);
         Map<Integer, SystemStore> systemStores = zone.getSystemStores();
 
         staticOrders.forEach(( (storeDetails, order) -> {

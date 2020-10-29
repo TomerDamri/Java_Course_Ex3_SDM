@@ -91,11 +91,6 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
-    public void completeDynamicOrder (UUID dynamicOrderId, boolean toConfirmNewDynamicOrder) {
-        // service.completeDynamicOrder(dynamicOrderId, toConfirmNewDynamicOrder);
-    }
-
-    @Override
     public void saveOrdersHistoryToFile (String path) {
         service.saveOrdersHistoryToFile(path);
     }

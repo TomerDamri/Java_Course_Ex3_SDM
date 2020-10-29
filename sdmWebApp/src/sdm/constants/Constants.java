@@ -7,6 +7,9 @@ public class Constants {
     public static final String USER_ID = "user_id";
     public static final String USER_TYPE = "user_type";
     public static final String ZONE = "zone";
+    public static final String ZONE_NAME = "zoneName";
+
+    public static final String AMOUNT = "amount";
 
     public static final int INT_PARAMETER_ERROR = Integer.MIN_VALUE;
 }

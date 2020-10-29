@@ -8,13 +8,13 @@ public class RankOrderStoresRequest {
     private String zoneName;
     private UUID orderId;
     private UUID customerId;
-    private List<OrderStoreRank> orderStoreRanks;
+    private List<StoreRank> storeRanks;
 
-    public RankOrderStoresRequest (String zoneName, UUID orderId, UUID customerId, List<OrderStoreRank> orderStoreRanks) {
+    public RankOrderStoresRequest (String zoneName, UUID orderId, UUID customerId, List<StoreRank> storeRanks) {
         this.zoneName = zoneName;
         this.orderId = orderId;
         this.customerId = customerId;
-        this.orderStoreRanks = orderStoreRanks;
+        this.storeRanks = storeRanks;
     }
 
     public String getZoneName () {
@@ -29,7 +29,7 @@ public class RankOrderStoresRequest {
         return customerId;
     }
 
-    public List<OrderStoreRank> getOrderStoreRanks () {
-        return orderStoreRanks;
+    public List<StoreRank> getOrderStoreRanks () {
+        return storeRanks;
     }
 }

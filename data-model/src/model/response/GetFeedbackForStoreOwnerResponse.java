@@ -2,17 +2,17 @@ package model.response;
 
 import java.util.List;
 
-import model.OrderStoreRankDTO;
+import model.StoreFeedbackDTO;
 
 public class GetFeedbackForStoreOwnerResponse {
 
-    List<OrderStoreRankDTO> orderStoreRanks;
+    List<StoreFeedbackDTO> orderStoreRanks;
 
-    public GetFeedbackForStoreOwnerResponse (List<OrderStoreRankDTO> orderStoreRanks) {
+    public GetFeedbackForStoreOwnerResponse (List<StoreFeedbackDTO> orderStoreRanks) {
         this.orderStoreRanks = orderStoreRanks;
     }
 
-    public List<OrderStoreRankDTO> getOrderStoreRanks () {
+    public List<StoreFeedbackDTO> getOrderStoreRanks () {
         return orderStoreRanks;
     }
 }
