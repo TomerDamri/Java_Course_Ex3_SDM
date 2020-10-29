@@ -1,30 +1,21 @@
 package sdm.servlets;
 
 import static sdm.constants.Constants.AMOUNT;
-import static sdm.constants.Constants.USER_ID;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import com.google.gson.Gson;
 
 import course.java.sdm.engine.controller.ISDMController;
 import model.request.DepositRequest;
 import model.request.GetUserBalanceRequest;
 import model.response.GetUserBalanceResponse;
-import sdm.utils.ServletUtils;
 
 @WebServlet(name = "AccountServlet", urlPatterns = { "/pages/userAccount" })
-public class AccountServlet extends BankServlet {
+public class AccountServlet extends BaseServlet {
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) {
@@ -34,14 +25,7 @@ public class AccountServlet extends BankServlet {
 
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) {
-        Consumer<UUID> getUserBalanceFunc = userId -> {
-            try {
-                processGetUserBalance(request, response, userId);
-            }
-            catch (IOException e) {
-                response.setStatus(500);
-            }
-        };
+        Consumer<UUID> getUserBalanceFunc = userId -> processGetUserBalance(response, userId);
         processRequest(request, response, getUserBalanceFunc);
     }
 
@@ -59,15 +43,9 @@ public class AccountServlet extends BankServlet {
         }
     }
 
-    private void processGetUserBalance (HttpServletRequest request, HttpServletResponse response, UUID userId) throws IOException {
+    private void processGetUserBalance (HttpServletResponse response, UUID userId) {
         ISDMController controller = getSDMController();
         GetUserBalanceResponse getUserBalanceResponse = controller.getUserBalance(new GetUserBalanceRequest(userId));
-        response.setStatus(200);
-        try (PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
-            String json = gson.toJson(getUserBalanceResponse);
-            out.println(json);
-            out.flush();
-        }
+        createJsonResponse(response, getUserBalanceResponse);
     }
 }

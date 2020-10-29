@@ -4,7 +4,7 @@ import java.util.*;
 
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
-import model.request.OrderStoreRank;
+import model.request.StoreRank;
 
 public class SystemUpdater {
 
@@ -272,26 +272,26 @@ public class SystemUpdater {
         updateSystemOrdersAccordingToHistoryFile(ordersFromHistoryFile, zone, systemOrdersBeforeUpdate, systemCustomers);
     }
 
-    public void rankOrderStores (List<OrderStoreRank> orderStoreRanks,
+    public void rankOrderStores (List<StoreRank> storeRanks,
                                  UUID orderId,
                                  List<SystemOrder> subOrders,
                                  SystemCustomer customer,
                                  Zone zone) {
-        orderStoreRanks.forEach(orderStoreRank -> {
-            SystemOrder relatedSubOrder = getSubOrderRelatedToSpecificStore(orderId, subOrders, orderStoreRank);
-            SystemStore relatedStore = getStoreByID(zone, orderStoreRank.getStoreId());
+        storeRanks.forEach(storeRank -> {
+            SystemOrder relatedSubOrder = getSubOrderRelatedToSpecificStore(orderId, subOrders, storeRank);
+            SystemStore relatedStore = getStoreByID(zone, storeRank.getStoreId());
 
             CustomerFeedback customerFeedback = new CustomerFeedback(relatedStore.getId(),
                                                                      customer.getName(),
                                                                      relatedSubOrder.getOrderDate(),
-                                                                     orderStoreRank.getRank(),
-                                                                     orderStoreRank.getTextualFeedback());
+                                                                     storeRank.getRank(),
+                                                                     storeRank.getTextualFeedback());
             relatedStore.getCustomersFeedback().add(customerFeedback);
         });
     }
 
-    private SystemOrder getSubOrderRelatedToSpecificStore (UUID orderId, List<SystemOrder> subOrders, OrderStoreRank orderStoreRank) {
-        Integer storeId = orderStoreRank.getStoreId();
+    private SystemOrder getSubOrderRelatedToSpecificStore (UUID orderId, List<SystemOrder> subOrders, StoreRank storeRank) {
+        Integer storeId = storeRank.getStoreId();
         Optional<SystemOrder> storeOrderOpt = subOrders.stream().filter(subOrder -> subOrder.getStoreId().equals(storeId)).findFirst();
         if (!storeOrderOpt.isPresent()) {
             throw new RuntimeException(String.format("There is no store with id: '%s' in order with id: '%s'", storeId, orderId));

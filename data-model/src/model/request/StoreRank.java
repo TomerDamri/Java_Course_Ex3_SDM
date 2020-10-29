@@ -1,12 +1,12 @@
 package model.request;
 
-public class OrderStoreRank {
+public class StoreRank {
 
     private Integer storeId;
     private double rank;
     private String textualFeedback;
 
-    public OrderStoreRank (Integer storeId, double rank, String textualFeedback) {
+    public StoreRank(Integer storeId, double rank, String textualFeedback) {
         this.storeId = storeId;
         this.rank = rank;
         this.textualFeedback = textualFeedback;
