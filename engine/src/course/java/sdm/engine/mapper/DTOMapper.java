@@ -25,15 +25,20 @@ public class DTOMapper {
         return singletonDTOMapper;
     }
 
-    public GetFeedbackForStoreOwnerResponse createGetFeedbackForStoreOwnerResponse (Map<String, List<CustomerFeedback>> zoneIdToCustomerFeedbacks) {
-        List<OrderStoreRankDTO> orderStoreRanks = new ArrayList<>();
-        zoneIdToCustomerFeedbacks.forEach( (zoneName,
-                                            customerFeedbacksPerZone) -> customerFeedbacksPerZone.forEach(customerFeedback -> orderStoreRanks.add(new OrderStoreRankDTO(zoneName,
-                                                                                                                                                                        customerFeedback.getStoreId(),
-                                                                                                                                                                        customerFeedback.getCustomerName(),
-                                                                                                                                                                        customerFeedback.getOrderDate(),
-                                                                                                                                                                        customerFeedback.getRank(),
-                                                                                                                                                                        customerFeedback.getTextualFeedback()))));
+    public GetFeedbackForStoreOwnerResponse createGetFeedbackForStoreOwnerResponse (List<StoreFeedback> storesFeedbacks) {
+        List<StoreFeedbackDTO> orderStoreRanks = new ArrayList<>();
+
+        storesFeedbacks.forEach(storeFeedback -> {
+            List<CustomerFeedbackDTO> customersFeedbacks = storeFeedback.getCustomersFeedbacks()
+                                                                        .stream()
+                                                                        .map(cFeedback -> new CustomerFeedbackDTO(cFeedback.getOrderDate(),
+                                                                                                                  cFeedback.getRank(),
+                                                                                                                  cFeedback.getTextualFeedback(),
+                                                                                                                  cFeedback.getCustomerName()))
+                                                                        .collect(Collectors.toList());
+
+            orderStoreRanks.add(new StoreFeedbackDTO(storeFeedback.getStoreId(), storeFeedback.getStoreName(), customersFeedbacks));
+        });
 
         return new GetFeedbackForStoreOwnerResponse(orderStoreRanks);
     }
