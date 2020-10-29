@@ -24,7 +24,7 @@ import model.response.GetUserBalanceResponse;
 import sdm.utils.ServletUtils;
 
 @WebServlet(name = "AccountServlet", urlPatterns = { "/pages/userAccount" })
-public class AccountServlet extends HttpServlet {
+public class AccountServlet extends BankServlet {
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) {
@@ -43,26 +43,6 @@ public class AccountServlet extends HttpServlet {
             }
         };
         processRequest(request, response, getUserBalanceFunc);
-    }
-
-    private void processRequest (HttpServletRequest request, HttpServletResponse response, Consumer<UUID> func) {
-        response.setContentType("application/json");
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            // TODO- ADD RESPONSE BODY?
-            response.setStatus(404);
-        }
-        else {
-            Object userIdAttribute = session.getAttribute(USER_ID);
-            if (userIdAttribute == null) {
-                // TODO- ADD RESPONSE BODY?
-                response.setStatus(404);
-            }
-            else {
-                UUID userId = UUID.fromString(userIdAttribute.toString());
-                func.accept(userId);
-            }
-        }
     }
 
     private void processDepositRequest (HttpServletRequest request, HttpServletResponse response, UUID userId) {
@@ -89,10 +69,5 @@ public class AccountServlet extends HttpServlet {
             out.println(json);
             out.flush();
         }
-    }
-
-    private ISDMController getSDMController () {
-        ServletContext servletContext = getServletContext();
-        return ServletUtils.getSDMController(servletContext);
     }
 }
