@@ -2,6 +2,8 @@ package sdm.servlets;
 
 import static sdm.constants.Constants.ZONE_NAME;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import course.java.sdm.engine.controller.ISDMController;
 import model.request.GetFeedbackForStoreOwnerRequest;
 import model.request.RankOrderStoresRequest;
+import model.request.StoreRank;
 import model.response.GetFeedbackForStoreOwnerResponse;
 
 @WebServlet(name = "RateServlet", urlPatterns = { "/pages/rateStore" })
@@ -29,8 +32,7 @@ public class RateServlet extends BaseServlet {
     }
 
     private void processRateStore (HttpServletRequest request, HttpServletResponse response) {
-        RankOrderStoresRequest rateStoreRequest = createRequestFromString(request.getParameter("rateStoreRequest"),
-                                                                         RankOrderStoresRequest.class);
+        RankOrderStoresRequest rateStoreRequest = createRankOrderStoresRequest(request);
         ISDMController controller = getSDMController();
         controller.rankOrderStores(rateStoreRequest);
         response.setStatus(200);
@@ -48,5 +50,22 @@ public class RateServlet extends BaseServlet {
                                                                                                                                              storeOwnerId));
             createJsonResponse(response, feedbackForStoreOwner);
         }
+    }
+
+    protected RankOrderStoresRequest createRankOrderStoresRequest (HttpServletRequest request) {
+        UUID orderId = UUID.fromString(request.getParameter("orderId"));
+        UUID customerId = UUID.fromString(request.getParameter("customerId"));
+        String zoneName = request.getParameter("zoneName");
+        int ranksCount = Integer.parseInt(request.getParameter("ranksCount"));
+        List<StoreRank> storeRanks = new ArrayList<>();
+        for (int i = 0; i < ranksCount; i++) {
+            int storeId = Integer.parseInt(request.getParameter("storeRanks[" + i + "][storeId]"));
+            double rank = Double.parseDouble(request.getParameter("storeRanks[" + i + "][rank]"));
+            String textualFeedback = request.getParameter("chosenDiscounts[" + i + "][textualFeedback]");
+
+            storeRanks.add(new StoreRank(storeId, rank, textualFeedback));
+        }
+
+        return new RankOrderStoresRequest(zoneName, orderId, customerId, storeRanks);
     }
 }

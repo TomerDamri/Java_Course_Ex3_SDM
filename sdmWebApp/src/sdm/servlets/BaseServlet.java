@@ -52,8 +52,4 @@ public abstract class BaseServlet extends HttpServlet {
             response.setStatus(500);
         }
     }
-
-    protected <T> T createRequestFromString (String objStr, Class<T> objClass) {
-        return gson.fromJson(objStr, objClass);
-    }
 }
