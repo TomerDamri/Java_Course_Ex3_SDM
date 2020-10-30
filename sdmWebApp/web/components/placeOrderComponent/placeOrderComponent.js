@@ -1,5 +1,5 @@
 var order_id;
-var discounts =[];
+var discounts = [];
 
 $(function () { // onload...do
 
@@ -389,7 +389,7 @@ function getDiscounts() {
                                 thenYouGet = '<select id="select_discount_' + discount.discountName + '_offer">' +
                                     '<option disabled selected value> -- select an option --</option>';
                                 discount.offers.forEach(function (offer) {
-                                    thenYouGet = thenYouGet + '<option id="'+offer.id+'">' + offer.quantity + ' ' + offer.offerItemName + ' ' + 'for additional ' + offer.forAdditional + '</option>';
+                                    thenYouGet = thenYouGet + '<option id="' + offer.id + '">' + offer.quantity + ' ' + offer.offerItemName + ' ' + 'for additional ' + offer.forAdditional + '</option>';
 
                                 })
                                 thenYouGet = thenYouGet + '</select>';
@@ -411,17 +411,21 @@ function getDiscounts() {
                                 'If You Buy:' + discount.ifYouBuyQuantity + ' ' + discount.ifYouBuyItemName +
                                 '</li>' +
                                 '<li class="list-group-item">' +
-                                'Then You Get:' + thenYouGet +
+                                'Then You Get:' +
+                                '<div class="form-group" >' +
+                                thenYouGet +
+                                '</div>' +
                                 '</li>' +
                                 '<li class="list-group-item">' +
+                                '  <div class="form-group">' +
                                 '<label for="discount_' + discount.discountName + '_amount">Number Of Redeems</label>' +
                                 // <input id="x-coordinate" type="text" class="form-control" required="true">
                                 '<input type="text" id="discount_' + discount.discountName + '_amount">' +
-                                '</li>'+
-                                '</ul>'+
-                              '<button type="button" class="btn" id="'+discount.discountName +'" onclick="addDiscount(id)">Add Discount'
+                                '</div>' +
+                                '</li>' +
+                                '</ul>' +
+                                '<button type="button" class="btn" id="' + store.storeId + '_' + discount.discountName + '_' + item.itemId + '" onclick="addDiscount(id)">Add Discount'
                             )
-
                         });
                     });
                 });
@@ -431,12 +435,58 @@ function getDiscounts() {
     });
 }
 
-function addDiscount(discountName){
-    var selectedOffer = $('#select_discount_' + discountName + '_offer');
-    if(selectedOffer != null){
-        //get selecetion
+function addDiscount(discount) {
+    //todo fix bug offerId num of realizations
+    var splitted = discount.split('_');
+    var storeId = splitted[0];
+    var discountName = splitted[1];
+    var itemId = splitted[2];
+    var orOfferId;
+    try {
+
+        var selectedOffer = $("#select_discount_" + discountName + "_offer");
+        orOfferId = selectedOffer.find(":selected").text();
+    } catch (error) {
+
+
     }
-    //todo - get
+    var discountAmountInput = $("#discount_" + discountName + "_amount");
+    var numOfRealizations = discountAmountInput.val();
+    discounts.push({
+        storeId: storeId,
+        itemId: itemId,
+        discountName: discountName,
+        numOfRealizations: 2,
+        orOfferId: 1
+    })
+    $('#selectDiscountsModalBody').find("input,textarea,select").val('').end();
+    alert("Discount Added Successfully");
+}
+
+//todo - make a generic func that get the modal id
+
+function submitDiscounts() {
+    var request = {
+        orderId: order_id,
+        discountsCount: discounts.length,
+        chosenDiscounts: discounts
+    }
+
+
+    $.ajax({
+        type: "POST",
+        data: request,
+        url: "/sdm/pages/discounts",
+        timeout: 2000,
+        error: function () {
+            console.error("Failed to submit");
+        },
+        success: function (response) {
+
+            //todo display order summary
+        }
+    });
+
 }
 
 function onModalClose() {
