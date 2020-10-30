@@ -16,7 +16,7 @@ public class SDMControllerImpl implements ISDMController {
     private SDMService service = new SDMService();
 
     @Override
-    public void addStoreToZone(AddStoreToZoneRequest request) {
+    public void addStoreToZone (AddStoreToZoneRequest request) {
         service.addStoreToZone(request);
     }
 
@@ -55,10 +55,10 @@ public class SDMControllerImpl implements ISDMController {
         return service.getUserTransactions(request);
     }
 
-     @Override
-     public GetCustomerOrdersResponse getCustomerOrders(GetCustomerOrdersRequest request) {
-     return service.getCustomerOrders(request);
-     }
+    @Override
+    public GetCustomerOrdersResponse getCustomerOrders (GetCustomerOrdersRequest request) {
+        return service.getCustomerOrders(request);
+    }
 
     @Override
     public PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request) {
@@ -141,17 +141,17 @@ public class SDMControllerImpl implements ISDMController {
     }
 
     @Override
-    public void rankOrderStores(RankOrderStoresRequest request) {
+    public void rankOrderStores (RankOrderStoresRequest request) {
         service.rankOrderStores(request);
     }
 
     @Override
-    public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner(GetFeedbackForStoreOwnerRequest request) {
+    public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request) {
         return service.getFeedbackForStoreOwner(request);
     }
 
     @Override
-    public GetStoreItemsResponse getStoreItems(GetStoreItemsRequest request) {
+    public GetStoreItemsResponse getStoreItems (GetStoreItemsRequest request) {
         return service.getStoreItems(request);
     }
 }

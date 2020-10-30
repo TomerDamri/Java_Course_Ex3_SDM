@@ -2,14 +2,14 @@ package model.request;
 
 import java.util.UUID;
 
-public class GetUserBalanceRequest extends AccountRequest{
+public class GetUserBalanceRequest extends AccountRequest {
 
-    public GetUserBalanceRequest(UUID userId) {
+    public GetUserBalanceRequest (UUID userId) {
         super(userId);
     }
 
     @Override
-    public UUID getUserId() {
+    public UUID getUserId () {
         return super.getUserId();
     }
 }

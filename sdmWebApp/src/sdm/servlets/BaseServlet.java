@@ -1,18 +1,20 @@
 package sdm.servlets;
 
-import com.google.gson.Gson;
-import course.java.sdm.engine.controller.ISDMController;
-import sdm.utils.ServletUtils;
-import sdm.utils.SessionUtils;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.UUID;
-import java.util.function.Consumer;
+
+import com.google.gson.Gson;
+
+import course.java.sdm.engine.controller.ISDMController;
+import sdm.utils.ServletUtils;
+import sdm.utils.SessionUtils;
 
 public abstract class BaseServlet extends HttpServlet {
 

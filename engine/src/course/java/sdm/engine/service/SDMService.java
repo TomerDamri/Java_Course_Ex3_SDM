@@ -415,7 +415,8 @@ public class SDMService {
     private boolean isValidLocation (Location userLocation) {
         return !sdmDescriptor.getSystemLocations().containsKey(userLocation);
     }
-//todo - throws null pointer exception
+
+    // todo - throws null pointer exception
     private Map<PricedItem, Double> getPricedItemFromStaticRequest (Zone zone, PlaceOrderRequest request) {
         return request.getOrderItemToAmount()
                       .keySet()

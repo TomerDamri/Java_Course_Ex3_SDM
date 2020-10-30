@@ -8,17 +8,16 @@ $(function () { // onload...do
     }
     selected_zone_name = window.localStorage.getItem('zoneName');
     $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
-    //todo- add if statement according to user type
+    //todo- add if statement according to user type (actions)
     $.ajax({
         type: "GET",
         enctype: 'multipart/form-data',
         url: "/sdm/pages/sellingZones/selectedZone",
         timeout: 2000,
-        error: function () {
-            console.error("Failed to submit");
+        error: function (error) {
+            alert.error(error.responseText);
         },
         success: function (response) {
-            //TODO - UPDATE ZONE DATA IN PAGE 3
             $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
             $("#zone").text(window.localStorage.getItem('zoneName'));
             selected_zone = response;
@@ -177,8 +176,8 @@ function onOrderTypeSelect() {
         enctype: 'multipart/form-data',
         url: "/sdm/pages/sellingZones/selectedZone",
         timeout: 2000,
-        error: function () {
-            console.error("Failed to submit");
+        error: function (error) {
+            alert.error(error.responseText);
         },
         success: function (response) {
             $("#item-price").css("visibility", "hidden");
@@ -227,8 +226,8 @@ function onStoreSelect() {
         data: request,
         url: "/sdm/pages/storeItems",
         timeout: 2000,
-        error: function () {
-            console.error("Failed to submit");
+        error: function (error) {
+            alert.error(error.responseText);
         },
         success: function (response) {
             var storeItems = response.storeItems;
@@ -287,11 +286,11 @@ function placeOrder() {
         data: request,
         cache: false,
         timeout: 2000,
-        error: function () {
-            console.error("Failed to submit");
+        error: function (error) {
+            alert.error(error.responseText);
         },
         success: function (response) {
-            order_id = response.id;
+            order_id = response.orderId;
             var placeOrderModal = $('#placeOrderModal');
             placeOrderModal.modal('hide');
             placeOrderModal.find("input,textarea,select").val('').end();
@@ -300,8 +299,9 @@ function placeOrder() {
             //todo- in case of dynamic display offer
             //todo handle discounts
             if (selection === "From Selected Store") {
-
+                getDiscounts();
             } else {
+                order_id = response.id;
                 var dynamicOrderOfferModalBody = $('#dynamicOrderOfferModalBody');
                 dynamicOrderOfferModalBody.empty();
                 dynamicOrderOfferModalBody.append('<h3>This is the offer for your order</h3>');
@@ -335,8 +335,8 @@ function getDiscounts() {
         data: {orderId: order_id},
         cache: false,
         timeout: 2000,
-        error: function () {
-            console.error("Failed to submit");
+        error: function (error) {
+            alert.error(error.responseText);
         },
         success: function (response) {
             var storesWithDiscounts = response.storeIdToValidDiscounts;
@@ -472,22 +472,42 @@ function submitDiscounts() {
         chosenDiscounts: discounts
     }
 
-
     $.ajax({
         type: "POST",
         data: request,
         url: "/sdm/pages/discounts",
-        timeout: 2000,
-        error: function () {
-            console.error("Failed to submit");
+        // timeout: 2000,
+        error: function (error) {
+            alert.error(error.responseText);
         },
         success: function (response) {
-
-            //todo display order summary
+            $('#selectDiscountsModal').modal('hide');
+            var orderSummaryModal = $('#orderSummaryModal');
+            var orderSummaryModalBody = $('#orderSummaryModalBody');
+            orderSummaryModalBody.empty();
+            orderSummaryModalBody.append('<h3>The order Summary</h3>' +
+                '<span>Items Price: ' + response.totalItemsPrice + '</span><br>' +
+                '<span>Delivery Price: ' + response.totalDeliveryPrice + '</span><br>' +
+                '<span>Total Price: ' + response.totalPrice + '</span><br>'
+            );
+            response.orderIncludedStoresDetails.forEach(store => {
+                for (var x in store) {
+                    if (x === "storePurchasedItems") {
+//todo
+//                             dynamicOrderOfferModalBody.append('<span> Location: (' + storeToOrderFrom[x]["xCoordinate"] + ',' + storeToOrderFrom[x]["yCoordinate"] + ')</span>' + '<br>');
+                    } else {
+                        var keyName = x.replace(/([A-Z])/g, ' $1').trim();
+                        keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
+                        orderSummaryModalBody.append('<span>' + keyName + ': ' + store[x] + '</span>' + '<br>');
+                    }
+                }
+                orderSummaryModalBody.append('<br>');
+            })
+            orderSummaryModal.modal('show');
         }
     });
-
 }
+
 
 function onModalClose() {
     $('#placeOrderModal').find("input,textarea,select").val('').end();

@@ -31,7 +31,7 @@ public class SDMDescriptor {
         return zoneNameToZone;
     }
 
-    public Map<Location, SystemStore> getSystemLocations() {
+    public Map<Location, SystemStore> getSystemLocations () {
         return allSystemLocations;
     }
 }

@@ -7,6 +7,7 @@ public class Item implements Serializable {
     private int id;
     private String name;
     private PurchaseCategory purchaseCategory;
+
     public Item (String name, String purchaseCategory, int id) {
         this.id = id;
         this.name = name;

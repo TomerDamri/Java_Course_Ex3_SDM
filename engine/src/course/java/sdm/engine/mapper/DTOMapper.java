@@ -1,10 +1,5 @@
 package course.java.sdm.engine.mapper;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import course.java.sdm.engine.model.*;
 import model.*;
 import model.request.AddDiscountsToOrderRequest;
@@ -12,6 +7,11 @@ import model.request.ChosenItemDiscount;
 import model.request.ChosenStoreDiscounts;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DTOMapper {
 
@@ -422,6 +422,7 @@ public class DTOMapper {
     private void addChosenDiscountToMap (Map<Integer, ChosenStoreDiscounts> storeIdToChosenDiscounts,
                                          model.ChosenDiscountDTO chosenDiscountDTO) {
         ChosenStoreDiscounts chosenStoreDiscounts;
+        List<ChosenItemDiscount> chosenItemDiscounts;
         Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts;
         ChosenItemDiscount newDiscount = new ChosenItemDiscount(chosenDiscountDTO.getDiscountName(),
                                                                 chosenDiscountDTO.getNumOfRealizations(),
@@ -429,18 +430,18 @@ public class DTOMapper {
         Integer storeId = chosenDiscountDTO.getStoreId();
         Integer itemId = chosenDiscountDTO.getItemId();
 
-
         if (storeIdToChosenDiscounts.containsKey(storeId)) {
             chosenStoreDiscounts = storeIdToChosenDiscounts.get(storeId);
             itemIdToChosenDiscounts = chosenStoreDiscounts.getItemIdToChosenDiscounts();
-            List<ChosenItemDiscount> chosenItemDiscounts = itemIdToChosenDiscounts.containsKey(itemId) ? itemIdToChosenDiscounts.get(itemId)
-                        : new ArrayList<>();
+            chosenItemDiscounts = itemIdToChosenDiscounts.containsKey(itemId) ? itemIdToChosenDiscounts.get(itemId) : new ArrayList<>();
             chosenItemDiscounts.add(newDiscount);
             itemIdToChosenDiscounts.put(itemId, chosenItemDiscounts);
         }
         else {
             itemIdToChosenDiscounts = new HashMap<>();
-            itemIdToChosenDiscounts.put(itemId, Collections.singletonList(newDiscount));
+            chosenItemDiscounts = new ArrayList<>();
+            chosenItemDiscounts.add(newDiscount);
+            itemIdToChosenDiscounts.put(itemId, chosenItemDiscounts);
 
             chosenStoreDiscounts = new ChosenStoreDiscounts(itemIdToChosenDiscounts);
         }

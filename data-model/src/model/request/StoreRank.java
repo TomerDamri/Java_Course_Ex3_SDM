@@ -6,7 +6,7 @@ public class StoreRank {
     private double rank;
     private String textualFeedback;
 
-    public StoreRank(Integer storeId, double rank, String textualFeedback) {
+    public StoreRank (Integer storeId, double rank, String textualFeedback) {
         this.storeId = storeId;
         this.rank = rank;
         this.textualFeedback = textualFeedback;

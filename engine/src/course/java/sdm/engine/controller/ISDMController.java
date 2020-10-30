@@ -25,7 +25,7 @@ public interface ISDMController {
     // load / add new data to system
 
     // TODO: 29/10/2020
-    //Place order
+    // Place order
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
 
@@ -37,7 +37,7 @@ public interface ISDMController {
 
     void completeTheOrder (UUID orderId, boolean toConfirmNewDynamicOrder);
 
-    //Place order
+    // Place order
 
     // TODO: 29/10/2020
     // add/delete/update item in store
@@ -74,16 +74,16 @@ public interface ISDMController {
     // bank account
 
     // TODO: 29/10/2020
-    //feedbacks
+    // feedbacks
 
     public void rankOrderStores (RankOrderStoresRequest request);
 
     public GetFeedbackForStoreOwnerResponse getFeedbackForStoreOwner (GetFeedbackForStoreOwnerRequest request);
 
-    //feedbacks
+    // feedbacks
 
     // TODO: 29/10/2020
-    //getters
+    // getters
     GetCustomersResponse getCustomers ();
 
     GetCustomerOrdersResponse getCustomerOrders (GetCustomerOrdersRequest request);
@@ -98,5 +98,5 @@ public interface ISDMController {
 
     boolean isValidLocation (final int xCoordinate, final int yCoordinate);
 
-    //getters
+    // getters
 }

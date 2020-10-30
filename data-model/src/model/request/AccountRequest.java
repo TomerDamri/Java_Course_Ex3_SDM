@@ -6,11 +6,11 @@ public abstract class AccountRequest {
 
     protected UUID userId;
 
-    protected AccountRequest(UUID userId) {
+    protected AccountRequest (UUID userId) {
         this.userId = userId;
     }
 
-    protected UUID getUserId() {
+    protected UUID getUserId () {
         return userId;
     }
 }

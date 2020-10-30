@@ -13,7 +13,7 @@ public class SystemOrder implements Serializable {
     private final Integer storeId;
     private final UUID customerId;
 
-    public SystemOrder (Order order,String zoneName,  String storeName, Integer storeId, UUID customerId) {
+    public SystemOrder (Order order, String zoneName, String storeName, Integer storeId, UUID customerId) {
         this.order = order;
         this.zoneName = zoneName;
         this.storeName = storeName;
@@ -21,7 +21,7 @@ public class SystemOrder implements Serializable {
         this.customerId = customerId;
     }
 
-    public String getZoneName() {
+    public String getZoneName () {
         return zoneName;
     }
 

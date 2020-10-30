@@ -3,7 +3,6 @@ package model.response;
 import java.util.List;
 
 import model.PricedItemDTO;
-import model.StoreItemDTO;
 
 public class GetStoreItemsResponse {
 

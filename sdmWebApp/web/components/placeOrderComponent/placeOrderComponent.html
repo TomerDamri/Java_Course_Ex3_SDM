@@ -105,5 +105,24 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="OrderSummaryModal" role="dialog" style="overflow-y: auto">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Order Summary</h4>
+            </div>
+            <div class="modal-body" id="OrderSummaryModalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="onModalClose()">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" onclick="getDiscounts()">Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

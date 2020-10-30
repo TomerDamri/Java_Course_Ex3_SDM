@@ -14,7 +14,7 @@ public class AddDiscountsToOrderRequest {
         this.chosenDiscounts = chosenDiscounts;
     }
 
-    public UUID getOrderId() {
+    public UUID getOrderId () {
         return orderId;
     }
 

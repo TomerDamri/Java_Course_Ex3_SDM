@@ -1,7 +1,6 @@
 package course.java.sdm.engine.model;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,7 +23,7 @@ public class StoresOwner {
         return name;
     }
 
-    public Map<String, Map<Integer, SystemStore>> getZoneToOwnedStores() {
+    public Map<String, Map<Integer, SystemStore>> getZoneToOwnedStores () {
         return zoneToOwnedStores;
     }
 }

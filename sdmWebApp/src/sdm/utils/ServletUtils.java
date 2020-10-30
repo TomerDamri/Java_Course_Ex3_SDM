@@ -44,7 +44,7 @@ public class ServletUtils {
         }
     }
 
-    public static <T> T tryParse (String strToParse, Function<String, T> parseFunc, Class<T> klass){
+    public static <T> T tryParse (String strToParse, Function<String, T> parseFunc, Class<T> klass) {
         try {
             return parseFunc.apply(strToParse);
         }

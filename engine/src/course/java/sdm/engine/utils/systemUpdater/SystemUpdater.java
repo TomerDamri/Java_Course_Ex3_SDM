@@ -435,7 +435,7 @@ public class SystemUpdater {
         updateZoneNameToCustomersOrders(orderId, systemCustomer, zoneName);
     }
 
-    private void updateZoneNameToCustomersOrders(UUID orderId, SystemCustomer systemCustomer, String zoneName) {
+    private void updateZoneNameToCustomersOrders (UUID orderId, SystemCustomer systemCustomer, String zoneName) {
         Map<String, List<UUID>> zoneNameToCustomerOrders = systemCustomer.getZoneNameToExecutedOrdersId();
         List<UUID> ordersIds = zoneNameToCustomerOrders.containsKey(zoneName) ? zoneNameToCustomerOrders.get(zoneName) : new ArrayList<>();
         ordersIds.add(orderId);

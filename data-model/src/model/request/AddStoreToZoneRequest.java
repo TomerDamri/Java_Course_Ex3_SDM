@@ -15,7 +15,13 @@ public class AddStoreToZoneRequest {
     private Integer deliveryPpk;
     private List<ItemToAddDTO> storeItems;
 
-    public AddStoreToZoneRequest(UUID storeOwnerId, String zoneName, String storeName, Integer xCoordinate, Integer yCoordinate, Integer deliveryPpk, List<ItemToAddDTO> storeItems) {
+    public AddStoreToZoneRequest (UUID storeOwnerId,
+                                  String zoneName,
+                                  String storeName,
+                                  Integer xCoordinate,
+                                  Integer yCoordinate,
+                                  Integer deliveryPpk,
+                                  List<ItemToAddDTO> storeItems) {
         this.storeOwnerId = storeOwnerId;
         this.zoneName = zoneName;
         this.storeName = storeName;
@@ -25,18 +31,17 @@ public class AddStoreToZoneRequest {
         this.storeItems = storeItems;
     }
 
-    public Integer getxCoordinate() {
+    public Integer getxCoordinate () {
         return xCoordinate;
     }
 
-    public Integer getyCoordinate() {
+    public Integer getyCoordinate () {
         return yCoordinate;
     }
 
     public String getZoneName () {
         return zoneName;
     }
-
 
     public Integer getDeliveryPpk () {
         return deliveryPpk;
@@ -46,11 +51,11 @@ public class AddStoreToZoneRequest {
         return storeItems;
     }
 
-    public String getStoreName() {
+    public String getStoreName () {
         return storeName;
     }
 
-    public UUID getStoreOwnerId() {
+    public UUID getStoreOwnerId () {
         return storeOwnerId;
     }
 }

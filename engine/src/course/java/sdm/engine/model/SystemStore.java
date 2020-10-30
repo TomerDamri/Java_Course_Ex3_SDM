@@ -20,7 +20,7 @@ public class SystemStore implements Serializable, Mappable {
         this.customersFeedback = new ArrayList<>();
     }
 
-    public List<CustomerFeedback> getCustomersFeedback() {
+    public List<CustomerFeedback> getCustomersFeedback () {
         return customersFeedback;
     }
 

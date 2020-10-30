@@ -13,7 +13,12 @@ public class PlaceDynamicOrderRequest {
     private int yCoordinate;
     private Map<Integer, Double> orderItemToAmount;
 
-    public PlaceDynamicOrderRequest(String zoneName, UUID customerId, LocalDate orderDate, int xCoordinate, int yCoordinate, Map<Integer, Double> orderItemToAmount) {
+    public PlaceDynamicOrderRequest (String zoneName,
+                                     UUID customerId,
+                                     LocalDate orderDate,
+                                     int xCoordinate,
+                                     int yCoordinate,
+                                     Map<Integer, Double> orderItemToAmount) {
         this.zoneName = zoneName;
         this.customerId = customerId;
         this.orderDate = orderDate;
@@ -22,32 +27,31 @@ public class PlaceDynamicOrderRequest {
         this.orderItemToAmount = orderItemToAmount;
     }
 
-    public void setOrderItemToAmount(Map<Integer, Double> orderItemToAmount) {
+    public void setOrderItemToAmount (Map<Integer, Double> orderItemToAmount) {
         this.orderItemToAmount = orderItemToAmount;
     }
 
-
-    public Map<Integer, Double> getOrderItemToAmount() {
+    public Map<Integer, Double> getOrderItemToAmount () {
         return orderItemToAmount;
     }
 
-    public int getxCoordinate() {
+    public int getxCoordinate () {
         return xCoordinate;
     }
 
-    public int getyCoordinate() {
+    public int getyCoordinate () {
         return yCoordinate;
     }
 
-    public LocalDate getOrderDate() {
+    public LocalDate getOrderDate () {
         return orderDate;
     }
 
-    public UUID getCustomerId() {
+    public UUID getCustomerId () {
         return customerId;
     }
 
-    public String getZoneName() {
+    public String getZoneName () {
         return zoneName;
     }
 }

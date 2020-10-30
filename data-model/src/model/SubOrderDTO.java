@@ -18,18 +18,18 @@ public class SubOrderDTO {
     private Integer storeId;
     private String zoneName;
 
-    public SubOrderDTO(String zoneName,
-                       UUID id,
-                       LocalDate orderDate,
-                       LocationDTO locationDTO,
-                       Map<Integer, Double> pricedItems,
-                       Integer numOfItemTypes,
-                       Integer amountOfItems,
-                       Double itemsPrice,
-                       Double deliveryPrice,
-                       Double totalPrice,
-                       String storeName,
-                       Integer storeId) {
+    public SubOrderDTO (String zoneName,
+                        UUID id,
+                        LocalDate orderDate,
+                        LocationDTO locationDTO,
+                        Map<Integer, Double> pricedItems,
+                        Integer numOfItemTypes,
+                        Integer amountOfItems,
+                        Double itemsPrice,
+                        Double deliveryPrice,
+                        Double totalPrice,
+                        String storeName,
+                        Integer storeId) {
         this.zoneName = zoneName;
         this.id = id;
         this.orderDate = orderDate;
@@ -83,7 +83,7 @@ public class SubOrderDTO {
         return storeId;
     }
 
-    public String getZoneName() {
+    public String getZoneName () {
         return zoneName;
     }
 
