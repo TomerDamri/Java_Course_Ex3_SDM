@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-
 import course.java.sdm.engine.controller.ISDMController;
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
 import model.ChosenDiscountDTO;
@@ -19,6 +18,13 @@ import model.request.AddDiscountsToOrderRequest;
 import model.response.FinalSummaryForOrder;
 import model.response.GetDiscountsResponse;
 import sdm.utils.ServletUtils;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.UUID;
 
 @WebServlet(name = "DiscountsServlet", urlPatterns = { "/pages/discounts" })
 public class DiscountsServlet extends BaseServlet {
@@ -39,6 +45,7 @@ public class DiscountsServlet extends BaseServlet {
 
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) {
+        response.setContentType("application/json");
         AddDiscountsToOrderRequest addDiscountsToOrderRequest = createAddDiscountsToOrderRequest(request);
         ISDMController controller = getSDMController();
         FinalSummaryForOrder finalSummaryForOrder = controller.addDiscountsToOrder(addDiscountsToOrderRequest);

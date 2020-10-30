@@ -1,21 +1,20 @@
 package sdm.servlets;
 
-import static sdm.constants.Constants.ZONE_NAME;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import course.java.sdm.engine.controller.ISDMController;
 import model.request.GetFeedbackForStoreOwnerRequest;
 import model.request.RankOrderStoresRequest;
 import model.request.StoreRank;
 import model.response.GetFeedbackForStoreOwnerResponse;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import static sdm.constants.Constants.ZONE_NAME;
 
 @WebServlet(name = "RateServlet", urlPatterns = { "/pages/rateStore" })
 public class RateServlet extends BaseServlet {
@@ -39,6 +38,7 @@ public class RateServlet extends BaseServlet {
     }
 
     private void processGetStoreOwnerFeedbackByZone (HttpServletRequest request, HttpServletResponse response, UUID storeOwnerId) {
+        response.setContentType("application/json");
         String zoneName = request.getParameter(ZONE_NAME);
         if (zoneName == null) {
             // TODO- ADD RESPONSE BODY?

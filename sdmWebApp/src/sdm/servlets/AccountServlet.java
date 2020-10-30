@@ -1,18 +1,17 @@
 package sdm.servlets;
 
-import static sdm.constants.Constants.AMOUNT;
-
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import course.java.sdm.engine.controller.ISDMController;
 import model.request.DepositRequest;
 import model.request.GetUserBalanceRequest;
 import model.response.GetUserBalanceResponse;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import static sdm.constants.Constants.AMOUNT;
 
 @WebServlet(name = "AccountServlet", urlPatterns = { "/pages/userAccount" })
 public class AccountServlet extends BaseServlet {
@@ -44,6 +43,7 @@ public class AccountServlet extends BaseServlet {
     }
 
     private void processGetUserBalance (HttpServletResponse response, UUID userId) {
+        response.setContentType("application/json");
         ISDMController controller = getSDMController();
         GetUserBalanceResponse getUserBalanceResponse = controller.getUserBalance(new GetUserBalanceRequest(userId));
         createJsonResponse(response, getUserBalanceResponse);

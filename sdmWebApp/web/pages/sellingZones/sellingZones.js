@@ -56,10 +56,8 @@ $(function () {
     //The users list is refreshed automatically every second
     setInterval(ajaxUsersList, refreshRate);
     setInterval(tableCreate, refreshRate);
-    document.getElementById('sales_areas_table').style.visibility ="hidden";
-});
-
-function initPage() {
+    setInterval(ajaxAccountBalance, refreshRate);
+    document.getElementById('sales_areas_table').style.visibility = "hidden";
     // $("#sales_areas_table").style = "visibility : hidden";
     $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
     var table = $("#sales_areas_table");
@@ -67,10 +65,72 @@ function initPage() {
     var url = "http://dbpedia.org/sparql"
     if (window.localStorage.getItem("userType") === "CUSTOMER") {
         document.getElementById("fileUpload").style.visibility = "hidden";
+        document.getElementById("accountDeposit").style.visibility = "visible";
     } else {
         document.getElementById("fileUpload").style.visibility = "visible";
-
+        document.getElementById("accountDeposit").style.visibility = "hidden";
     }
+});
+
+function ajaxAccountBalance() {
+    $.ajax({
+        type: "GET",
+        url: "/sdm/pages/userAccount",
+        // timeout: 2000,
+        error: function (error) {
+            console.error("Failed to submit");
+        },
+        success: function (response) {
+            $("#balance").text(response.balance);
+        }
+    });
+
+}
+
+function deposit() {
+    var amountToDeposit = $('#deposit').val();
+    $.ajax({
+        type: "POST",
+        data: {amount: amountToDeposit},
+        url: "/sdm/pages/userAccount",
+        // timeout: 2000,
+        error: function (error) {
+            alert(error.responseText);
+        },
+        success: function (response) {
+            alert("Deposit " + amountToDeposit + " Shekels Successfully");
+            $('#deposit').val("").end();
+        }
+    });
+
+}
+
+function displayTransactions() {
+    var displayTransactionsModalBody = $('#displayTransactionsModalBody');
+    displayTransactionsModalBody.empty();
+    $.ajax({
+        type: "GET",
+        url: "/sdm//pages/userTransactions",
+        error: function (error) {
+            alert(error.responseText);
+        },
+        success: function (response) {
+            displayTransactionsModalBody.append('<h3>Your Transactions</h3>');
+            if (response.transactions.length === 0) {
+                alert("There are no transactions to display")
+            } else {
+                response.transactions.forEach(transaction => {
+                    for (var x in transaction) {
+                        var keyName = x.replace(/([A-Z])/g, ' $1').trim();
+                        keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
+                        displayTransactionsModalBody.append('<span>' + keyName + ': ' + transaction[x] + '</span>' + '<br>');
+                    }
+                    displayTransactionsModalBody.append('<br>');
+                })
+                $('#displayTransactionsModal').modal('show');
+            }
+        }
+    });
 }
 
 function onAreaClick() {
@@ -104,7 +164,7 @@ function tableCreate() {
             console.error("Failed to submit");
         },
         success: function (r) {
-            document.getElementById('sales_areas_table').style.visibility ="visible";
+            document.getElementById('sales_areas_table').style.visibility = "visible";
             var zones = r.systemZones;
             var tableBody = document.getElementsByTagName('tbody')[0];
             while (tableBody.firstChild) {
