@@ -55,6 +55,7 @@ public class AccountManager {
 
     public void deposit (UUID userId, double amount) {
         validateAccountExistForUser(userId);
+        validatePositiveAmount(amount);
         updateBalanceForUser(TransactionType.DEPOSIT, amount, userId, LocalDate.now());
     }
 
@@ -91,6 +92,12 @@ public class AccountManager {
     private void validateAccountExistForUser (UUID userId) {
         if (!userIdToUserAccount.containsKey(userId)) {
             throw new RuntimeException(String.format("The user with ID: '%s' don't have user account", userId));
+        }
+    }
+
+    private void validatePositiveAmount (Double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Invalid amount.\nAmount should be positive");
         }
     }
 
