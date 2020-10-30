@@ -1,5 +1,10 @@
 package course.java.sdm.engine.mapper;
 
+import java.time.LocalDate;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import course.java.sdm.engine.model.*;
 import model.*;
 import model.request.AddDiscountsToOrderRequest;
@@ -7,11 +12,6 @@ import model.request.ChosenItemDiscount;
 import model.request.ChosenStoreDiscounts;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
-
-import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class DTOMapper {
 
@@ -85,7 +85,10 @@ public class DTOMapper {
             return toStoreSummaryForOrder(entry.getKey(), currOrder, systemStores.get(entry.getKey().getId()));
         }).collect(Collectors.toList());
 
-        return new FinalSummaryForOrder(totalItemsPrice[0], totalDeliveryPrice[0], totalPrice[0], storesSummaryForOrder);
+        return new FinalSummaryForOrder(Utils.round(totalItemsPrice[0], 2),
+                                        Utils.round(totalDeliveryPrice[0], 2),
+                                        Utils.round(totalPrice[0], 2),
+                                        storesSummaryForOrder);
     }
 
     private StoreSummaryForOrder toStoreSummaryForOrder (StoreDetails storeDetails, Order order, SystemStore systemStore) {
