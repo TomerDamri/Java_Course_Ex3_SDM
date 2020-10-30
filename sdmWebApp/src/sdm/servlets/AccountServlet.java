@@ -1,31 +1,46 @@
 package sdm.servlets;
 
-import course.java.sdm.engine.controller.ISDMController;
-import model.request.DepositRequest;
-import model.request.GetUserBalanceRequest;
-import model.response.GetUserBalanceResponse;
+import static sdm.constants.Constants.AMOUNT;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
-import java.util.function.Consumer;
 
-import static sdm.constants.Constants.AMOUNT;
+import course.java.sdm.engine.controller.ISDMController;
+import model.request.DepositRequest;
+import model.request.GetUserBalanceRequest;
+import model.response.GetUserBalanceResponse;
+import sdm.utils.ServletUtils;
 
 @WebServlet(name = "AccountServlet", urlPatterns = { "/pages/userAccount" })
 public class AccountServlet extends BaseServlet {
 
     @Override
-    protected void doPost (HttpServletRequest request, HttpServletResponse response) {
-        Consumer<UUID> depositFun = userId -> processDepositRequest(request, response, userId);
-        processRequest(request, response, depositFun);
+    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            Consumer<UUID> depositFun = userId -> processDepositRequest(request, response, userId);
+            processRequest(request, response, depositFun);
+        }
+        catch (Exception ex) {
+            response.setStatus(400);
+            response.getWriter().println(ex.getMessage());
+        }
     }
 
     @Override
-    protected void doGet (HttpServletRequest request, HttpServletResponse response) {
-        Consumer<UUID> getUserBalanceFunc = userId -> processGetUserBalance(response, userId);
-        processRequest(request, response, getUserBalanceFunc);
+    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            Consumer<UUID> getUserBalanceFunc = userId -> processGetUserBalance(response, userId);
+            processRequest(request, response, getUserBalanceFunc);
+        }
+        catch (Exception ex) {
+            response.setStatus(400);
+            response.getWriter().println(ex.getMessage());
+        }
     }
 
     private void processDepositRequest (HttpServletRequest request, HttpServletResponse response, UUID userId) {
@@ -35,7 +50,7 @@ public class AccountServlet extends BaseServlet {
             response.setStatus(400);
         }
         else {
-            double amountToDeposit = Double.parseDouble(amountToDepositStr);
+            Double amountToDeposit = ServletUtils.tryParse(amountToDepositStr, Double::parseDouble, Double.class);
             ISDMController controller = getSDMController();
             controller.deposit(new DepositRequest(userId, amountToDeposit));
             response.setStatus(200);

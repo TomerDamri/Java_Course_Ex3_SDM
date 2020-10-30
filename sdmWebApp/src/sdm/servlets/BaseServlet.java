@@ -26,7 +26,7 @@ public abstract class BaseServlet extends HttpServlet {
             response.setStatus(404);
         }
         else {
-            UUID userId = UUID.fromString(userIdStr);
+            UUID userId = ServletUtils.tryParse(userIdStr, UUID::fromString, UUID.class);
             func.accept(userId);
         }
     }

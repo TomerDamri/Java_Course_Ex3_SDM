@@ -1,25 +1,23 @@
 package sdm.servlets;
 
-import com.google.gson.Gson;
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
+import static sdm.constants.Constants.USERNAME;
+import static sdm.constants.Constants.USER_ROLE;
+
+import java.io.IOException;
+import java.util.UUID;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import course.java.sdm.engine.controller.ISDMController;
 import model.User;
 import model.response.LoginResponse;
 import sdm.constants.Constants;
 import sdm.utils.ServletUtils;
 import sdm.utils.SessionUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.UUID;
-
-import static sdm.constants.Constants.USERNAME;
-import static sdm.constants.Constants.USER_ROLE;
-
-public class LoginServlet extends HttpServlet {
+public class LoginServlet extends BaseServlet {
 
     // urls that starts with forward slash '/' are considered absolute
     // urls that doesn't start with forward slash '/' are considered relative to the place where this
@@ -35,88 +33,91 @@ public class LoginServlet extends HttpServlet {
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @param request
+     *        servlet request
+     * @param response
+     *        servlet response
+     * @throws ServletException
+     *         if a servlet-specific error occurs
+     * @throws IOException
+     *         if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        String usernameFromSession = SessionUtils.getUsername(request);
-        SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
+    protected void processRequest (HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            response.setContentType("application/json");
+            String usernameFromSession = SessionUtils.getUsername(request);
+            ISDMController sdmController = getSDMController();
 
-        if (usernameFromSession == null) { // user is not logged in yet
+            if (usernameFromSession == null) { // user is not logged in yet
 
-            String usernameFromParameter = request.getParameter(USERNAME);
-            String userRoleFromParameter = request.getParameter(USER_ROLE);
-            if (usernameFromParameter == null || usernameFromParameter.isEmpty()) {
-                // no username in session and no username in parameter - not standard situation. it's a conflict
-                // stands for conflict in server state
-                response.setStatus(409);
-            } else {
-                // normalize the username value
-                usernameFromParameter = usernameFromParameter.trim();
+                String usernameFromParameter = request.getParameter(USERNAME);
+                String userRoleFromParameter = request.getParameter(USER_ROLE);
+                if (usernameFromParameter == null || usernameFromParameter.isEmpty()) {
+                    // no username in session and no username in parameter - not standard situation. it's a conflict
+                    // stands for conflict in server state
+                    response.setStatus(409);
+                }
+                else {
+                    // normalize the username value
+                    usernameFromParameter = usernameFromParameter.trim();
 
-                /*
-                 * One can ask why not enclose all the synchronizations inside the userManager object ? Well, the
-                 * atomic action we need to perform here includes both the question (isUserExists) and (potentially)
-                 * the insertion of a new user (addUser). These two actions needs to be considered atomic, and
-                 * synchronizing only each one of them, solely, is not enough. (of course there are other more
-                 * sophisticated and performable means for that (atomic objects etc) but these are not in our scope)
-                 *
-                 * The synchronized is on this instance (the servlet). As the servlet is singleton - it is promised
-                 * that all threads will be synchronized on the very same instance (crucial here)
-                 *
-                 * A better code would be to perform only as little and as necessary things we need here inside the
-                 * synchronized block and avoid do here other not related actions (such as request
-                 * dispatcher\redirection etc. this is shown here in that manner just to stress this issue
-                 */
-                synchronized (this) {
-                    if (sdmController.isUserExists(usernameFromParameter)) {
-                        String errorMessage = "Username " + usernameFromParameter + " already exists. Please enter a different username.";
+                    /*
+                     * One can ask why not enclose all the synchronizations inside the userManager object ? Well, the
+                     * atomic action we need to perform here includes both the question (isUserExists) and (potentially)
+                     * the insertion of a new user (addUser). These two actions needs to be considered atomic, and
+                     * synchronizing only each one of them, solely, is not enough. (of course there are other more
+                     * sophisticated and performable means for that (atomic objects etc) but these are not in our scope)
+                     *
+                     * The synchronized is on this instance (the servlet). As the servlet is singleton - it is promised
+                     * that all threads will be synchronized on the very same instance (crucial here)
+                     *
+                     * A better code would be to perform only as little and as necessary things we need here inside the
+                     * synchronized block and avoid do here other not related actions (such as request
+                     * dispatcher\redirection etc. this is shown here in that manner just to stress this issue
+                     */
+                    synchronized (this) {
+                        if (sdmController.isUserExists(usernameFromParameter)) {
+                            String errorMessage = "Username " + usernameFromParameter
+                                        + " already exists. Please enter a different username.";
 
-                        // stands for unauthorized as there is already such user with this name
-                        response.setStatus(401);
-                        response.getOutputStream().println(errorMessage);
-                    } else {
-                        // add the new user to the users list
+                            // stands for unauthorized as there is already such user with this name
+                            response.setStatus(401);
+                            response.getOutputStream().println(errorMessage);
+                        }
+                        else {
+                            // add the new user to the users list
 
-                        User.UserType userType = userRoleFromParameter.equals("customer") ? User.UserType.CUSTOMER
-                                : User.UserType.STORE_OWNER;
-                        UUID userId = sdmController.addUserToSystem(usernameFromParameter, userType);
-                        // set the username in a session so it will be available on each request
-                        // the true parameter means that if a session object does not exists yet
-                        // create a new one
-                        request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
-                        request.getSession(false).setAttribute(Constants.USER_ID, userId);
-                        request.getSession(false).setAttribute(Constants.USER_TYPE, userType);
+                            User.UserType userType = userRoleFromParameter.equals("customer") ? User.UserType.CUSTOMER
+                                        : User.UserType.STORE_OWNER;
+                            UUID userId = sdmController.addUserToSystem(usernameFromParameter, userType);
+                            // set the username in a session so it will be available on each request
+                            // the true parameter means that if a session object does not exists yet
+                            // create a new one
+                            request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
+                            request.getSession(false).setAttribute(Constants.USER_ID, userId);
+                            request.getSession(false).setAttribute(Constants.USER_TYPE, userType);
 
-                        // redirect the request to the chat room - in order to actually change the URL
-                        System.out.println("On login, request URI is: " + request.getRequestURI());
-                        response.setStatus(200);
-//                        response.setContentType("application/json");
-                        try (PrintWriter out = response.getWriter()) {
-                            Gson gson = new Gson();
+                            // redirect the request to the chat room - in order to actually change the URL
+                            System.out.println("On login, request URI is: " + request.getRequestURI());
                             LoginResponse loginResponse = new LoginResponse(SELLING_ZONES, userId, usernameFromParameter, userType);
-                            String json = gson.toJson(loginResponse);
-                            out.println(json);
-                            out.flush();
+                            createJsonResponse(response, loginResponse);
                         }
                     }
                 }
             }
-        } else {
-            // user is already logged in
-            response.setStatus(200);
-            try (PrintWriter out = response.getWriter()) {
-                Gson gson = new Gson();
+            else {
+                // user is already logged in
                 User.UserType userType = (User.UserType) request.getSession().getAttribute(Constants.USER_TYPE);
-                UUID userId =  UUID.fromString(request.getSession().getAttribute(Constants.USER_ID).toString());
-                LoginResponse loginResponse = new LoginResponse(SELLING_ZONES, userId, usernameFromSession,userType);
-                String json = gson.toJson(loginResponse);
-                out.println(json);
-                out.flush();
+                UUID userId = ServletUtils.tryParse(request.getSession().getAttribute(Constants.USER_ID).toString(),
+                                                    UUID::fromString,
+                                                    UUID.class);
+                LoginResponse loginResponse = new LoginResponse(SELLING_ZONES, userId, usernameFromSession, userType);
+                createJsonResponse(response, loginResponse);
             }
+        }
+        catch (Exception ex) {
+            response.setStatus(400);
+            response.getWriter().println(ex.getMessage());
         }
     }
 
@@ -126,26 +127,34 @@ public class LoginServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @param request
+     *        servlet request
+     * @param response
+     *        servlet response
+     * @throws ServletException
+     *         if a servlet-specific error occurs
+     * @throws IOException
+     *         if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @param request
+     *        servlet request
+     * @param response
+     *        servlet response
+     * @throws ServletException
+     *         if a servlet-specific error occurs
+     * @throws IOException
+     *         if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -155,7 +164,7 @@ public class LoginServlet extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-    public String getServletInfo() {
+    public String getServletInfo () {
         return "Short description";
     }// </editor-fold>
 

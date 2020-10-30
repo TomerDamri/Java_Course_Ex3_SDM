@@ -55,16 +55,6 @@ public class SDMControllerImpl implements ISDMController {
         return service.getUserTransactions(request);
     }
 
-    // @Override
-    // public GetStoresResponse getStores () {
-    // return service.getStores();
-    // }
-    //
-    //// @Override
-    // public GetItemsResponse getItems () {
-    // return service.getItems();
-    // }
-    //
      @Override
      public GetCustomerOrdersResponse getCustomerOrders(GetCustomerOrdersRequest request) {
      return service.getCustomerOrders(request);
@@ -79,11 +69,6 @@ public class SDMControllerImpl implements ISDMController {
     public boolean isValidLocation (final int xCoordinate, final int yCoordinate) {
         return service.isValidLocation(xCoordinate, yCoordinate);
     }
-
-    // @Override
-    // public GetMapEntitiesResponse getSystemMappableEntities () {
-    // return service.getSystemMappableEntities();
-    // }
 
     @Override
     public PlaceDynamicOrderResponse placeDynamicOrder (PlaceDynamicOrderRequest request) {

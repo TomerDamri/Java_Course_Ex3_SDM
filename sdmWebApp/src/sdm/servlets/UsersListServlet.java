@@ -1,30 +1,28 @@
 package sdm.servlets;
 
-import com.google.gson.Gson;
-import course.java.sdm.engine.controller.impl.SDMControllerImpl;
-import model.User;
-import sdm.utils.ServletUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Set;
 
-public class UsersListServlet extends HttpServlet {
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import course.java.sdm.engine.controller.ISDMController;
+import model.User;
+
+public class UsersListServlet extends BaseServlet {
 
     protected void processRequest (HttpServletRequest request, HttpServletResponse response) throws IOException {
         // returning JSON objects, not HTML
-        response.setContentType("application/json");
-        try (PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
-            SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
+        try {
+            response.setContentType("application/json");
+            ISDMController sdmController = getSDMController();
             Set<User> usersList = sdmController.getUsers();
-            String json = gson.toJson(usersList);
-            out.println(json);
-            out.flush();
+            createJsonResponse(response, usersList);
+        }
+        catch (Exception ex) {
+            response.setStatus(400);
+            response.getWriter().println(ex.getMessage());
         }
     }
 
