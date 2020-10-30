@@ -1,7 +1,7 @@
 var order_id;
 var discounts = [];
 
-$(function () { // onload...do
+$(function () { // onload
 
     if (selected_zone_name === window.localStorage.getItem('zoneName')) {
         return;
@@ -15,7 +15,7 @@ $(function () { // onload...do
         url: "/sdm/pages/sellingZones/selectedZone",
         timeout: 2000,
         error: function (error) {
-            alert.error(error.responseText);
+            alert(error.responseText);
         },
         success: function (response) {
             $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
@@ -177,7 +177,7 @@ function onOrderTypeSelect() {
         url: "/sdm/pages/sellingZones/selectedZone",
         timeout: 2000,
         error: function (error) {
-            alert.error(error.responseText);
+            alert(error.responseText);
         },
         success: function (response) {
             $("#item-price").css("visibility", "hidden");
@@ -227,7 +227,7 @@ function onStoreSelect() {
         url: "/sdm/pages/storeItems",
         timeout: 2000,
         error: function (error) {
-            alert.error(error.responseText);
+            alert(error.responseText);
         },
         success: function (response) {
             var storeItems = response.storeItems;
@@ -287,7 +287,7 @@ function placeOrder() {
         cache: false,
         timeout: 2000,
         error: function (error) {
-            alert.error(error.responseText);
+            alert(error.responseText);
         },
         success: function (response) {
             order_id = response.orderId;
@@ -336,7 +336,7 @@ function getDiscounts() {
         cache: false,
         timeout: 2000,
         error: function (error) {
-            alert.error(error.responseText);
+            alert(error.responseText);
         },
         success: function (response) {
             var storesWithDiscounts = response.storeIdToValidDiscounts;
@@ -386,10 +386,10 @@ function getDiscounts() {
                         item.validDiscounts.forEach(function (discount) {
                             var thenYouGet;
                             if (discount.operator === "ONE_OF") {
-                                thenYouGet = '<select id="select_discount_' + discount.discountName + '_offer">' +
+                                thenYouGet = '<select id="select_discount_' + discount.discountName + '_offer" onchange="onOfferSelect(id)">' +
                                     '<option disabled selected value> -- select an option --</option>';
                                 discount.offers.forEach(function (offer) {
-                                    thenYouGet = thenYouGet + '<option id="' + offer.id + '">' + offer.quantity + ' ' + offer.offerItemName + ' ' + 'for additional ' + offer.forAdditional + '</option>';
+                                    thenYouGet = thenYouGet + '<option id="' + offer.id + '" value="' + offer.id + '">' + offer.quantity + ' ' + offer.offerItemName + ' ' + 'for additional ' + offer.forAdditional + '</option>';
 
                                 })
                                 thenYouGet = thenYouGet + '</select>';
@@ -435,37 +435,36 @@ function getDiscounts() {
     });
 }
 
+
 function addDiscount(discount) {
-    //todo fix bug offerId num of realizations
     var splitted = discount.split('_');
     var storeId = splitted[0];
     var discountName = splitted[1];
     var itemId = splitted[2];
     var orOfferId;
-    try {
-
-        var selectedOffer = $("#select_discount_" + discountName + "_offer");
-        orOfferId = selectedOffer.find(":selected").text();
-    } catch (error) {
-
-
+    var selectedId = "select_discount_" + discountName + "_offer";
+    var select = document.getElementById(selectedId);
+    if (select != null) {
+        var option = select.options[select.selectedIndex];
+        orOfferId = option.attributes.id.nodeValue;
     }
-    var discountAmountInput = $("#discount_" + discountName + "_amount");
-    var numOfRealizations = discountAmountInput.val();
+    var inputId = "discount_" + discountName + "_amount";
+    var numOfRealizations = document.getElementById(inputId).value;
     discounts.push({
         storeId: storeId,
         itemId: itemId,
         discountName: discountName,
-        numOfRealizations: 2,
-        orOfferId: 1
+        numOfRealizations: numOfRealizations,
+        orOfferId: orOfferId
     })
     $('#selectDiscountsModalBody').find("input,textarea,select").val('').end();
     alert("Discount Added Successfully");
 }
 
-//todo - make a generic func that get the modal id
 
 function submitDiscounts() {
+    var orderSummaryModal = $('#orderSummaryModal');
+    var orderSummaryModalBody = $('#orderSummaryModalBody');
     var request = {
         orderId: order_id,
         discountsCount: discounts.length,
@@ -478,12 +477,10 @@ function submitDiscounts() {
         url: "/sdm/pages/discounts",
         // timeout: 2000,
         error: function (error) {
-            alert.error(error.responseText);
+            alert(error.responseText);
         },
         success: function (response) {
             $('#selectDiscountsModal').modal('hide');
-            var orderSummaryModal = $('#orderSummaryModal');
-            var orderSummaryModalBody = $('#orderSummaryModalBody');
             orderSummaryModalBody.empty();
             orderSummaryModalBody.append('<h3>The order Summary</h3>' +
                 '<span>Items Price: ' + response.totalItemsPrice + '</span><br>' +
@@ -493,8 +490,13 @@ function submitDiscounts() {
             response.orderIncludedStoresDetails.forEach(store => {
                 for (var x in store) {
                     if (x === "storePurchasedItems") {
-//todo
-//                             dynamicOrderOfferModalBody.append('<span> Location: (' + storeToOrderFrom[x]["xCoordinate"] + ',' + storeToOrderFrom[x]["yCoordinate"] + ')</span>' + '<br>');
+                        dynamicOrderOfferModalBody.append('<span> Order Items: </span>' + '<br>');
+                        for (var y in store[x]) {
+                            var keyName = y.replace(/([A-Z])/g, ' $1').trim();
+                            keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
+                            orderSummaryModalBody.append('<span>' + keyName + ': ' + store[x][y] + '</span>' + '<br>');
+                            dynamicOrderOfferModalBody.append('<span>' + keyName + ': ' + storeToOrderFrom[x][y] + +'</span>' + '<br>');
+                        }
                     } else {
                         var keyName = x.replace(/([A-Z])/g, ' $1').trim();
                         keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
@@ -502,13 +504,14 @@ function submitDiscounts() {
                     }
                 }
                 orderSummaryModalBody.append('<br>');
-            })
-            orderSummaryModal.modal('show');
+            });
+            $('#orderSummaryModal').modal('show');
         }
     });
+    discounts = [];
 }
 
-
+//todo - make a generic func that get the modal id
 function onModalClose() {
     $('#placeOrderModal').find("input,textarea,select").val('').end();
     $('#t-body').html('');
