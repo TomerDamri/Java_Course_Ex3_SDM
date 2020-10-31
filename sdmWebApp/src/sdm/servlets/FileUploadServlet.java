@@ -30,7 +30,7 @@ public class FileUploadServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         Part file = request.getPart("file");
-        UUID userId = ServletUtils.tryParse(SessionUtils.getUserId(request), UUID::fromString, UUID.class);
+        UUID userId = ServletUtils.tryParse(SessionUtils.getUserId(request), UUID::fromString, "user Id", UUID.class);
         ISDMController sdmController = ServletUtils.getSDMController(getServletContext());
         try {
             sdmController.loadFile(file, userId);

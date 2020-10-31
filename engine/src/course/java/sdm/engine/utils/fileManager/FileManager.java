@@ -109,7 +109,7 @@ public class FileManager {
         }
     }
 
-    public void addStoreToZone (StoresOwner storesOwner, Zone zone, Location newStoreLocation, AddStoreToZoneRequest request) {
+    public SystemStore addStoreToZone (StoresOwner storesOwner, Zone zone, Location newStoreLocation, AddStoreToZoneRequest request) {
 
         Map<Integer, StoreItem> storeItems = createStoreItems(zone, request.getStoreItems());
         Map<Integer, List<Discount>> storeDiscountsMap = new HashMap<>();
@@ -124,6 +124,7 @@ public class FileManager {
         SystemStore newSystemStore = GENERATED_DATA_MAPPER.toSystemStore(storesOwner, newStore);
         // systemUpdater
         zone.getSystemStores().put(newSystemStore.getId(), newSystemStore);
+        return newSystemStore;
     }
 
     private Map<Integer, StoreItem> createStoreItems (Zone zone, List<ItemToAddDTO> itemsToAdd) {

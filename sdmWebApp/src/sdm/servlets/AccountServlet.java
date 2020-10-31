@@ -50,7 +50,7 @@ public class AccountServlet extends BaseServlet {
             response.setStatus(400);
         }
         else {
-            Double amountToDeposit = ServletUtils.tryParse(amountToDepositStr, Double::parseDouble, Double.class);
+            Double amountToDeposit = ServletUtils.tryParse(amountToDepositStr, Double::parseDouble, "amount to deposit", Double.class);
             ISDMController controller = getSDMController();
             controller.deposit(new DepositRequest(userId, amountToDeposit));
             response.setStatus(200);

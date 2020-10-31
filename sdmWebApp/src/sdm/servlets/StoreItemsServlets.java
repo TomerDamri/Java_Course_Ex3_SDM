@@ -23,7 +23,7 @@ public class StoreItemsServlets extends BaseServlet {
             response.setContentType("application/json");
             ISDMController controller = getSDMController();
             String zoneName = request.getParameter(ZONE_NAME);
-            Integer storeId = ServletUtils.tryParse(request.getParameter(STORE_ID), Integer::parseInt, Integer.class);
+            Integer storeId = ServletUtils.tryParse(request.getParameter(STORE_ID), Integer::parseInt, "store Id", Integer.class);
             GetStoreItemsResponse getStoreItemsResponse = controller.getStoreItems(new GetStoreItemsRequest(zoneName, storeId));
             createJsonResponse(response, getStoreItemsResponse);
         }

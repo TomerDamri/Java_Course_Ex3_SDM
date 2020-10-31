@@ -36,6 +36,11 @@ public class UserManager {
     public UUID addUser (SDMDescriptor sdmDescriptor, String username, User.UserType userType) {
         UUID id = UUID.randomUUID();
 
+        if (isUserExists(username)) {
+            throw new RuntimeException(String.format("There is another user in the system with name: '%s'.\nPlease enter other name.",
+                                                     username));
+        }
+
         addUserToSDMDescriptor(sdmDescriptor, id, username, userType);
         addUserToManagerCollection(id, username, userType);
         return id;
