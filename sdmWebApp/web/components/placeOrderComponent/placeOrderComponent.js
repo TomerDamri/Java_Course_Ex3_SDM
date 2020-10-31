@@ -533,6 +533,7 @@ function confirmOrder(confirm) {
         },
         success: function (response) {
             alert("Order Created Successfully");
+            location.reload();
             //todo - feedback
 
         }
