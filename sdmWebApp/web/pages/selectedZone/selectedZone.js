@@ -2,14 +2,12 @@ var selected_zone_name;
 var selected_zone;
 var availableItems;
 
-
-$(function () { // onload...do
+$(function () { // onload
     if (selected_zone_name === window.localStorage.getItem('zoneName')) {
         return;
     }
     selected_zone_name = window.localStorage.getItem('zoneName');
     $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
-    //todo- add if statement according to user type
     $.ajax({
         type: "GET",
         enctype: 'multipart/form-data',
@@ -24,6 +22,7 @@ $(function () { // onload...do
             }
             else{
                 $("#newStore").load("../../components/addNewStoreComponent/addNewStoreComponent.html");
+                $("#store-owner-rates").load("../../components/displayFeedbackComponent/displayFeedbackComponent.html");
             }
             var username = window.localStorage.getItem("username");
             $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
@@ -199,10 +198,7 @@ $(function () { // onload...do
                     )
                 });
             });
-
-
         }
     });
-// by default - we'll always return false so it doesn't redirect the user.
     return false;
 });

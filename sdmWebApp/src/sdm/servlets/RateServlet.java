@@ -1,29 +1,30 @@
 package sdm.servlets;
 
-import static sdm.constants.Constants.ZONE_NAME;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import course.java.sdm.engine.controller.ISDMController;
 import model.request.GetFeedbackForStoreOwnerRequest;
 import model.request.RankOrderStoresRequest;
 import model.request.StoreRank;
 import model.response.GetFeedbackForStoreOwnerResponse;
 import sdm.utils.ServletUtils;
+import sdm.utils.SessionUtils;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import static sdm.constants.Constants.ZONE_NAME;
 
 @WebServlet(name = "RateServlet", urlPatterns = { "/pages/rateStore" })
 public class RateServlet extends BaseServlet {
 
     @Override
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setStatus(200);
         try {
             Consumer<UUID> getUserBalanceFunc = userId -> processGetStoreOwnerFeedbackByZone(request, response, userId);
             processRequest(request, response, getUserBalanceFunc);
@@ -69,7 +70,7 @@ public class RateServlet extends BaseServlet {
 
     protected RankOrderStoresRequest createRankOrderStoresRequest (HttpServletRequest request) {
         UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, UUID.class);
-        UUID customerId = ServletUtils.tryParse(request.getParameter("customerId"), UUID::fromString, UUID.class);
+        UUID customerId = ServletUtils.tryParse(SessionUtils.getUserId(request), UUID::fromString, UUID.class);
         String zoneName = request.getParameter("zoneName");
         Integer ranksCount = ServletUtils.tryParse(request.getParameter("ranksCount"), Integer::parseInt, Integer.class);
         List<StoreRank> storeRanks = new ArrayList<>();
@@ -78,7 +79,7 @@ public class RateServlet extends BaseServlet {
                                                     Integer::parseInt,
                                                     Integer.class);
             Double rank = ServletUtils.tryParse(request.getParameter("storeRanks[" + i + "][rank]"), Double::parseDouble, Double.class);
-            String textualFeedback = request.getParameter("chosenDiscounts[" + i + "][textualFeedback]");
+            String textualFeedback = request.getParameter("storeRanks[" + i + "][textualFeedback]");
 
             storeRanks.add(new StoreRank(storeId, rank, textualFeedback));
         }

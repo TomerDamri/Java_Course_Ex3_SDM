@@ -1,173 +1,7 @@
 var order_id;
 var discounts = [];
-
-$(function () { // onload
-
-    if (selected_zone_name === window.localStorage.getItem('zoneName')) {
-        return;
-    }
-    selected_zone_name = window.localStorage.getItem('zoneName');
-    $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
-    //todo- add if statement according to user type (actions)
-    $.ajax({
-        type: "GET",
-        enctype: 'multipart/form-data',
-        url: "/sdm/pages/sellingZones/selectedZone",
-        timeout: 2000,
-        error: function (error) {
-            alert(error.responseText);
-        },
-        success: function (response) {
-            $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
-            $("#zone").text(window.localStorage.getItem('zoneName'));
-            selected_zone = response;
-            var items = response.items;
-            var stores = response.stores;
-            $('#items-accordion').empty();
-            $('#stores-accordion').empty();
-            items.forEach(function (item) {
-                $('#items-accordion').append(
-                    '<div class="panel-group">' +
-                    '<div class="panel panel-default">' +
-                    '<div class="panel-heading" role="tab" id="heading_' + item.id + '">' +
-                    '<h4 class="panel-title">' +
-                    '<a class="collapsed" data-toggle="collapse" data-parent="#items-accordion" href="#collapse_item_' + item.id + '" aria-expanded="false" aria-controls="#collapse_item_' + item.id + '">' +
-                    item.name +
-                    '</a>' +
-                    '</h4>' +
-                    '</div>' +
-                    '<div id="collapse_item_' + item.id + '" class="panel-collapse collapse">' +
-                    '<ul class="list-group">' +
-                    '<li class="list-group-item">' +
-                    'Item ID :' + item.id +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Purchase Catagory: ' + item.purchaseCategory +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Stores Count : ' + item.storesCount +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Average Price : ' + item.avgPrice +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Total Number Of Purchases : ' + (item.ordersCount + item.discountOrderCount) +
-                    '</li>' +
-                    '</ul>' +
-                    '</div>' +
-                    '</div>'
-                );
-            });
-            stores.forEach(function (store) {
-                $('#stores-accordion').append(
-                    '<div class="panel-group">' +
-                    '<div class="panel panel-default">' +
-                    '<div class="panel-heading" role="tab" id="heading_' + store.id + '">' +
-                    '<h4 class="panel-title">' +
-                    '<a class="collapsed" data-toggle="collapse" data-parent="#stores-accordion" href="#collapse_store_' + store.id + '" aria-expanded="false" aria-controls="#collapse_store_' + store.id + '">' +
-                    store.name +
-                    '</a>' +
-                    '</h4>' +
-                    '</div>' +
-                    '<div id="collapse_store_' + store.id + '" class="panel-collapse collapse">' +
-                    '<ul id="parent_' + store.id + '" class="list-group">' +
-                    '<li class="list-group-item">' +
-                    'Store ID :' + store.id +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Store Owner: ' + store.storeOwnerName +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Location : ' + store.location +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Orders Count : ' + store.orders.length +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    'Total Deliveries Payment : ' + (store.totalDeliveriesPayment) +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    ' <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#itemsModal_' + store.id + '">Store Items</button>' +
-                    '<div class="modal fade" id="itemsModal_' + store.id + '" role="dialog">' +
-                    '<div class="modal-dialog">' +
-                    '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-                    '<h4 class="modal-title">Store Items</h4>' +
-                    '</div>' +
-                    '<div class="modal-body" id="store-' + store.id + '-items">' +
-                    '</div>' +
-                    '<div class="modal-footer">' +
-                    '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</li>' +
-                    '<li class="list-group-item">' +
-                    ' <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#ordersModal_' + store.id + '">Store Items</button>' +
-                    '<div class="modal fade" id="ordersModal_' + store.id + '" role="dialog">' +
-                    '<div class="modal-dialog">' +
-                    '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-                    '<h4 class="modal-title">Store Orders</h4>' +
-                    '</div>' +
-                    '<div class="orders-modal-body" id="store-' + store.id + '-items">' +
-                    '</div>' +
-                    '<div class="modal-footer">' +
-                    '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</li>' +
-                    '</ul>' +
-                    '</div>' +
-                    '</div>'
-                );
-            });
-            stores.forEach(function (store) {
-                var itemsModal = $("#store-" + store.id + "-items");
-                store.items.forEach(function (storeItem) {
-                    itemsModal.append(
-                        '<div class="panel-group">' +
-                        '<div class="panel panel-default">' +
-                        '<div class="panel-heading" role="tab" id="heading_' + storeItem.id + '">' +
-                        '<h4 class="panel-title">' +
-                        '<a class="collapsed" data-toggle="collapse" data-parent="#items-accordion" href="#collapse_store_' + store.id + 'item_' + storeItem.id + '" aria-expanded="false" aria-controls="#collapse_store_' + store.id + 'item_' + storeItem.id + '">' +
-                        storeItem.name +
-                        '</a>' +
-                        '</h4>' +
-                        '</div>' +
-                        '<div id="collapse_store_' + store.id + 'item_' + storeItem.id + '" class="panel-collapse collapse">' +
-                        '<ul class="list-group">' +
-                        '<li class="list-group-item">' +
-                        'Item ID :' + storeItem.id +
-                        '</li>' +
-                        '<li class="list-group-item">' +
-                        'Purchase Catagory: ' + storeItem.purchaseCategory +
-                        '</li>' +
-                        '<li class="list-group-item">' +
-                        'Stores Count : ' + storeItem.storesCount +
-                        '</li>' +
-                        '<li class="list-group-item">' +
-                        'Average Price : ' + storeItem.avgPrice +
-                        '</li>' +
-                        '<li class="list-group-item">' +
-                        'Total Number Of Purchases : ' + (storeItem.ordersCount + storeItem.discountOrderCount) +
-                        '</li>' +
-                        '</ul>' +
-                        '</div>' +
-                        '</div>'
-                    )
-                });
-            });
-        }
-    });
-// by default - we'll always return false so it doesn't redirect the user.
-    return false;
-});
+var storeRanks = [];
+var orderSummary;
 
 function onOrderTypeSelect() {
     $('#t-body').html('');
@@ -254,10 +88,9 @@ function placeOrder() {
     var yCoordinate = $('#y-coordinate').val();
     var date = $('#order-date').val();
     var items = [];
-    var itemsTable = $('#order-items-table');
+
     availableItems.forEach(function (item) {
         var itemAmount = $('#item_' + item.id + '_amount').val();
-        //todo validation on item amount (a positive double or integer)
         if (itemAmount) {
             items.push({
                 itemId: item.id,
@@ -265,6 +98,7 @@ function placeOrder() {
             });
         }
     });
+
     request = {
         customerId: window.localStorage.getItem('userId'),
         zoneName: selected_zone_name,
@@ -295,9 +129,6 @@ function placeOrder() {
             placeOrderModal.modal('hide');
             placeOrderModal.find("input,textarea,select").val('').end();
             $('#t-body').html('');
-
-            //todo- in case of dynamic display offer
-            //todo handle discounts
             if (selection === "From Selected Store") {
                 getDiscounts();
             } else {
@@ -318,7 +149,6 @@ function placeOrder() {
                     }
                     dynamicOrderOfferModalBody.append('<br>');
                 })
-
                 $('#dynamicOrderOfferModal').modal('show');
             }
         }
@@ -435,7 +265,6 @@ function getDiscounts() {
     });
 }
 
-
 function addDiscount(discount) {
     var splitted = discount.split('_');
     var storeId = splitted[0];
@@ -461,7 +290,6 @@ function addDiscount(discount) {
     alert("Discount Added Successfully");
 }
 
-
 function submitDiscounts() {
     var orderSummaryModalBody = $('#orderSummaryModalBody');
     var request = {
@@ -479,6 +307,7 @@ function submitDiscounts() {
             alert(error.responseText);
         },
         success: function (response) {
+            orderSummary = response;
             $('#selectDiscountsModal').modal('hide');
             orderSummaryModalBody.empty();
             orderSummaryModalBody.append(
@@ -533,14 +362,93 @@ function confirmOrder(confirm) {
         },
         success: function (response) {
             alert("Order Created Successfully");
-            location.reload();
-            //todo - feedback
+            rateOrder();
+            // location.reload();
 
         }
-    })}
-//todo - make a generic func that get the modal id
-        function onModalClose()
-    {
-        $('#placeOrderModal').find("input,textarea,select").val('').end();
-        $('#t-body').html('');
+    })
+}
+
+function rateOrder() {
+    $('#rateOrderModalBody').append('<p>Rate your order stores or press "Close" to skip</p>');
+    orderSummary.orderIncludedStoresDetails.forEach(store => {
+        $('#rateOrderModalBody').append(
+            '<div class="panel-group">' +
+            '<div class="panel panel-default">' +
+            '<div class="panel-heading" role="tab" id="heading_' + store.storeId + '">' +
+            '<h4 class="panel-title">' +
+            '<a class="collapsed" data-toggle="collapse" data-parent="#rateOrderModalBody" href="#collapse_store_' + store.id + '_rate" aria-expanded="false" aria-controls="#collapse_store_' + store.id + '_rate">' +
+            store.name +
+            '</a>' +
+            '</h4>' +
+            '</div>' +
+            '<div id="collapse_store_' + store.id + '_rate" class="panel-collapse collapse">' +
+            '<label for="store_' + store.id + 'text_rate">Insert Textual Feedback:  </label><br>' +
+            '<input type="text" id="store_' + store.id + 'text_rate"><br>' +
+            '<label for="store_' + store.id + '_rank">Rank Store:  </label><br>' +
+            '<select id="select_store_' + store.id + '_rank">' +
+            '<option disabled selected value> -- select an option --</option>' +
+            '<option>1</option>' +
+            '<option>2</option>' +
+            '<option>3</option>' +
+            '<option>4</option>' +
+            '<option>5</option>' +
+            '</select>' +
+            '<button type="button" class="btn" id="store_' + store.id + '_rate" onclick="addRate(id)">Add Rate</button>' +
+            '</div>' +
+            '</div>' +
+            '</div>');
+    });
+    $('#rateOrderModal').modal('show');
+}
+
+function addRate(store) {
+    var storeId = store.split('_')[1];
+    var selectedId = "select_store_" + storeId + "_rank";
+    var select = document.getElementById(selectedId);
+    var rank;
+    if (select != null) {
+        var option = select.options[select.selectedIndex];
+        rank = option.value;
     }
+    var inputId = 'store_' + storeId + 'text_rate';
+    var textualFeedback = document.getElementById(inputId).value;
+    storeRanks.push({
+            storeId: storeId,
+            rank: rank,
+            textualFeedback: textualFeedback
+        });
+    $('#rateOrderModalBody').find("input,textarea,select").val('').end();
+}
+
+function submitRateOrder() {
+    var request = {
+        orderId: order_id,
+        zoneName: selected_zone_name,
+        ranksCount: storeRanks.length,
+        storeRanks: storeRanks
+    }
+
+    $.ajax({
+        type: "POST",
+        data: request,
+        url: "/sdm/pages/rateStore",
+        // timeout: 2000,
+        error: function (error) {
+            alert(error.responseText);
+        },
+        success: function (response) {
+            alert("Feedback Added Successfully");
+            // location.reload();
+
+        }
+    })
+        storeRanks=[];
+
+}
+
+
+function onModalClose() {
+    $('#placeOrderModal').find("input,textarea,select").val('').end();
+    $('#t-body').html('');
+}
