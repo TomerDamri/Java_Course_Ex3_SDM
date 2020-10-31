@@ -19,8 +19,11 @@ $(function () { // onload...do
             alert(error.responseText);
         },
         success: function (response) {
-            if(window.localStorage.getItem('userType') === "CUSTOMER"){
-            $("#place-order").load("../../components/placeOrderComponent/placeOrderComponent.html");
+            if (window.localStorage.getItem('userType') === "CUSTOMER") {
+                $("#place-order").load("../../components/placeOrderComponent/placeOrderComponent.html");
+            }
+            else{
+                $("#newStore").load("../../components/addNewStoreComponent/addNewStoreComponent.html");
             }
             var username = window.localStorage.getItem("username");
             $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
@@ -111,28 +114,28 @@ $(function () { // onload...do
                     '</li>'
                 );
                 if (store.storeOwnerName === username) {
-                    $('#parent_' + store.id ).append(
-                    '<li class="list-group-item">' +
-                    ' <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#ordersModal_' + store.id + '">Store Orders</button>' +
-                    '<div class="modal fade" id="ordersModal_' + store.id + '" role="dialog">' +
-                    '<div class="modal-dialog">' +
-                    '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-                    '<h4 class="modal-title">Store Orders</h4>' +
-                    '</div>' +
-                    '<div class="orders-modal-body" id="store-' + store.id + '-orders">' +
-                    '</div>' +
-                    '<div class="modal-footer">' +
-                    '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</li>' +
-                    '</ul>' +
-                    '</div>' +
-                    '</div>'
+                    $('#parent_' + store.id).append(
+                        '<li class="list-group-item">' +
+                        ' <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#ordersModal_' + store.id + '">Store Orders</button>' +
+                        '<div class="modal fade" id="ordersModal_' + store.id + '" role="dialog">' +
+                        '<div class="modal-dialog">' +
+                        '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                        '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+                        '<h4 class="modal-title">Store Orders</h4>' +
+                        '</div>' +
+                        '<div class="orders-modal-body" id="store-' + store.id + '-orders">' +
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                        '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>'
                     );
 
                     store.orders.forEach(function (order) {
@@ -143,16 +146,18 @@ $(function () { // onload...do
                             '<div class="panel-heading" role="tab" id="heading_' + order.id + '">' +
                             '<h4 class="panel-title">' +
                             '<a class="collapsed" data-toggle="collapse" data-parent="#items-accordion" href="#collapse_store_' + store.id + 'order_' + order.id + '" aria-expanded="false" aria-controls="#collapse_store_' + store.id + 'order_' + order.id + '">' +
-                            order.name +
+                            order.id +
                             '</a>' +
                             '</h4>' +
                             '</div>' +
                             '<div id="collapse_store_' + store.id + 'order_' + order.id + '" class="panel-collapse collapse">' +
-                            '<ul class="list-group">' +
-                            '<li class="list-group-item">' +
-                            'Order ID :' + order.id +
-                            '</li>' +
-                            '</ul>' +
+                            '<span>Items Quantity: ' + order.amountOfItems + '</span><br>' +
+                            '<span>Delivery Price: ' + order.deliveryPrice + '</span><br>' +
+                            '<span>Items Price: ' + order.itemsPrice + '</span><br>' +
+                            '<span>Order Location: (' + order.location.xCoordinate + ',' + order.location.yCoordinate + ')</span><br>' +
+                            '<span>Number Of Items Types: ' + order.numOfItemTypes + '</span><br>' +
+                            '<span>Parent Order Id: ' + order.parentId + '</span><br>' +
+                            '<span>Total Price: ' + order.totalPrice + '</span><br>' +
                             '</div>' +
                             '</div>' +
                             '</div>'

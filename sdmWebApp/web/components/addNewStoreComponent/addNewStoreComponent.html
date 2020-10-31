@@ -1,0 +1,55 @@
+<html lang="en">
+<head></head>
+<body>
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#newStoreModal"
+        onclick="insertItemsToModal()">Add New Store
+</button>
+<div class="modal fade" id="newStoreModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Store</h4>
+            </div>
+            <div class="modal-body" id="newStoreModalBody">
+                <div class="form-group">
+                    <label for="store-name">Store Name: </label>
+                    <input id="store-name" type="text" class="form-control" required="true">
+                </div>
+                <lable>Insert store Location coordinates</lable>
+                <div class="form-group">
+                    <label for="store-x-coordinate">X Coordinate:</label>
+                    <input id="store-x-coordinate" type="text" class="form-control" required="true">
+                </div>
+                <div class="form-group">
+                    <label for="store-y-coordinate">Y Coordinate:</label>
+                    <input id="store-y-coordinate" type="text" class="form-control" required="true">
+                </div>
+                <div class="form-group">
+                    <label for="store-ppk">PPK: </label>
+                    <input id="store-ppk" type="text" class="form-control" required="true">
+                </div>
+                <label class="control-label" for="store-items-table">Insert price for items you want to sell: </label>
+                <table id="store-items-table" data-toggle="table" data-sort-stable="true">
+                    <thead>
+                    <th data-sortable="true">Id</th>
+                    <th data-sortable="true">Item</th>
+                    <th data-sortable="true">Purchase Category</th>
+                    <th>Price</th>
+                    </thead>
+                    <tbody id="t-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="onModalClose()">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" id="submit" onclick="addStore()">Submit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
