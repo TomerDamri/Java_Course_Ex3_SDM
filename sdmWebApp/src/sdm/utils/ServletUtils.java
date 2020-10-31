@@ -1,11 +1,8 @@
 package sdm.utils;
 
-import static sdm.constants.Constants.INT_PARAMETER_ERROR;
-
 import java.util.function.Function;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
 
@@ -16,18 +13,6 @@ public class ServletUtils {
 
     private static final Object selectedZoneLock = new Object();
     private static final Object sdmControllerLock = new Object();
-
-    public static int getIntParameter (HttpServletRequest request, String name) {
-        String value = request.getParameter(name);
-        if (value != null) {
-            try {
-                return Integer.parseInt(value);
-            }
-            catch (NumberFormatException numberFormatException) {
-            }
-        }
-        return INT_PARAMETER_ERROR;
-    }
 
     public static SDMControllerImpl getSDMController (ServletContext servletContext) {
         synchronized (sdmControllerLock) {

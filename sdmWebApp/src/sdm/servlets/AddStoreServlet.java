@@ -19,7 +19,7 @@ public class AddStoreServlet extends BaseServlet {
     @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            processRateStore(request, response);
+            processAddStoreToSystem(request, response);
         }
         catch (Exception ex) {
             response.setStatus(400);
@@ -27,7 +27,7 @@ public class AddStoreServlet extends BaseServlet {
         }
     }
 
-    private void processRateStore (HttpServletRequest request, HttpServletResponse response) {
+    private void processAddStoreToSystem (HttpServletRequest request, HttpServletResponse response) {
         AddStoreToZoneRequest addStoreRequest = createAddStoreToZoneRequest(request);
         ISDMController controller = getSDMController();
         controller.addStoreToZone(addStoreRequest);
@@ -42,6 +42,10 @@ public class AddStoreServlet extends BaseServlet {
         Integer yCoordinate = ServletUtils.tryParse(request.getParameter("yCoordinate"), Integer::parseInt, Integer.class);
         Integer deliveryPpk = ServletUtils.tryParse(request.getParameter("deliveryPpk"), Integer::parseInt, Integer.class);
         Integer itemsCount = ServletUtils.tryParse(request.getParameter("itemsCount"), Integer::parseInt, Integer.class);
+        if (itemsCount <= 0) {
+            throw new RuntimeException(String.format("Failed to add '%s' store.\nYou have to add at least one item to your new store",
+                                                     storeName));
+        }
         List<ItemToAddDTO> itemsToAdd = new ArrayList<>();
         for (int i = 0; i < itemsCount; i++) {
             Integer itemId = ServletUtils.tryParse(request.getParameter("storeItems[" + i + "][id]"), Integer::parseInt, Integer.class);

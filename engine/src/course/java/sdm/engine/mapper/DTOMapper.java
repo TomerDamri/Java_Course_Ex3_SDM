@@ -427,9 +427,11 @@ public class DTOMapper {
         ChosenStoreDiscounts chosenStoreDiscounts;
         List<ChosenItemDiscount> chosenItemDiscounts;
         Map<Integer, List<ChosenItemDiscount>> itemIdToChosenDiscounts;
+        Optional<Integer> orOfferIdOpt = chosenDiscountDTO.getOrOfferId() != null ? Optional.of(chosenDiscountDTO.getOrOfferId())
+                    : Optional.empty();
         ChosenItemDiscount newDiscount = new ChosenItemDiscount(chosenDiscountDTO.getDiscountName(),
                                                                 chosenDiscountDTO.getNumOfRealizations(),
-                                                                Optional.of(chosenDiscountDTO.getOrOfferId()));
+                                                                orOfferIdOpt);
         Integer storeId = chosenDiscountDTO.getStoreId();
         Integer itemId = chosenDiscountDTO.getItemId();
 
