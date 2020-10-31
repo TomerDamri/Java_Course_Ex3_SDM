@@ -28,6 +28,7 @@ public class DiscountsServlet extends BaseServlet {
             SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
             GetDiscountsResponse getDiscountsResponse = sdmController.getDiscounts(ServletUtils.tryParse(request.getParameter("orderId"),
                                                                                                          UUID::fromString,
+                                                                                                         "order Id",
                                                                                                          UUID.class));
             createJsonResponse(response, getDiscountsResponse);
         }
@@ -53,23 +54,30 @@ public class DiscountsServlet extends BaseServlet {
     }
 
     private AddDiscountsToOrderRequest createAddDiscountsToOrderRequest (HttpServletRequest request) {
-        UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, UUID.class);
+        UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, "order Id", UUID.class);
         ;
-        Integer discountsCount = ServletUtils.tryParse(request.getParameter("discountsCount"), Integer::parseInt, Integer.class);
+        Integer discountsCount = ServletUtils.tryParse(request.getParameter("discountsCount"),
+                                                       Integer::parseInt,
+                                                       "discounts count",
+                                                       Integer.class);
         List<ChosenDiscountDTO> chosenDiscounts = new ArrayList<>();
         for (int i = 0; i < discountsCount; i++) {
             Integer storeId = ServletUtils.tryParse(request.getParameter("chosenDiscounts[" + i + "][storeId]"),
                                                     Integer::parseInt,
+                                                    "store Id",
                                                     Integer.class);
             Integer itemId = ServletUtils.tryParse(request.getParameter("chosenDiscounts[" + i + "][itemId]"),
                                                    Integer::parseInt,
+                                                   "item Id",
                                                    Integer.class);
             String discountName = request.getParameter("chosenDiscounts[" + i + "][discountName]");
             Integer numOfRealizations = ServletUtils.tryParse(request.getParameter("chosenDiscounts[" + i + "][numOfRealizations]"),
                                                               Integer::parseInt,
+                                                              "number of realizations",
                                                               Integer.class);
             String orOfferIdStr = request.getParameter("chosenDiscounts[" + i + "][orOfferId]");
-            Integer orOfferId = orOfferIdStr != null ? ServletUtils.tryParse(orOfferIdStr, Integer::parseInt, Integer.class) : null;
+            Integer orOfferId = orOfferIdStr != null ? ServletUtils.tryParse(orOfferIdStr, Integer::parseInt, "or offer id", Integer.class)
+                        : null;
 
             chosenDiscounts.add(new ChosenDiscountDTO(storeId, itemId, discountName, numOfRealizations, orOfferId));
         }

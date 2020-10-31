@@ -78,7 +78,8 @@ public class SDMService {
         StoresOwner storesOwner = getStoresOwner(request.getStoreOwnerId());
         Location newStoreLocation = createLocation(request.getxCoordinate(), request.getyCoordinate());
 
-        fileManager.addStoreToZone(storesOwner, zone, newStoreLocation, request);
+        SystemStore newSystemStore = fileManager.addStoreToZone(storesOwner, zone, newStoreLocation, request);
+        systemUpdater.updateSystemItemsAfterAddingNewStore(newSystemStore, zone.getSystemItems(), zone.getSystemStores());
     }
 
     private Location createLocation (Integer xCoordinate, Integer yCoordinate) {

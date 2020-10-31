@@ -29,12 +29,15 @@ public class ServletUtils {
         }
     }
 
-    public static <T> T tryParse (String strToParse, Function<String, T> parseFunc, Class<T> klass) {
+    public static <T> T tryParse (String strToParse, Function<String, T> parseFunc, String propertyName, Class<T> klass) {
         try {
             return parseFunc.apply(strToParse);
         }
         catch (Exception ex) {
-            throw new RuntimeException(String.format("You have to enter a valid '%s'", klass.getSimpleName()));
+            throw new RuntimeException(String.format("The value: '%s' is invalid for the property '%s'.\nYou have to enter a valid '%s'.",
+                                                     strToParse,
+                                                     propertyName,
+                                                     klass.getSimpleName()));
         }
     }
 }

@@ -110,6 +110,16 @@ public class SystemUpdater {
         SYSTEM_UPDATER_VALIDATOR.validateStoreExistInSystem(storeId, systemStores);
     }
 
+    public void updateSystemItemsAfterAddingNewStore (SystemStore newStore,
+                                                      Map<Integer, SystemItem> zoneItems,
+                                                      Map<Integer, SystemStore> zoneStores) {
+
+        Map<Integer, StoreItem> newStoreItems = newStore.getItemIdToStoreItem();
+        newStoreItems.forEach( (itemId, storeItem) -> {
+            updateSystemItemAfterAddingToStore(itemId, newStore.getId(), storeItem.getPrice(), zoneStores, zoneItems.get(itemId));
+        });
+    }
+
     private void updateSystemItemAfterAddingToStore (Integer itemId,
                                                      Integer storeId,
                                                      Integer itemPrice,

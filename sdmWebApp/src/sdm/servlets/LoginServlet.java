@@ -89,6 +89,7 @@ public class LoginServlet extends BaseServlet {
 
                             User.UserType userType = userRoleFromParameter.equals("customer") ? User.UserType.CUSTOMER
                                         : User.UserType.STORE_OWNER;
+                            usernameFromParameter = usernameFromParameter.toLowerCase();
                             UUID userId = sdmController.addUserToSystem(usernameFromParameter, userType);
                             // set the username in a session so it will be available on each request
                             // the true parameter means that if a session object does not exists yet
@@ -110,6 +111,7 @@ public class LoginServlet extends BaseServlet {
                 User.UserType userType = (User.UserType) request.getSession().getAttribute(Constants.USER_TYPE);
                 UUID userId = ServletUtils.tryParse(request.getSession().getAttribute(Constants.USER_ID).toString(),
                                                     UUID::fromString,
+                                                    "user Id",
                                                     UUID.class);
                 LoginResponse loginResponse = new LoginResponse(SELLING_ZONES, userId, usernameFromSession, userType);
                 createJsonResponse(response, loginResponse);

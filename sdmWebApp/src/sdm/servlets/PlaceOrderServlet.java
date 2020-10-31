@@ -25,8 +25,11 @@ public class PlaceOrderServlet extends BaseServlet {
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             ISDMController sdmController = getSDMController();
-            UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, UUID.class);
-            boolean confirmOrder = ServletUtils.tryParse(request.getParameter("confirmOrder"), Boolean::parseBoolean, Boolean.class);
+            UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, "order Id", UUID.class);
+            boolean confirmOrder = ServletUtils.tryParse(request.getParameter("confirmOrder"),
+                                                         Boolean::parseBoolean,
+                                                         "confirm Order",
+                                                         Boolean.class);
             sdmController.completeTheOrder(orderId, confirmOrder);
             response.setStatus(200);
         }
@@ -42,19 +45,27 @@ public class PlaceOrderServlet extends BaseServlet {
             response.setContentType("application/json");
             SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
             // parse request
-            UUID customerId = ServletUtils.tryParse(request.getParameter("customerId"), UUID::fromString, UUID.class);
+            UUID customerId = ServletUtils.tryParse(request.getParameter("customerId"), UUID::fromString, "customer Id", UUID.class);
             String zoneName = request.getParameter("zoneName");
-            Integer xCoordinate = ServletUtils.tryParse(request.getParameter("xCoordinate"), Integer::parseInt, Integer.class);
-            Integer yCoordinate = ServletUtils.tryParse(request.getParameter("yCoordinate"), Integer::parseInt, Integer.class);
-            LocalDate date = ServletUtils.tryParse(request.getParameter("orderDate"), LocalDate::parse, LocalDate.class);
-            Integer itemsCount = ServletUtils.tryParse(request.getParameter("itemsCount"), Integer::parseInt, Integer.class);
+            Integer xCoordinate = ServletUtils.tryParse(request.getParameter("xCoordinate"),
+                                                        Integer::parseInt,
+                                                        "x Coordinate",
+                                                        Integer.class);
+            Integer yCoordinate = ServletUtils.tryParse(request.getParameter("yCoordinate"),
+                                                        Integer::parseInt,
+                                                        "y Coordinate",
+                                                        Integer.class);
+            LocalDate date = ServletUtils.tryParse(request.getParameter("orderDate"), LocalDate::parse, "order Date", LocalDate.class);
+            Integer itemsCount = ServletUtils.tryParse(request.getParameter("itemsCount"), Integer::parseInt, "items count", Integer.class);
             Map<Integer, Double> orderItemToAmount = new HashMap<>();
             for (int i = 0; i < itemsCount; i++) {
                 Integer itemId = ServletUtils.tryParse(request.getParameter("orderItemToAmount[" + i + "][itemId]"),
                                                        Integer::parseInt,
+                                                       "item Id",
                                                        Integer.class);
                 Double itemAmount = ServletUtils.tryParse(request.getParameter("orderItemToAmount[" + i + "][amount]"),
                                                           Double::parseDouble,
+                                                          "item Amount",
                                                           Double.class);
                 orderItemToAmount.put(itemId, itemAmount);
             }
@@ -109,7 +120,7 @@ public class PlaceOrderServlet extends BaseServlet {
                                                              Integer yCoordinate,
                                                              LocalDate date,
                                                              Map<Integer, Double> orderItemToAmount) {
-        Integer storeId = ServletUtils.tryParse(request.getParameter("storeId"), Integer::parseInt, Integer.class);
+        Integer storeId = ServletUtils.tryParse(request.getParameter("storeId"), Integer::parseInt, "store Id", Integer.class);
         PlaceOrderRequest placeOrderRequest = new PlaceOrderRequest(zoneName,
                                                                     storeId,
                                                                     customerId,

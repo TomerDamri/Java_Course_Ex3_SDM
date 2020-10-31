@@ -68,16 +68,20 @@ public class RateServlet extends BaseServlet {
     }
 
     protected RankOrderStoresRequest createRankOrderStoresRequest (HttpServletRequest request) {
-        UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, UUID.class);
-        UUID customerId = ServletUtils.tryParse(request.getParameter("customerId"), UUID::fromString, UUID.class);
+        UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, "order Id", UUID.class);
+        UUID customerId = ServletUtils.tryParse(request.getParameter("customerId"), UUID::fromString, "customer Id", UUID.class);
         String zoneName = request.getParameter("zoneName");
-        Integer ranksCount = ServletUtils.tryParse(request.getParameter("ranksCount"), Integer::parseInt, Integer.class);
+        Integer ranksCount = ServletUtils.tryParse(request.getParameter("ranksCount"), Integer::parseInt, "ranks count", Integer.class);
         List<StoreRank> storeRanks = new ArrayList<>();
         for (int i = 0; i < ranksCount; i++) {
             Integer storeId = ServletUtils.tryParse(request.getParameter("storeRanks[" + i + "][storeId]"),
                                                     Integer::parseInt,
+                                                    "store Id",
                                                     Integer.class);
-            Double rank = ServletUtils.tryParse(request.getParameter("storeRanks[" + i + "][rank]"), Double::parseDouble, Double.class);
+            Double rank = ServletUtils.tryParse(request.getParameter("storeRanks[" + i + "][rank]"),
+                                                Double::parseDouble,
+                                                "rank",
+                                                Double.class);
             String textualFeedback = request.getParameter("chosenDiscounts[" + i + "][textualFeedback]");
 
             storeRanks.add(new StoreRank(storeId, rank, textualFeedback));
