@@ -386,7 +386,7 @@ function getDiscounts() {
                         item.validDiscounts.forEach(function (discount) {
                             var thenYouGet;
                             if (discount.operator === "ONE_OF") {
-                                thenYouGet = '<select id="select_discount_' + discount.discountName + '_offer" onchange="onOfferSelect(id)">' +
+                                thenYouGet = '<select id="select_discount_' + discount.discountName + '_offer">' +
                                     '<option disabled selected value> -- select an option --</option>';
                                 discount.offers.forEach(function (offer) {
                                     thenYouGet = thenYouGet + '<option id="' + offer.id + '" value="' + offer.id + '">' + offer.quantity + ' ' + offer.offerItemName + ' ' + 'for additional ' + offer.forAdditional + '</option>';
@@ -463,7 +463,6 @@ function addDiscount(discount) {
 
 
 function submitDiscounts() {
-    var orderSummaryModal = $('#orderSummaryModal');
     var orderSummaryModalBody = $('#orderSummaryModalBody');
     var request = {
         orderId: order_id,
@@ -482,21 +481,28 @@ function submitDiscounts() {
         success: function (response) {
             $('#selectDiscountsModal').modal('hide');
             orderSummaryModalBody.empty();
-            orderSummaryModalBody.append('<h3>The order Summary</h3>' +
+            orderSummaryModalBody.append(
+                '<h5>Press Submit To Confirm:</h5>' +
                 '<span>Items Price: ' + response.totalItemsPrice + '</span><br>' +
                 '<span>Delivery Price: ' + response.totalDeliveryPrice + '</span><br>' +
                 '<span>Total Price: ' + response.totalPrice + '</span><br>'
             );
+            orderSummaryModalBody.append('<h4> Order Stores: </h4>' + '<br>');
             response.orderIncludedStoresDetails.forEach(store => {
                 for (var x in store) {
                     if (x === "storePurchasedItems") {
-                        dynamicOrderOfferModalBody.append('<span> Order Items: </span>' + '<br>');
-                        for (var y in store[x]) {
-                            var keyName = y.replace(/([A-Z])/g, ' $1').trim();
-                            keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
-                            orderSummaryModalBody.append('<span>' + keyName + ': ' + store[x][y] + '</span>' + '<br>');
-                            dynamicOrderOfferModalBody.append('<span>' + keyName + ': ' + storeToOrderFrom[x][y] + +'</span>' + '<br>');
-                        }
+                        orderSummaryModalBody.append('<span> Order Store Items: </span>' + '<br>');
+                        store[x].forEach(purchasedItem => {
+                            orderSummaryModalBody.append(
+                                '<span>Item Id: ' + purchasedItem.id + '</span><br>' +
+                                '<span>Item Name: ' + purchasedItem.name + '</span><br>' +
+                                '<span>Purchase Category: ' + purchasedItem.purchaseCategory + '</span><br>' +
+                                '<span>Quantity: ' + purchasedItem.quantity + '</span><br>' +
+                                '<span>Unit Price: ' + purchasedItem.unitPrice + '</span><br>' +
+                                '<span>Total Price: ' + purchasedItem.totalPrice + '</span><br>' +
+                                '<span>Purchased As Part Of Discount: ' + purchasedItem.isPurchasedAsPartOfDiscount + '</span><br>'
+                            );
+                        });
                     } else {
                         var keyName = x.replace(/([A-Z])/g, ' $1').trim();
                         keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
@@ -511,8 +517,29 @@ function submitDiscounts() {
     discounts = [];
 }
 
+function confirmOrder(confirm) {
+    var request = {
+        orderId: order_id,
+        confirmOrder: confirm
+    }
+
+    $.ajax({
+        type: "GET",
+        data: request,
+        url: "/sdm/pages/placeOrder",
+        // timeout: 2000,
+        error: function (error) {
+            alert(error.responseText);
+        },
+        success: function (response) {
+            alert("Order Created Successfully");
+            //todo - feedback
+
+        }
+    })}
 //todo - make a generic func that get the modal id
-function onModalClose() {
-    $('#placeOrderModal').find("input,textarea,select").val('').end();
-    $('#t-body').html('');
-}
+        function onModalClose()
+    {
+        $('#placeOrderModal').find("input,textarea,select").val('').end();
+        $('#t-body').html('');
+    }

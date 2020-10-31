@@ -115,8 +115,11 @@
             <div class="modal-body" id="orderSummaryModalBody">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="onModalClose()">
-                    OK
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="confirmOrder(false)">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="confirmOrder(true)">
+                    Submit
                 </button>
             </div>
         </div>

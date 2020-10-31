@@ -39,10 +39,6 @@ function uploadFile() {
         contentType: false,
         cache: false,
         timeout: 2000,
-        // error: function (error) {
-        //     // console.error("Failed to submit");
-        //     alert('Error Uploading File' + error.getResponseHeader());
-        // },
         error: function (error) {
             alert("Error occurred while uploading file:\n" + error.responseText);
         },
@@ -78,7 +74,7 @@ function ajaxAccountBalance() {
         url: "/sdm/pages/userAccount",
         // timeout: 2000,
         error: function (error) {
-            console.error("Failed to submit");
+            alert(error.responseText);
         },
         success: function (response) {
             $("#balance").text(response.balance);
@@ -122,8 +118,17 @@ function displayTransactions() {
                 response.transactions.forEach(transaction => {
                     for (var x in transaction) {
                         var keyName = x.replace(/([A-Z])/g, ' $1').trim();
-                        keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1)
-                        displayTransactionsModalBody.append('<span>' + keyName + ': ' + transaction[x] + '</span>' + '<br>');
+                        keyName = keyName.charAt(0).toUpperCase() + keyName.slice(1);
+                        var value = transaction[x];
+                        if (keyName === "Operation Type") {
+                            value = value.replace(/([A-Z])/g, ' $1').trim();
+                            value = value.charAt(0).toUpperCase() + value.slice(1);
+                        }
+                        if (keyName === "Date") {
+                            value = value.day + '/' + value.month + '/' + value.year;
+                        }
+
+                        displayTransactionsModalBody.append('<span>' + keyName + ': ' + value + '</span>' + '<br>');
                     }
                     displayTransactionsModalBody.append('<br>');
                 })
@@ -143,7 +148,7 @@ function onAreaClick() {
         data: {zone: zone},
         // timeout: 2000,
         error: function (error) {
-            console.error("Failed to submit");
+            alert(error.responseText);
         },
         success: function (r) {
             window.location.replace("../selectedZone/selectedZone.html");
@@ -161,7 +166,7 @@ function tableCreate() {
         type: "GET",
         url: "/sdm/pages/sellingZones/zonesList",
         error: function (error) {
-            console.error("Failed to submit");
+            console.error(error.responseText);
         },
         success: function (r) {
             document.getElementById('sales_areas_table').style.visibility = "visible";

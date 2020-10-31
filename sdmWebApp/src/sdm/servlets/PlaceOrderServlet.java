@@ -1,15 +1,5 @@
 package sdm.servlets;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import course.java.sdm.engine.controller.impl.SDMControllerImpl;
 import model.request.PlaceDynamicOrderRequest;
 import model.request.PlaceOrderRequest;
@@ -17,11 +7,27 @@ import model.response.PlaceDynamicOrderResponse;
 import model.response.PlaceOrderResponse;
 import sdm.utils.ServletUtils;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @WebServlet(name = "PlaceOrderServlet", urlPatterns = { "/pages/placeOrder" })
 public class PlaceOrderServlet extends BaseServlet {
-
+    // Used as post to complete the order and confirm its creation
     @Override
-    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet (HttpServletRequest request, HttpServletResponse response) {
+        // response.setContentType("application/json");
+        SDMControllerImpl sdmController = ServletUtils.getSDMController(getServletContext());
+        UUID orderId = ServletUtils.tryParse(request.getParameter("orderId"), UUID::fromString, UUID.class);
+        boolean confirmOrder = ServletUtils.tryParse(request.getParameter("confirmOrder"), Boolean::parseBoolean, Boolean.class);
+        // Boolean.getBoolean(request.getParameter("confirmOrder"));
+        sdmController.completeTheOrder(orderId, confirmOrder);
+        response.setStatus(200);
     }
 
     @Override

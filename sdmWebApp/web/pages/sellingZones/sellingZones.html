@@ -4,16 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Super Duper Market</title>
     <script src="../../common/jquery-2.0.3.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../../common/context-path-helper.js"></script>
     <script src="sellingZones.js"></script>
     <link rel="stylesheet" href="../../common/bootstrap.min.css">
     <link rel="stylesheet" href="sellingZones.css">
     <style>
-
-
-        /*tr:nth-child(even) {*/
-        /*	background-color: #dddddd;*/
-        /*}*/
     </style>
 </head>
 <body>
@@ -86,11 +82,6 @@
                 <label for="balance">Account Balance: </label>
                 <span id="balance"></span>
             </div>
-            <div id="accountDeposit">
-                <label for="deposit">Insert Amount To Deposit: </label>
-                <input id="deposit" type="text" class="form-control" required="true">
-                <button type="button" class="btn btn-info" onclick="deposit()">Deposit</button>
-            </div>
             <div id="transactions">
                 <button type="button" class="btn btn-info" onclick="displayTransactions()">Display Transactions
                 </button>
@@ -111,6 +102,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div id="accountDeposit">
+                <label for="deposit">Insert Amount To Deposit: </label>
+                <input id="deposit" type="text" class="form-control" required="true">
+                <button type="button" class="btn btn-info" onclick="deposit()">Deposit</button>
             </div>
         </div>
     </div>
