@@ -48,7 +48,7 @@ public class ServletUtils {
         try {
             return parseFunc.apply(strToParse);
         }
-        catch (NumberFormatException ex) {
+        catch (Exception ex) {
             throw new RuntimeException(String.format("You have to enter a valid '%s'", klass.getSimpleName()));
         }
     }
