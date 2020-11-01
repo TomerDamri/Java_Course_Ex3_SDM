@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="war" name="sdmWebApp:Web exploded2">
-    <output-path>$PROJECT_DIR$/out/artifacts/sdmWebApp_Web_exploded2</output-path>
-    <root id="archive" name="sdmWebApp_Web exploded2.war">
+  <artifact type="war" name="sdm">
+    <output-path>$PROJECT_DIR$/out/artifacts/sdm</output-path>
+    <root id="archive" name="sdm.war">
       <element id="javaee-facet-resources" facet="sdmWebApp/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
