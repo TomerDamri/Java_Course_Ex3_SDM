@@ -25,7 +25,7 @@ public class StoreAddedNotification extends Notification {
 
     @Override
     public String toString () {
-        return String.format("The new store '%s' was added by '%s' in '%s' location in '%s'.\nThe store sales '%s' items from '%s' the zone items.",
+        return String.format("The new store '%s' was added by '%s' in '%s' location in '%s'.\nThe store sales '%s/%s' items from zone items.",
                              getStoreName(),
                              newStoreOwnerName,
                              newStoreLocation,
