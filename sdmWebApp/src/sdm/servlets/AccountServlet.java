@@ -1,20 +1,20 @@
 package sdm.servlets;
 
-import static sdm.constants.Constants.AMOUNT;
-
-import java.io.IOException;
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import course.java.sdm.engine.controller.ISDMController;
 import model.request.DepositRequest;
 import model.request.GetUserBalanceRequest;
 import model.response.GetUserBalanceResponse;
 import sdm.utils.ServletUtils;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import static sdm.constants.Constants.AMOUNT;
 
 @WebServlet(name = "AccountServlet", urlPatterns = { "/pages/userAccount" })
 public class AccountServlet extends BaseServlet {
@@ -46,13 +46,13 @@ public class AccountServlet extends BaseServlet {
     private void processDepositRequest (HttpServletRequest request, HttpServletResponse response, UUID userId) {
         String amountToDepositStr = request.getParameter(AMOUNT);
         if (amountToDepositStr == null) {
-            // TODO- ADD RESPONSE BODY?
             response.setStatus(400);
         }
         else {
             Double amountToDeposit = ServletUtils.tryParse(amountToDepositStr, Double::parseDouble, "amount to deposit", Double.class);
+            LocalDate date = ServletUtils.tryParse(request.getParameter("depositDate"), LocalDate::parse, "deposit date", LocalDate.class);
             ISDMController controller = getSDMController();
-            controller.deposit(new DepositRequest(userId, amountToDeposit));
+            controller.deposit(new DepositRequest(userId, amountToDeposit, date));
             response.setStatus(200);
         }
     }

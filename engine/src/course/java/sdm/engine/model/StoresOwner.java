@@ -1,9 +1,9 @@
 package course.java.sdm.engine.model;
 
-import java.util.*;
-
 import course.java.sdm.engine.model.notifications.base.Notification;
 import course.java.sdm.engine.model.notifications.subscriber.NotificationsSubscriber;
+
+import java.util.*;
 
 public class StoresOwner implements NotificationsSubscriber {
     private final UUID id;
@@ -37,10 +37,10 @@ public class StoresOwner implements NotificationsSubscriber {
         List<Notification> latestNotifications;
         synchronized (newNotificationsLock) {
             latestNotifications = new ArrayList<>(newNotifications);
+            oldNotifications.addAll(newNotifications);
             newNotifications.clear();
+            return latestNotifications;
         }
-        oldNotifications.addAll(latestNotifications);
-        return latestNotifications;
     }
 
     @Override

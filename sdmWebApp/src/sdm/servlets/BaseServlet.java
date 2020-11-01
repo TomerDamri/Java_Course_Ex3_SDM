@@ -1,20 +1,18 @@
 package sdm.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.UUID;
-import java.util.function.Consumer;
+import com.google.gson.Gson;
+import course.java.sdm.engine.controller.ISDMController;
+import sdm.utils.ServletUtils;
+import sdm.utils.SessionUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.gson.Gson;
-
-import course.java.sdm.engine.controller.ISDMController;
-import sdm.utils.ServletUtils;
-import sdm.utils.SessionUtils;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public abstract class BaseServlet extends HttpServlet {
 
@@ -24,7 +22,6 @@ public abstract class BaseServlet extends HttpServlet {
         String userIdStr = SessionUtils.getUserId(request);
 
         if (userIdStr == null) {
-            // TODO- ADD RESPONSE BODY?
             response.setStatus(404);
         }
         else {

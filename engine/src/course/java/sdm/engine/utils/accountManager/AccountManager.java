@@ -1,12 +1,12 @@
 package course.java.sdm.engine.utils.accountManager;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.TransactionType;
 import model.TransactionDTO;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AccountManager {
     private static AccountManager singletonAccountManager = null;
@@ -53,10 +53,10 @@ public class AccountManager {
                            .collect(Collectors.toList());
     }
 
-    public void deposit (UUID userId, double amount) {
+    public void deposit (UUID userId, double amount, LocalDate date) {
         validateAccountExistForUser(userId);
         validatePositiveAmount(amount);
-        updateBalanceForUser(TransactionType.DEPOSIT, amount, userId, LocalDate.now());
+        updateBalanceForUser(TransactionType.DEPOSIT, amount, userId, date);
     }
 
     public void transfer (UUID fromUserId, double amount, UUID toUserId, LocalDate transferDate) {

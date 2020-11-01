@@ -147,7 +147,7 @@ public class SDMService {
     /* UserAccounts */
 
     public void deposit (DepositRequest request) {
-        accountManager.deposit(request.getUserId(), request.getAmount());
+        accountManager.deposit(request.getUserId(), request.getAmount(), request.getDate());
     }
 
     public GetUserBalanceResponse getUserBalance (GetUserBalanceRequest request) {
@@ -438,7 +438,6 @@ public class SDMService {
         return !sdmDescriptor.getSystemLocations().containsKey(userLocation);
     }
 
-    // todo - throws null pointer exception
     private Map<PricedItem, Double> getPricedItemFromStaticRequest (Zone zone, PlaceOrderRequest request) {
         return request.getOrderItemToAmount()
                       .keySet()

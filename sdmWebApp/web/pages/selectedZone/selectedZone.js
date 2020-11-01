@@ -1,6 +1,21 @@
 var selected_zone_name;
 var selected_zone;
 var availableItems;
+var refreshRate = 2000; //milli seconds
+
+function ajaxNotifications() {
+    $.ajax({
+        type: 'GET',
+        url: '/sdm/pages/alerts',
+        error: function (error) {
+        },
+        success: function (response) {
+            response.userNotifications.forEach(notification => {
+                alert(notification);
+            });
+        }
+    });
+}
 
 $(function () { // onload
     if (selected_zone_name === window.localStorage.getItem('zoneName')) {
@@ -20,10 +35,10 @@ $(function () { // onload
             if (window.localStorage.getItem('userType') === "CUSTOMER") {
                 $("#place-order").load("../../components/placeOrderComponent/placeOrderComponent.html");
                 $("#display-orders").load("../../components/displayOrdersComponent/displayOrdersComponent.html")
-            }
-            else{
+            } else {
                 $("#newStore").load("../../components/addNewStoreComponent/addNewStoreComponent.html");
                 $("#store-owner-rates").load("../../components/displayFeedbackComponent/displayFeedbackComponent.html");
+                setInterval(ajaxNotifications, refreshRate);
             }
             var username = window.localStorage.getItem("username");
             $("#logged_in_user").text('Logged in as ' + window.localStorage.getItem('username'));
@@ -86,7 +101,7 @@ $(function () { // onload
                     'Store Owner: ' + store.storeOwnerName +
                     '</li>' +
                     '<li class="list-group-item">' +
-                    'Location : ' + store.location +
+                    'Location : (' + store.location.xCoordinate + ',' + store.location.yCoordinate + ')' +
                     '</li>' +
                     '<li class="list-group-item">' +
                     'Orders Count : ' + store.orders.length +

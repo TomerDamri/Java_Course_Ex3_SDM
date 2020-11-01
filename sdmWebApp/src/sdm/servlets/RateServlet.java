@@ -57,7 +57,6 @@ public class RateServlet extends BaseServlet {
         response.setContentType("application/json");
         String zoneName = request.getParameter(ZONE_NAME);
         if (zoneName == null) {
-            // TODO- ADD RESPONSE BODY?
             response.setStatus(404);
         }
         else {
@@ -83,7 +82,7 @@ public class RateServlet extends BaseServlet {
                                                 Double::parseDouble,
                                                 "rank",
                                                 Double.class);
-            String textualFeedback = request.getParameter("chosenDiscounts[" + i + "][textualFeedback]");
+            String textualFeedback = request.getParameter("storeRanks[" + i + "][textualFeedback]");
 
             storeRanks.add(new StoreRank(storeId, rank, textualFeedback));
         }

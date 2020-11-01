@@ -7,7 +7,9 @@ var IS_STORE_OWNER = buildUrlWithContextPath("chat");
 function refreshUsersList(users) {
     //clear all current users
     $("#userslist").empty();
-
+    if (users != null) {
+        users.sort();
+    }
     // rebuild the list of users: scan all users and add them to the list of users
     $.each(users || [], function (index, user) {
         console.log("Adding user #" + index + ": " + user.name);
@@ -23,6 +25,21 @@ function ajaxUsersList() {
         url: USER_LIST_URL,
         success: function (users) {
             refreshUsersList(users);
+
+        }
+    });
+}
+
+function ajaxNotifications() {
+    $.ajax({
+        type: 'GET',
+        url: '/sdm/pages/alerts',
+        error: function (error) {
+        },
+        success: function (response) {
+            response.userNotifications.forEach(notification => {
+                alert(notification);
+            });
         }
     });
 }
@@ -65,6 +82,7 @@ $(function () {
     } else {
         document.getElementById("fileUpload").style.visibility = "visible";
         document.getElementById("accountDeposit").style.visibility = "hidden";
+        setInterval(ajaxNotifications, refreshRate);
     }
 });
 
@@ -74,8 +92,6 @@ function ajaxAccountBalance() {
         url: "/sdm/pages/userAccount",
         // timeout: 2000,
         error: function (error) {
-            //todo- fix bug can't find session in BE
-            // alert(error.responseText);
         },
         success: function (response) {
             $("#balance").text(response.balance);
@@ -86,9 +102,13 @@ function ajaxAccountBalance() {
 
 function deposit() {
     var amountToDeposit = $('#deposit').val();
+    var depositDate = $('#deposit-date').val();
     $.ajax({
         type: "POST",
-        data: {amount: amountToDeposit},
+        data: {
+            amount: amountToDeposit,
+            depositDate: depositDate
+        },
         url: "/sdm/pages/userAccount",
         // timeout: 2000,
         error: function (error) {
@@ -156,13 +176,9 @@ function onAreaClick() {
             window.localStorage.setItem("zoneName", zone);
         }
     });
-    //todo rout to 3rd page
-
 }
 
 function tableCreate() {
-
-    //todo - get zones
     $.ajax({
         type: "GET",
         url: "/sdm/pages/sellingZones/zonesList",

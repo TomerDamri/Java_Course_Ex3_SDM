@@ -14,7 +14,14 @@
 </head>
 <body>
 <div class="container-fluid">
-    <h1 class="text-center">Selling Zones</h1>
+    <div class="row">
+        <div class="col-xs-9">
+            <h1 class="text-center">Selling Zones</h1>
+        </div>
+        <div class="col-xs-3">
+            <p id="logged_in_user"></p>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xs-2">
             <div class="sidebar">
@@ -40,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xs-7" id="table-area">
+        <div class="col-xs-8" id="table-area">
             <table id="sales_areas_table">
                 <thead>
                 <th>Zone Owner</th>
@@ -53,15 +60,6 @@
                 <tbody class="tbody">
                 </tbody>
             </table>
-        </div>
-        <div class="col-xs-1">
-            <div class="row">
-                <div class="col-xs-1">
-                    <div>
-                        <p id="logged_in_user"></p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     <div class="row" id="account">
@@ -94,8 +92,12 @@
             <div id="accountDeposit">
                 <label for="deposit">Insert Amount To Deposit: </label>
                 <input id="deposit" type="text" class="form-control" required="true">
-                <button type="button" class="btn btn-info" onclick="deposit()">Deposit</button>
+                <label class="control-label" for="deposit-date">Deposit Date</label>
+                <input type="date" class="form-control" id="deposit-date" name="date"
+                       placeholder="MM/DD/YYY"
+                       type="text" required="true"/>
             </div>
+            <button type="button" class="btn btn-info" onclick="deposit()">Deposit</button>
         </div>
     </div>
 </div>

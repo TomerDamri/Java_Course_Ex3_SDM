@@ -1,17 +1,16 @@
 package sdm.servlets;
 
-import static sdm.constants.Constants.ZONE;
-
-import java.io.IOException;
+import course.java.sdm.engine.controller.ISDMController;
+import model.response.GetZoneResponse;
+import sdm.utils.ServletUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import course.java.sdm.engine.controller.ISDMController;
-import model.response.GetZoneResponse;
-import sdm.utils.ServletUtils;
+import static sdm.constants.Constants.ZONE;
 
 @WebServlet(name = "SelectedZoneServlet", urlPatterns = { "/pages/sellingZones/selectedZone" })
 
@@ -38,7 +37,6 @@ public class SelectedZoneServlet extends BaseServlet {
             String zone = request.getParameter(ZONE);
             if (zone == null || zone.isEmpty()) {
                 response.setStatus(400);
-                // TODO- ADD RESPONSE BODY?
             }
             else {
                 zone = zone.trim();

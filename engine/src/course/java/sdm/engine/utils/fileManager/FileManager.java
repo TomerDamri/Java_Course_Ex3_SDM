@@ -1,16 +1,5 @@
 package course.java.sdm.engine.utils.fileManager;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.Part;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.exceptions.FileNotSaveException;
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
@@ -18,6 +7,16 @@ import course.java.sdm.engine.model.*;
 import examples.jaxb.schema.generated.SuperDuperMarketDescriptor;
 import model.ItemToAddDTO;
 import model.request.AddStoreToZoneRequest;
+
+import javax.servlet.http.Part;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FileManager {
 
@@ -54,7 +53,6 @@ public class FileManager {
                                            StoresOwner storesOwner,
                                            SDMDescriptor sdmDescriptor) {
         Map<Integer, Item> items = GENERATED_DATA_MAPPER.generatedItemsToItems(superDuperMarketDescriptor.getSDMItems());
-        // TODO: 02/09/2020 - add discounts to stores
         Map<Integer, Store> stores = GENERATED_DATA_MAPPER.generatedStoresToStores(superDuperMarketDescriptor.getSDMStores(), items);
         String zoneName = GENERATED_DATA_MAPPER.getZoneName(superDuperMarketDescriptor.getSDMZone(), sdmDescriptor);
         FILE_MANAGER_VALIDATOR.validateItemsAndStores(items, stores, zoneName, sdmDescriptor);

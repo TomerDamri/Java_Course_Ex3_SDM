@@ -1,18 +1,16 @@
 package course.java.sdm.engine.controller;
 
-import java.io.IOException;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.servlet.http.Part;
-
 import model.User;
 import model.request.*;
 import model.response.*;
 
+import javax.servlet.http.Part;
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+
 public interface ISDMController {
 
-    // TODO: 29/10/2020
     // load / add new data to system
     void loadFile (Part part, UUID storesOwnerID) throws IOException;
 
@@ -24,7 +22,6 @@ public interface ISDMController {
 
     // load / add new data to system
 
-    // TODO: 29/10/2020
     // Place order
 
     PlaceOrderResponse placeStaticOrder (PlaceOrderRequest request);
@@ -39,7 +36,6 @@ public interface ISDMController {
 
     // Place order
 
-    // TODO: 29/10/2020
     // add/delete/update item in store
 
     void addItemToStore (UpdateStoreRequest request);
@@ -50,7 +46,6 @@ public interface ISDMController {
 
     // add/delete/update item in store
 
-    // TODO: 29/10/2020
     // users
 
     UUID addUserToSystem (String username, User.UserType userType);
@@ -63,7 +58,6 @@ public interface ISDMController {
 
     // users
 
-    // TODO: 29/10/2020
     // bank account
     public GetUserTransactionsResponse getUserTransactions (GetUserTransactionsRequest request);
 
@@ -73,7 +67,6 @@ public interface ISDMController {
 
     // bank account
 
-    // TODO: 29/10/2020
     // feedbacks
 
     public void rankOrderStores (RankOrderStoresRequest request);
@@ -82,7 +75,6 @@ public interface ISDMController {
 
     // feedbacks
 
-    // TODO: 29/10/2020
     // getters
     GetCustomersResponse getCustomers ();
 

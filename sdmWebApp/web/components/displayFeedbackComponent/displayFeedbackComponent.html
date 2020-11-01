@@ -1,22 +1,19 @@
 <html lang="en">
 <head></head>
 <body>
-<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#displayFeedbackModal"
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal"
         onclick="displayFeedbacks()">Display Feedbacks
 </button>
 <div class="modal fade" id="displayFeedbackModal" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" onclick="displayFeedbacks()">&times;</button>
                 <h4 class="modal-title">Zone Feedbacks</h4>
             </div>
-            <div class="modal-body" id="displayFeedbackModalBody">
+            <div class="modal-body" id="displayFeedbackModalBody"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     Close
-                </button>
-                <button type="button" class="btn btn-primary" id="submit">Submit
                 </button>
             </div>
         </div>
