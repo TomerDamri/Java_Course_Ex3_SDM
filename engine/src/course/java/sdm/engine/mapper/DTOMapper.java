@@ -79,7 +79,7 @@ public class DTOMapper {
     }
 
     public GetUserBalanceResponse toGetUserBalanceResponse (UUID userId, Double userBalance) {
-        return new GetUserBalanceResponse(userId, userBalance);
+        return new GetUserBalanceResponse(userId, Utils.round(userBalance, 2));
     }
 
     public FinalSummaryForOrder createFinalSummaryForOrder (Map<StoreDetails, Order> staticOrders, Map<Integer, SystemStore> systemStores) {

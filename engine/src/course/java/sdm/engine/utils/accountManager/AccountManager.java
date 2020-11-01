@@ -3,6 +3,7 @@ package course.java.sdm.engine.utils.accountManager;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.TransactionType;
 import model.TransactionDTO;
+import model.Utils;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -47,9 +48,9 @@ public class AccountManager {
         return transactions.stream()
                            .map(tran -> dtoMapper.toTransactionDTO(tran.getOperationType(),
                                                                    tran.getDate(),
-                                                                   tran.getTransactionAmount(),
-                                                                   tran.getBalanceBeforeTransaction(),
-                                                                   tran.getBalanceAfterTransaction()))
+                                                                   Utils.round(tran.getTransactionAmount(), 2),
+                                                                   Utils.round(tran.getBalanceBeforeTransaction(), 2),
+                                                                   Utils.round(tran.getBalanceAfterTransaction(), 2)))
                            .collect(Collectors.toList());
     }
 
