@@ -74,7 +74,8 @@ function ajaxAccountBalance() {
         url: "/sdm/pages/userAccount",
         // timeout: 2000,
         error: function (error) {
-            alert(error.responseText);
+            //todo- fix bug can't find session in BE
+            // alert(error.responseText);
         },
         success: function (response) {
             $("#balance").text(response.balance);

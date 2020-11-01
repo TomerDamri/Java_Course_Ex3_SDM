@@ -1,12 +1,14 @@
 package course.java.sdm.engine.model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class CustomerFeedback {
 
     public static final int MIN_RANK = 1;
     public static final int MAX_RANK = 5;
 
+    private UUID feedbackId;
     private Integer storeId;
     private String customerName;
     private LocalDate orderDate;
@@ -15,10 +17,15 @@ public class CustomerFeedback {
 
     public CustomerFeedback (Integer storeId, String customerName, LocalDate orderDate, double rank, String textualFeedback) {
         setRank(rank);
+        this.feedbackId = UUID.randomUUID();
         this.storeId = storeId;
         this.customerName = customerName;
         this.orderDate = orderDate;
         this.textualFeedback = textualFeedback;
+    }
+
+    public UUID getFeedbackId () {
+        return feedbackId;
     }
 
     public Integer getStoreId () {

@@ -1,10 +1,5 @@
 package course.java.sdm.engine.mapper;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import course.java.sdm.engine.model.*;
 import course.java.sdm.engine.model.notifications.base.Notification;
 import model.*;
@@ -13,6 +8,11 @@ import model.request.ChosenItemDiscount;
 import model.request.ChosenStoreDiscounts;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DTOMapper {
 
@@ -38,11 +38,12 @@ public class DTOMapper {
 
     public GetFeedbackForStoreOwnerResponse createGetFeedbackForStoreOwnerResponse (List<StoreFeedback> storesFeedbacks) {
         List<StoreFeedbackDTO> orderStoreRanks = new ArrayList<>();
-
+        int[] rankCounter = new int[1];
         storesFeedbacks.forEach(storeFeedback -> {
             List<CustomerFeedbackDTO> customersFeedbacks = storeFeedback.getCustomersFeedbacks()
                                                                         .stream()
-                                                                        .map(cFeedback -> new CustomerFeedbackDTO(cFeedback.getOrderDate(),
+                                                                        .map(cFeedback -> new CustomerFeedbackDTO(++rankCounter[0],
+                                                                                                                  cFeedback.getOrderDate(),
                                                                                                                   cFeedback.getRank(),
                                                                                                                   cFeedback.getTextualFeedback(),
                                                                                                                   cFeedback.getCustomerName()))
