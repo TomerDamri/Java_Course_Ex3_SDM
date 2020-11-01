@@ -19,6 +19,7 @@ $(function () { // onload
         success: function (response) {
             if (window.localStorage.getItem('userType') === "CUSTOMER") {
                 $("#place-order").load("../../components/placeOrderComponent/placeOrderComponent.html");
+                $("#display-orders").load("../../components/displayOrdersComponent/displayOrdersComponent.html")
             }
             else{
                 $("#newStore").load("../../components/addNewStoreComponent/addNewStoreComponent.html");
