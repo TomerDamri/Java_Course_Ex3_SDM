@@ -3,7 +3,9 @@ package course.java.sdm.engine.model;
 import java.io.Serializable;
 import java.util.*;
 
-public class SystemStore implements Serializable, Mappable {
+import course.java.sdm.engine.model.notifications.publisher.NotificationsPublisher;
+
+public class SystemStore extends NotificationsPublisher implements Serializable, Mappable {
 
     private UUID storeOwnerId;
     private String storeOwnerName;

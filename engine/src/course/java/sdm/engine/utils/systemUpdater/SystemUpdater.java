@@ -4,6 +4,8 @@ import java.util.*;
 
 import course.java.sdm.engine.mapper.GeneratedDataMapper;
 import course.java.sdm.engine.model.*;
+import course.java.sdm.engine.model.notifications.FeedbackAddedNotification;
+import course.java.sdm.engine.model.notifications.OrderCompletedNotification;
 import model.request.StoreRank;
 
 public class SystemUpdater {
@@ -297,6 +299,7 @@ public class SystemUpdater {
                                                                      storeRank.getRank(),
                                                                      storeRank.getTextualFeedback());
             relatedStore.getCustomersFeedback().add(customerFeedback);
+            relatedStore.broadcast(new FeedbackAddedNotification(zone.getZoneName(), relatedStore.getName(), customer.getName()));
         });
     }
 
@@ -408,6 +411,8 @@ public class SystemUpdater {
         // update total delivery price and total items price for system customer (update numOfOrder in case
         // the order is not part of dynamic order)
         updateSystemCustomerAfterOrderCompletion(newOrder, systemCustomer, zone.getZoneName());
+        // send "ORDER_COMPLETED" notification to all subscribers
+        systemStore.broadcast(new OrderCompletedNotification(zone.getZoneName(), systemStore.getName(), systemCustomer.getName()));
     }
 
     private void updateSystemCustomerAfterOrderCompletion (Order newOrder, SystemCustomer systemCustomer, String zoneName) {

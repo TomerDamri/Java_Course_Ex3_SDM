@@ -10,6 +10,8 @@ import javax.servlet.http.Part;
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
+import course.java.sdm.engine.model.notifications.StoreAddedNotification;
+import course.java.sdm.engine.model.notifications.base.Notification;
 import course.java.sdm.engine.users.UserManager;
 import course.java.sdm.engine.utils.SDMUtils;
 import course.java.sdm.engine.utils.accountManager.AccountManager;
@@ -39,6 +41,13 @@ public class SDMService {
         SystemStore systemStore = SDMUtils.getStoreByID(zone, request.getStoreId());
 
         return dtoMapper.toGetStoreItems(systemStore);
+    }
+
+    public GetUserNotificationsResponse getUserNotifications (GetUserNotificationsRequest request) {
+        StoresOwner storesOwner = getStoresOwner(request.getUserId());
+        List<Notification> newNotifications = storesOwner.getNewNotifications();
+
+        return dtoMapper.toGetUserNotificationsResponse(newNotifications);
     }
 
     /* Feedback */
@@ -75,11 +84,24 @@ public class SDMService {
     /* Add new store to zone */
     public void addStoreToZone (AddStoreToZoneRequest request) {
         Zone zone = getZoneByName(request.getZoneName());
+        StoresOwner zoneOwner = getZoneOwner(zone.getZoneOwnerId());
         StoresOwner storesOwner = getStoresOwner(request.getStoreOwnerId());
         Location newStoreLocation = createLocation(request.getxCoordinate(), request.getyCoordinate());
 
         SystemStore newSystemStore = fileManager.addStoreToZone(storesOwner, zone, newStoreLocation, request);
         systemUpdater.updateSystemItemsAfterAddingNewStore(newSystemStore, zone.getSystemItems(), zone.getSystemStores());
+        if (!zoneOwner.equals(storesOwner)) {
+            zone.broadcast(new StoreAddedNotification(zone.getZoneName(),
+                                                      newSystemStore.getName(),
+                                                      storesOwner.getName(),
+                                                      newStoreLocation,
+                                                      newSystemStore.getItemIdToStoreItem().size(),
+                                                      zone.getSystemItems().size()));
+        }
+    }
+
+    private StoresOwner getZoneOwner (UUID zoneOwnerId) {
+        return getStoresOwner(zoneOwnerId);
     }
 
     private Location createLocation (Integer xCoordinate, Integer yCoordinate) {

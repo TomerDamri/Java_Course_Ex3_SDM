@@ -1,4 +1,4 @@
-package course.java.sdm.engine.model.notifications.baseNotification;
+package course.java.sdm.engine.model.notifications.base;
 
 public abstract class StoreNotification extends Notification {
 

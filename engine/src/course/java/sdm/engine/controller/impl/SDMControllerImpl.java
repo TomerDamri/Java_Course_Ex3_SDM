@@ -154,4 +154,9 @@ public class SDMControllerImpl implements ISDMController {
     public GetStoreItemsResponse getStoreItems (GetStoreItemsRequest request) {
         return service.getStoreItems(request);
     }
+
+    @Override
+    public GetUserNotificationsResponse getUserNotifications (GetUserNotificationsRequest request) {
+        return service.getUserNotifications(request);
+    }
 }

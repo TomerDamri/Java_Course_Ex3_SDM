@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import course.java.sdm.engine.model.*;
+import course.java.sdm.engine.model.notifications.base.Notification;
 import model.*;
 import model.request.AddDiscountsToOrderRequest;
 import model.request.ChosenItemDiscount;
@@ -26,6 +27,13 @@ public class DTOMapper {
         }
 
         return singletonDTOMapper;
+    }
+
+    public GetUserNotificationsResponse toGetUserNotificationsResponse (List<Notification> newNotifications) {
+        List<String> notificationsStr = new ArrayList<>();
+        newNotifications.forEach(notification -> notificationsStr.add(notification.toString()));
+
+        return new GetUserNotificationsResponse(notificationsStr);
     }
 
     public GetFeedbackForStoreOwnerResponse createGetFeedbackForStoreOwnerResponse (List<StoreFeedback> storesFeedbacks) {

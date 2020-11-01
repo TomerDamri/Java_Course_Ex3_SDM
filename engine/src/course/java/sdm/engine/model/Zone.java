@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-public class Zone implements Serializable {
+import course.java.sdm.engine.model.notifications.publisher.NotificationsPublisher;
+
+public class Zone extends NotificationsPublisher implements Serializable {
 
     private final String zoneName;
     private final UUID zoneOwnerId;

@@ -58,11 +58,15 @@ public class GeneratedDataMapper {
                                                                     Store.class.getSimpleName());
         Map<Integer, SystemItem> systemItems = toSystemItems(items, systemStores.values());
 
-        return new Zone(zoneName, storesOwner.getId(), storesOwner.getName(), systemStores, systemItems);
+        Zone newZone = new Zone(zoneName, storesOwner.getId(), storesOwner.getName(), systemStores, systemItems);
+        newZone.addNotificationsSubscriber(storesOwner);
+        return newZone;
     }
 
     public SystemStore toSystemStore (StoresOwner storesOwner, Store store) {
-        return new SystemStore(store, storesOwner.getName(), storesOwner.getId());
+        SystemStore systemStore = new SystemStore(store, storesOwner.getName(), storesOwner.getId());
+        systemStore.addNotificationsSubscriber(storesOwner);
+        return systemStore;
     }
 
     private Map<Integer, SystemItem> toSystemItems (Map<Integer, Item> items, Collection<SystemStore> stores) {

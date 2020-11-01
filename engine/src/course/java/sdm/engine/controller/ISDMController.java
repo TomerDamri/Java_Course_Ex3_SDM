@@ -99,4 +99,6 @@ public interface ISDMController {
     boolean isValidLocation (final int xCoordinate, final int yCoordinate);
 
     // getters
+
+    public GetUserNotificationsResponse getUserNotifications (GetUserNotificationsRequest request);
 }
