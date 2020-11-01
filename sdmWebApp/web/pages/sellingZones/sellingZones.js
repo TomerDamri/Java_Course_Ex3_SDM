@@ -29,12 +29,13 @@ function ajaxNotifications() {
         error: function (error) {
         },
         success: function (response) {
-            var alert = "";
-            response.userNotifications.forEach(notification => {
-                alert += notification + '\n';
-
-            });
-            alert(alert);
+            if (response.userNotifications && response.userNotifications.length > 0) {
+                var notification = "";
+                for (var i = 0, j = 1; i < response.userNotifications.length; i++, j++) {
+                    notification = notification + j + '. ' + response.userNotifications[i] + '\n\n';
+                }
+                alert(notification);
+            }
         }
     });
 }

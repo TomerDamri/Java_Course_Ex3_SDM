@@ -1,5 +1,10 @@
 package course.java.sdm.engine.mapper;
 
+import java.time.LocalDate;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import course.java.sdm.engine.model.*;
 import course.java.sdm.engine.model.notifications.base.Notification;
 import model.*;
@@ -8,11 +13,6 @@ import model.request.ChosenItemDiscount;
 import model.request.ChosenStoreDiscounts;
 import model.request.ValidStoreDiscountsDTO;
 import model.response.*;
-
-import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class DTOMapper {
 
@@ -495,7 +495,7 @@ public class DTOMapper {
                                                 .stream()
                                                 .collect(Collectors.toMap(PricedItem::getId,
                                                                           pricedItem -> systemOrder.getOrderItems().get(pricedItem)));
-        return new SubOrderDTO(systemOrder.getStoreName(),
+        return new SubOrderDTO(systemOrder.getZoneName(),
                                systemOrder.getId(),
                                systemOrder.getOrderDate(),
                                toLocationDTO(systemOrder.getOrderLocation()),
