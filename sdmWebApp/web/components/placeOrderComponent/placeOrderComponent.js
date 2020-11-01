@@ -391,6 +391,7 @@ function confirmOrder(confirm) {
 }
 
 function rateOrder() {
+    $('#rateOrderModalBody').empty();
     $('#rateOrderModalBody').append('<p>Rate your order stores or press "Close" to skip</p>');
     orderSummary.orderIncludedStoresDetails.forEach(store => {
         $('#rateOrderModalBody').append(

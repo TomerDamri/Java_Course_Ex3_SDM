@@ -117,6 +117,7 @@ function deposit() {
         success: function (response) {
             alert("Deposit " + amountToDeposit + " Shekels Successfully");
             $('#deposit').val("").end();
+            $('#deposit-date').val("").end();
         }
     });
 
