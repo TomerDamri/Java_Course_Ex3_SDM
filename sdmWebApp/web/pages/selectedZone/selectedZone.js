@@ -52,7 +52,9 @@ $(function () { // onload
             var items = response.items;
             var stores = response.stores;
             $('#items-accordion').empty();
+            $('#items-accordion').append('<h3>Items</h3>');
             $('#stores-accordion').empty();
+            $('#stores-accordion').append('<h3>Stores</h3>');
             items.forEach(function (item) {
                 $('#items-accordion').append(
                     '<div class="panel-group">' +
