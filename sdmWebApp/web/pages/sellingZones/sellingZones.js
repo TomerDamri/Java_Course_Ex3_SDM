@@ -1,23 +1,16 @@
 var refreshRate = 2000; //milli seconds
 var USER_LIST_URL = buildUrlWithContextPath("userslist");
-var IS_STORE_OWNER = buildUrlWithContextPath("chat");
 
-//users = a list of usernames, essentially an array of javascript strings:
-// ["moshe","nachum","nachche"...]
 function refreshUsersList(users) {
-    //clear all current users
     $("#userslist").empty();
     if (users != null) {
-        users.sort();
+        for (var index = 0; index < users.length; index++) {
+            var user = users[index];
+            var userType = user.userType === "CUSTOMER" ? "Customer" : "Store Owner";
+            $('<li>' + user.name + " " + userType + '</li>')
+                .appendTo($("#userslist"));
+        }
     }
-    // rebuild the list of users: scan all users and add them to the list of users
-    $.each(users || [], function (index, user) {
-        console.log("Adding user #" + index + ": " + user.name);
-        var userType = user.userType === "CUSTOMER" ? "Customer" : "Store Owner";
-        //create a new <li> tag with a value in it and append it to the #userslist (div with id=userslist) element
-        $('<li>' + user.name + " " + userType + '</li>')
-            .appendTo($("#userslist"));
-    });
 }
 
 function ajaxUsersList() {
@@ -25,7 +18,6 @@ function ajaxUsersList() {
         url: USER_LIST_URL,
         success: function (users) {
             refreshUsersList(users);
-
         }
     });
 }
@@ -37,9 +29,12 @@ function ajaxNotifications() {
         error: function (error) {
         },
         success: function (response) {
+            var alert = "";
             response.userNotifications.forEach(notification => {
-                alert(notification);
+                alert += notification + '\n';
+
             });
+            alert(alert);
         }
     });
 }

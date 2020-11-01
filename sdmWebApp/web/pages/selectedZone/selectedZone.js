@@ -10,9 +10,12 @@ function ajaxNotifications() {
         error: function (error) {
         },
         success: function (response) {
+            var alert = "";
             response.userNotifications.forEach(notification => {
-                alert(notification);
+                alert += notification + '\n';
+
             });
+            alert(alert);
         }
     });
 }
