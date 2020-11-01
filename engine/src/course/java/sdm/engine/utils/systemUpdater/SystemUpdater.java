@@ -99,9 +99,14 @@ public class SystemUpdater {
         systemZones.put(newZone.getZoneName(), newZone);
     }
 
-    private void addSystemStoresToStoresOwner (StoresOwner storesOwner, String newZoneName, Map<Integer, SystemStore> zoneStores) {
+    public void addSystemStoresToStoresOwner (StoresOwner storesOwner, String newZoneName, Map<Integer, SystemStore> zoneStores) {
         // adding zone stores to stores owner
-        storesOwner.getZoneToOwnedStores().put(newZoneName, zoneStores);
+        Map<String, Map<Integer, SystemStore>> zoneToOwnedStores = storesOwner.getZoneToOwnedStores();
+        Map<Integer, SystemStore> ownedStores = zoneToOwnedStores.containsKey(newZoneName) ? zoneToOwnedStores.get(newZoneName)
+                    : new HashMap<>();
+
+        ownedStores.putAll(zoneStores);
+        zoneToOwnedStores.put(newZoneName, ownedStores);
     }
 
     private void validateExistenceInSystem (Integer itemId,
@@ -301,6 +306,14 @@ public class SystemUpdater {
             relatedStore.getCustomersFeedback().add(customerFeedback);
             relatedStore.broadcast(new FeedbackAddedNotification(zone.getZoneName(), relatedStore.getName(), customer.getName()));
         });
+    }
+
+    public void updateSystemAfterNewStoreAdded (SystemStore newSystemStore, Zone zone, StoresOwner storesOwner) {
+        updateSystemItemsAfterAddingNewStore(newSystemStore, zone.getSystemItems(), zone.getSystemStores());
+
+        Map<Integer, SystemStore> storeMap = new HashMap<>();
+        storeMap.put(newSystemStore.getId(), newSystemStore);
+        addSystemStoresToStoresOwner(storesOwner, zone.getZoneName(), storeMap);
     }
 
     private SystemOrder getSubOrderRelatedToSpecificStore (UUID orderId, List<SystemOrder> subOrders, StoreRank storeRank) {

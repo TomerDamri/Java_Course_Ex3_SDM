@@ -1,5 +1,12 @@
 package course.java.sdm.engine.service;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.Part;
+
 import course.java.sdm.engine.exceptions.FileNotLoadedException;
 import course.java.sdm.engine.mapper.DTOMapper;
 import course.java.sdm.engine.model.*;
@@ -16,12 +23,6 @@ import model.TransactionDTO;
 import model.User;
 import model.request.*;
 import model.response.*;
-
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class SDMService {
 
@@ -88,7 +89,7 @@ public class SDMService {
         Location newStoreLocation = createLocation(request.getxCoordinate(), request.getyCoordinate());
 
         SystemStore newSystemStore = fileManager.addStoreToZone(storesOwner, zone, newStoreLocation, request);
-        systemUpdater.updateSystemItemsAfterAddingNewStore(newSystemStore, zone.getSystemItems(), zone.getSystemStores());
+        systemUpdater.updateSystemAfterNewStoreAdded(newSystemStore, zone, storesOwner);
         if (!zoneOwner.equals(storesOwner)) {
             zone.broadcast(new StoreAddedNotification(zone.getZoneName(),
                                                       newSystemStore.getName(),
